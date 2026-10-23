@@ -1,0 +1,11 @@
+# private or temporary files that must never be uploaded
+node_modules/
+__pycache__/
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+test-output/
+*.zip
+.env
+.env.*
