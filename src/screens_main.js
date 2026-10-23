@@ -9,6 +9,20 @@ function buildHome() {
   const mb = addHot(S, 45, 1600, 105, 105, () => { Music.toggle(); }, 'Music'); mb.dataset.music = '1';
   const slash = el('div', 'music-state'); slash.innerHTML = '<svg viewBox="0 0 100 100"><path d="M18 82 82 18" stroke="#ffd9a0" stroke-width="7" stroke-linecap="round"/></svg>';
   mb.appendChild(slash);
+  // Settings gear (top-right, where the old sign-out words are painted)
+  const gear = el('button', 'gear-btn'); gear.type = 'button'; gear.setAttribute('aria-label', 'Settings');
+  place(gear, 700, 16, 124, 124, S);
+  gear.innerHTML = '<svg viewBox="0 0 64 64"><defs><linearGradient id="gearw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a2b"/><stop offset="1" stop-color="#4b2c12"/></linearGradient></defs>' +
+    '<rect x="2" y="2" width="60" height="60" rx="30" fill="url(#gearw)" stroke="#d9a95a" stroke-width="3"/>' +
+    '<g fill="#ffe3a3"><path d="M29 12h6l1 5 4 2 4-3 4 4-3 4 2 4 5 1v6l-5 1-2 4 3 4-4 4-4-3-4 2-1 5h-6l-1-5-4-2-4 3-4-4 3-4-2-4-5-1v-6l5-1 2-4-3-4 4-4 4 3 4-2z"/></g>' +
+    '<circle cx="32" cy="32" r="7" fill="#5e3716"/></svg>';
+  gear.addEventListener('click', (ev) => { ev.stopPropagation(); go('settings'); });
+  S.art.appendChild(gear);
+  // small "Privacy & safety" link at the bottom
+  const pl = el('button', 'privacy-link'); pl.type = 'button'; pl.textContent = 'Privacy & safety';
+  place(pl, 246, 1748, 360, 72, S); pl.style.fontSize = 'calc(var(--u) * 38)';
+  pl.addEventListener('click', (ev) => { ev.stopPropagation(); go('privacy'); });
+  S.art.appendChild(pl);
   S.onShow = () => { Music.paint(); };
 }
 
@@ -40,10 +54,9 @@ function buildLoved() {
   S.scroll = scroll;
   S.onShow = () => renderLoved(S);
 }
-// Contacts are kept only on this phone. (Adding/editing them arrives with the Settings screen.)
-let CONTACTS = [];
+// Contacts are kept only on this phone (see contacts.js). Loved Ones opens freely: names, circles and photos only.
 function lovedPeople() {
-  return CONTACTS.filter(m => m && !!sanitizePhone(m.phone || ''))          // only people with a valid WhatsApp number
+  return Contacts.list().filter(m => !!sanitizePhone(m.phone || ''))       // only people with a valid WhatsApp number
     .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 }
 function renderLoved(S) {
@@ -51,7 +64,7 @@ function renderLoved(S) {
   sc.innerHTML = '';
   const people = lovedPeople();
   if (!people.length) {
-    sc.appendChild(el('div', 'loved-empty', 'No one is here yet.<br>When someone is added, they will appear here.'));
+    const e = el('div', 'loved-empty'); e.append('No one is here yet.', document.createElement('br'), 'Add people in Settings (the gear on the Home screen).'); sc.appendChild(e);
     return;
   }
   const n = people.length;
@@ -62,14 +75,13 @@ function renderLoved(S) {
   people.forEach(m => {
     const card = el('button', 'medallion'); card.type = 'button';
     const ring = el('div', 'med-ring');
-    ring.style.background = accentFor(m);
-    ring.textContent = initialOf(m.name);                                   // plain text, never read as code
+    if (isSafePhoto(m.photo)) ring.style.backgroundImage = 'url("' + m.photo + '")';
+    else { ring.style.background = accentFor(m); ring.textContent = initialOf(m.name); }   // plain text, never read as code
     card.appendChild(ring);
     const nm = el('div', 'med-name'); nm.textContent = m.name || ''; card.appendChild(nm);
     card.addEventListener('click', () => {
-      const digits = (sanitizePhone(m.phone || '') || '').replace(/\D/g, '');
-      if (!digits) return;
-      window.open('https://wa.me/' + digits, '_blank', 'noopener');
+      const link = waLink(m.phone); if (!link) return;
+      window.open(link, '_blank', 'noopener');
     });
     grid.appendChild(card);
   });

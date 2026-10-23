@@ -188,6 +188,58 @@ body.debug .hot { outline:2px dashed #3f3; background:rgba(60,255,60,.18); }
 
 .stone-lab { display:flex; align-items:center; justify-content:center; text-align:center; font-family:'Fraunces',Georgia,serif; font-weight:700; color:#5a3f22; text-shadow:0 1px 0 #fff8, 0 -1px 0 #0003; pointer-events:none; }
 
+/* ============ Step 2: Settings gear, Privacy link, Settings & Privacy sheets ============ */
+.gear-btn { position:absolute; z-index:7; background:none; border:0; padding:0; cursor:pointer; filter:drop-shadow(0 0 calc(var(--u)*8) rgba(255,200,110,.55)) drop-shadow(0 calc(var(--u)*3) calc(var(--u)*5) rgba(0,0,0,.6)); }
+.gear-btn svg { width:100%; height:100%; display:block; }
+.gear-btn:active { transform:scale(.94); }
+.privacy-link { position:absolute; z-index:6; border:1px solid rgba(227,184,102,.7); border-radius:999px; background:rgba(10,8,20,.62); color:#ffe9b8; font-family:'Fraunces',Georgia,serif; font-weight:600; cursor:pointer; padding:0; -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+.privacy-link:active { transform:scale(.97); }
+.sheet { position:absolute; z-index:6; overflow-y:auto; -webkit-overflow-scrolling:touch; box-sizing:border-box; padding:18px 16px 26px; border-radius:18px;
+  background:rgba(8,10,28,.74); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border:1px solid rgba(227,184,102,.55);
+  color:#fff1d0; font-family:'Fraunces',Georgia,serif; font-size:17px; line-height:1.42; }
+.sheet h3 { font-size:22px; margin:2px 0 10px; color:#ffe3a3; font-weight:600; }
+.sheet p { margin:0 0 12px; }
+.sheet .swarn { color:#ffd9a0; font-style:italic; }
+.sheet .shint { font-size:15px; color:#e8d6ae; margin-top:-6px; }
+.sheet .serr { color:#ffb4a2; font-weight:600; min-height:1em; }
+.sheet .snote { font-size:14.5px; line-height:1.4; color:#d8c7a2; border-top:1px solid rgba(227,184,102,.35); margin-top:16px; padding-top:12px; }
+.sfield { display:block; margin:0 0 12px; }
+.slabel { display:block; font-weight:600; color:#ffe3a3; font-size:17px; margin:4px 0 4px; }
+.sinput { display:block; width:100%; box-sizing:border-box; min-height:52px; font-size:18px; padding:12px 14px; border-radius:12px; border:2px solid #c99a4c; background:#fff8e7; color:#2d1a08; font-family:inherit; }
+.sinput:focus { outline:3px solid #ffd27a; outline-offset:1px; }
+.sinput:disabled { opacity:.55; }
+.scheck { display:flex; align-items:center; gap:10px; min-height:44px; font-size:16px; margin:-4px 0 6px; }
+.scheck input { width:24px; height:24px; accent-color:#c99a4c; }
+.sbtn { display:block; width:100%; min-height:54px; margin:10px 0 0; padding:12px 16px; font-size:18px; font-weight:700; font-family:inherit; color:#fff4d6; cursor:pointer;
+  background:linear-gradient(180deg,#9a6430,#5e3716); border:2px solid #d7a65a; border-radius:14px; box-shadow:0 3px 0 #2e1a09; }
+.sbtn.secondary { color:#5e3716; background:linear-gradient(180deg,#fff4d6,#ead3a0); box-shadow:0 3px 0 #b08a45; }
+.sbtn.danger { background:linear-gradient(180deg,#a8402e,#6e2216); border-color:#e59a7d; }
+.sbtn.small { min-height:48px; font-size:16px; margin:0; }
+.sbtn:active { transform:translateY(2px); box-shadow:none; }
+.sbtn:disabled { opacity:.5; cursor:default; }
+.sbtn.slink { background:none; border:0; box-shadow:none; color:#ffd27a; text-decoration:underline; font-weight:600; font-size:17px; min-height:48px; }
+.sbtn.slink.danger-link { color:#ffb4a2; }
+.crow { display:flex; align-items:center; gap:12px; width:100%; min-height:68px; margin:0 0 8px; padding:8px 10px; box-sizing:border-box; text-align:left; cursor:pointer;
+  background:rgba(255,240,210,.08); border:1px solid rgba(227,184,102,.35); border-radius:14px; color:#fff1d0; font-family:inherit; }
+.cdot, .pprev { flex:0 0 auto; width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:24px; color:#fff7e2;
+  background-size:cover; background-position:center; border:3px solid #e3b866; box-sizing:border-box; }
+.pprev { width:84px; height:84px; font-size:38px; }
+.ctext { flex:1 1 auto; display:flex; flex-direction:column; min-width:0; }
+.cname { font-size:18px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.cnum { font-size:15px; color:#d8c7a2; }
+.carrow { font-size:28px; color:#e3b866; }
+.prow { display:flex; align-items:center; gap:14px; margin:0 0 12px; }
+.pbtns { flex:1 1 auto; display:flex; flex-direction:column; gap:8px; }
+.swatches { display:flex; flex-wrap:wrap; gap:10px; margin:2px 0 8px; }
+.swatch { width:44px; height:44px; border-radius:50%; border:3px solid rgba(255,255,255,.35); cursor:pointer; padding:0; }
+.swatch.on { border-color:#fff4d6; box-shadow:0 0 0 3px #c99a4c; }
+.plist { margin:0; padding-left:26px; }
+.plist li { margin:0 0 12px; padding-left:4px; }
+.plist li::marker { color:#ffd27a; font-weight:700; }
+.fade-note { position:absolute; left:50%; top:max(14px, env(safe-area-inset-top)); transform:translateX(-50%); z-index:95; width:min(92%,420px); padding:14px 18px; border-radius:16px; cursor:pointer;
+  background:rgba(40,24,10,.94); color:#ffe9c0; border:1px solid #c99a4c; font-family:'Fraunces',Georgia,serif; font-size:16px; line-height:1.35; text-align:center; transition:opacity .5s; animation:fadein .4s ease; }
+.fade-note.out { opacity:0; }
+
 </style>
 </head>
 <body>
@@ -461,6 +513,119 @@ function accentFor(c) {
 function initialOf(name) { const t = String(name || '?').trim(); return t ? Array.from(t)[0].toUpperCase() : '?'; }
 
 // ============================================================
+// CONTACTS + PASSCODE (kept only on this phone, never sent anywhere)
+// - Contacts: name, WhatsApp number, circle colour. Readable by the app so
+//   Loved Ones can open WhatsApp with one tap. Seeing/changing numbers needs the passcode.
+// - Passcode: never stored. Only a salted PBKDF2 fingerprint is kept, so it cannot be read back.
+// ============================================================
+const CONTACT_MAX = 20, NAME_MAX = 40, PASS_MIN = 8;
+const UNLOCK_MINUTES = 10;                 // locks again after 10 minutes without a tap (or when the app closes)
+const PBKDF2_ROUNDS = 210000;
+
+const Contacts = {
+  list() {
+    const a = Store.get('contacts', []);
+    return Array.isArray(a) ? a.filter(c => c && typeof c.name === 'string' && typeof c.phone === 'string') : [];
+  },
+  saveAll(a) { try { localStorage.setItem(Store.key('contacts'), JSON.stringify(a.slice(0, CONTACT_MAX))); return true; } catch (e) { return false; } },
+  // returns '' when fine, otherwise a friendly message
+  check(name, phone) {
+    name = String(name || '').trim(); phone = String(phone || '').trim();
+    if (!name) return 'Please type a name.';
+    if (Array.from(name).length > NAME_MAX) return 'Please keep the name under ' + NAME_MAX + ' characters.';
+    if (!phone.startsWith('+')) return 'Please start the number with + and the country code, for example +1 for Canada or +91 for India.';
+    if (!sanitizePhone(phone)) return 'Please check the number: it should have 8 to 15 digits after the +.';
+    return '';
+  },
+  clean(c) {
+    return { id: c.id || ('c' + nowMs().toString(36) + Math.random().toString(36).slice(2, 6)),
+             name: String(c.name).trim().slice(0, 80), phone: '+' + sanitizePhone(c.phone).replace(/\D/g, ''),
+             accent: /^#[0-9a-fA-F]{6}$/.test(c.accent || '') ? c.accent : '',
+             photo: isSafePhoto(c.photo) ? c.photo : '' };
+  },
+  upsert(c) {
+    const a = this.list(), x = this.clean(c), i = a.findIndex(o => o.id === x.id);
+    if (i >= 0) a[i] = x; else { if (a.length >= CONTACT_MAX) return 'full'; a.push(x); }
+    return this.saveAll(a) ? 'ok' : 'nospace';
+  },
+  remove(id) { this.saveAll(this.list().filter(c => c.id !== id)); },
+  eraseAll() { Store.del('contacts'); }
+};
+// A contact photo is only ever a small JPEG the app drew itself (see makeContactPhoto).
+function isSafePhoto(p) { return typeof p === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(p) && p.length < 300000; }
+// Turn any picture the person chooses into a small square JPEG. The original file is never kept:
+// redrawing it removes hidden details (location, camera) and anything that is not a picture.
+function makeContactPhoto(file) {
+  return new Promise((resolve, reject) => {
+    if (!file || !/^image\//.test(file.type || '') || file.size > 25 * 1024 * 1024) { reject(new Error('not a picture')); return; }
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      try {
+        const side = Math.min(img.naturalWidth, img.naturalHeight), N = 320;
+        const cv = document.createElement('canvas'); cv.width = N; cv.height = N;
+        const g = cv.getContext('2d');
+        g.drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, N, N);
+        URL.revokeObjectURL(url);
+        const out = cv.toDataURL('image/jpeg', 0.82);
+        if (!isSafePhoto(out)) { reject(new Error('too big')); return; }
+        resolve(out);
+      } catch (e) { URL.revokeObjectURL(url); reject(e); }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('unreadable')); };
+    img.src = url;
+  });
+}
+function waLink(phone) { const d = (sanitizePhone(phone || '') || '').replace(/\D/g, ''); return d ? 'https://wa.me/' + d : ''; }
+
+// ---- passcode ----
+const Pass = {
+  unlockedUntil: 0,                         // in memory only: closing the app always locks
+  isSet() { const p = Store.get('pass', null); return !!(p && p.salt && p.hash); },
+  isUnlocked() { return this.unlockedUntil > nowMs(); },
+  touch() { if (this.isUnlocked()) this.unlockedUntil = nowMs() + UNLOCK_MINUTES * 60000; },
+  lock() { this.unlockedUntil = 0; },
+  async fingerprint(code, saltB64, rounds) {
+    const enc = new TextEncoder(), salt = Uint8Array.from(atob(saltB64), ch => ch.charCodeAt(0));
+    const key = await crypto.subtle.importKey('raw', enc.encode(code), 'PBKDF2', false, ['deriveBits']);
+    const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: rounds }, key, 256);
+    return btoa(String.fromCharCode(...new Uint8Array(bits)));
+  },
+  async create(code) {
+    const salt = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16))));
+    const hash = await this.fingerprint(code, salt, PBKDF2_ROUNDS);
+    Store.set('pass', { v: 1, salt, hash, rounds: PBKDF2_ROUNDS });
+    Store.del('passlock');
+    this.unlockedUntil = nowMs() + UNLOCK_MINUTES * 60000;
+  },
+  // waiting time (ms) still left after too many wrong tries
+  waitLeft() { const l = Store.get('passlock', null); return l && l.until ? Math.max(0, l.until - nowMs()) : 0; },
+  async check(code) {
+    if (this.waitLeft() > 0) return 'wait';
+    const p = Store.get('pass', null); if (!p) return 'none';
+    const h = await this.fingerprint(code, p.salt, p.rounds || PBKDF2_ROUNDS);
+    if (h === p.hash) { Store.del('passlock'); this.unlockedUntil = nowMs() + UNLOCK_MINUTES * 60000; return 'ok'; }
+    const l = Store.get('passlock', { fails: 0, rounds: 0 }); l.fails = (l.fails || 0) + 1;
+    if (l.fails >= 5) {                     // 5 wrong tries: wait 30 s, then 1 min, 2 min, 4 min ... (max 30 min)
+      l.until = nowMs() + Math.min(30 * 60000, 30000 * Math.pow(2, l.rounds || 0));
+      l.rounds = (l.rounds || 0) + 1; l.fails = 0;
+    }
+    Store.set('passlock', l);
+    return 'wrong';
+  },
+  // "Forgot passcode?": erases saved contacts and the passcode. Games and stats stay.
+  forget() { Contacts.eraseAll(); Store.del('pass'); Store.del('passlock'); this.lock(); }
+};
+// any tap keeps an unlocked Settings open for another 10 minutes
+['pointerup', 'keydown'].forEach(t => document.addEventListener(t, () => Pass.touch(), true));
+
+// "Erase everything on this phone": every saved thing of this app, nothing else on the phone
+function eraseEverything() {
+  try { Object.keys(localStorage).filter(k => k.startsWith('tt:')).forEach(k => localStorage.removeItem(k)); } catch (e) {}
+  try { Object.keys(sessionStorage).filter(k => k.startsWith('tt:')).forEach(k => sessionStorage.removeItem(k)); } catch (e) {}
+  Pass.lock();
+}
+
+// ============================================================
 // MUSIC ENGINE: 432 Hz Veena + Bansuri flute, made live (no audio files)
 // - Tuning: A4 = 432 Hz (so the note D, our "Sa", is exactly 288 Hz).
 // - Raga: Bhoopali-style five-note scale (Sa Re Ga Pa Dha).
@@ -728,6 +893,20 @@ function buildHome() {
   const mb = addHot(S, 45, 1600, 105, 105, () => { Music.toggle(); }, 'Music'); mb.dataset.music = '1';
   const slash = el('div', 'music-state'); slash.innerHTML = '<svg viewBox="0 0 100 100"><path d="M18 82 82 18" stroke="#ffd9a0" stroke-width="7" stroke-linecap="round"/></svg>';
   mb.appendChild(slash);
+  // Settings gear (top-right, where the old sign-out words are painted)
+  const gear = el('button', 'gear-btn'); gear.type = 'button'; gear.setAttribute('aria-label', 'Settings');
+  place(gear, 700, 16, 124, 124, S);
+  gear.innerHTML = '<svg viewBox="0 0 64 64"><defs><linearGradient id="gearw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a2b"/><stop offset="1" stop-color="#4b2c12"/></linearGradient></defs>' +
+    '<rect x="2" y="2" width="60" height="60" rx="30" fill="url(#gearw)" stroke="#d9a95a" stroke-width="3"/>' +
+    '<g fill="#ffe3a3"><path d="M29 12h6l1 5 4 2 4-3 4 4-3 4 2 4 5 1v6l-5 1-2 4 3 4-4 4-4-3-4 2-1 5h-6l-1-5-4-2-4 3-4-4 3-4-2-4-5-1v-6l5-1 2-4-3-4 4-4 4 3 4-2z"/></g>' +
+    '<circle cx="32" cy="32" r="7" fill="#5e3716"/></svg>';
+  gear.addEventListener('click', (ev) => { ev.stopPropagation(); go('settings'); });
+  S.art.appendChild(gear);
+  // small "Privacy & safety" link at the bottom
+  const pl = el('button', 'privacy-link'); pl.type = 'button'; pl.textContent = 'Privacy & safety';
+  place(pl, 246, 1748, 360, 72, S); pl.style.fontSize = 'calc(var(--u) * 38)';
+  pl.addEventListener('click', (ev) => { ev.stopPropagation(); go('privacy'); });
+  S.art.appendChild(pl);
   S.onShow = () => { Music.paint(); };
 }
 
@@ -759,10 +938,9 @@ function buildLoved() {
   S.scroll = scroll;
   S.onShow = () => renderLoved(S);
 }
-// Contacts are kept only on this phone. (Adding/editing them arrives with the Settings screen.)
-let CONTACTS = [];
+// Contacts are kept only on this phone (see contacts.js). Loved Ones opens freely: names, circles and photos only.
 function lovedPeople() {
-  return CONTACTS.filter(m => m && !!sanitizePhone(m.phone || ''))          // only people with a valid WhatsApp number
+  return Contacts.list().filter(m => !!sanitizePhone(m.phone || ''))       // only people with a valid WhatsApp number
     .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 }
 function renderLoved(S) {
@@ -770,7 +948,7 @@ function renderLoved(S) {
   sc.innerHTML = '';
   const people = lovedPeople();
   if (!people.length) {
-    sc.appendChild(el('div', 'loved-empty', 'No one is here yet.<br>When someone is added, they will appear here.'));
+    const e = el('div', 'loved-empty'); e.append('No one is here yet.', document.createElement('br'), 'Add people in Settings (the gear on the Home screen).'); sc.appendChild(e);
     return;
   }
   const n = people.length;
@@ -781,18 +959,242 @@ function renderLoved(S) {
   people.forEach(m => {
     const card = el('button', 'medallion'); card.type = 'button';
     const ring = el('div', 'med-ring');
-    ring.style.background = accentFor(m);
-    ring.textContent = initialOf(m.name);                                   // plain text, never read as code
+    if (isSafePhoto(m.photo)) ring.style.backgroundImage = 'url("' + m.photo + '")';
+    else { ring.style.background = accentFor(m); ring.textContent = initialOf(m.name); }   // plain text, never read as code
     card.appendChild(ring);
     const nm = el('div', 'med-name'); nm.textContent = m.name || ''; card.appendChild(nm);
     card.addEventListener('click', () => {
-      const digits = (sanitizePhone(m.phone || '') || '').replace(/\D/g, '');
-      if (!digits) return;
-      window.open('https://wa.me/' + digits, '_blank', 'noopener');
+      const link = waLink(m.phone); if (!link) return;
+      window.open(link, '_blank', 'noopener');
     });
     grid.appendChild(card);
   });
   sc.appendChild(grid);
+}
+
+// ============================================================
+// SETTINGS (passcode-protected) and PRIVACY & SAFETY page
+// Built on the Loved Ones night-sky picture with a dark frosted sheet on top.
+// All text is set with textContent: anything a person types is shown as plain text, never run as code.
+// ============================================================
+const SETTINGS_NOTE = 'Contacts saved here stay only on this phone, inside Taarala Thota. Anyone using this phone can call them from Loved Ones and see their names and photos, but only someone with the passcode can see or change the numbers. Your phone’s own contacts are never touched.';
+const FORGOT_TEXT = 'If you forget this passcode, the contacts you saved in Taarala Thota will be erased, and you’ll need to add them again. Your phone’s own contacts and WhatsApp are not affected.';
+const DAILY_NOTICE = 'Contacts saved here stay only on this phone. Your phone’s own contacts are never touched.';
+const OFFICIAL_ADDRESS = '';   // filled in at launch
+const PRIVACY_POINTS = [
+  'Everything stays on this phone. No sign-in, no ads, no tracking.',
+  'Contacts you save here exist only in this app. Your phone’s own contacts and WhatsApp are never changed.',
+  'Anyone using this phone can call your saved contacts from Loved Ones and see their names and photos. Seeing or changing numbers needs your passcode.',
+  'Keep your phone locked with a PIN, fingerprint or face unlock. That also protects this app’s data.',
+  'Choose a passcode you’ll remember. If you forget it, your saved contacts must be erased and added again.',
+  'Back up regularly, and keep the backup file private. Its password can’t be recovered.',
+  'On iPhone, add the app to your Home Screen, so your data is kept even if you don’t open it for a while.',
+  'Clearing your browser’s data or removing the app deletes everything, unless you have a backup.',
+  'Tapping a contact only opens WhatsApp. Nothing is ever sent automatically.',
+  'Only use the official address' + (OFFICIAL_ADDRESS ? ': ' + OFFICIAL_ADDRESS + '.' : ' shared by the creator.') + ' Copies elsewhere aren’t ours.'
+];
+
+// ---- tiny DOM builders (always plain text) ----
+function tx(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function btn(label, cls, fn) { const b = tx('button', 'sbtn ' + (cls || ''), label); b.type = 'button'; b.addEventListener('click', (ev) => { ev.stopPropagation(); try { fn && fn(ev); } catch (e) { console.error(e); } }); return b; }
+function field(labelText, type, opts) {
+  opts = opts || {};
+  const w = tx('label', 'sfield'); w.appendChild(tx('span', 'slabel', labelText));
+  const i = document.createElement('input'); i.type = type; i.className = 'sinput';
+  if (opts.value != null) i.value = opts.value;
+  if (opts.placeholder) i.placeholder = opts.placeholder;
+  if (opts.inputmode) i.inputMode = opts.inputmode;
+  if (opts.max) i.maxLength = opts.max;
+  i.autocomplete = opts.autocomplete || 'off'; i.spellcheck = false; i.setAttribute('autocapitalize', opts.caps || 'off');
+  w.appendChild(i); return { wrap: w, input: i };
+}
+function today() { const d = new Date(nowMs()); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+
+// ============================================================
+function buildSettings() {
+  const S = defScreen('settings', 'loved', { parent: 'home-view', name: 'Settings' });
+  addNav(S, { icons: true });
+  addText(S, 'loved-title', 100, 150, 520, 140, 92, 'Settings');
+  const sheet = el('div', 'sheet'); place(sheet, 45, 330, 763, 1470, S); S.art.appendChild(sheet);
+  S.sheet = sheet; S.view = null;
+  S.onShow = () => { S.view = null; renderSettings(S); dailyNotice(S); };
+  S.onHide = () => { clearInterval(S.waitTimer); };
+}
+function dailyNotice(S) {
+  if (Store.get('noticeDay', '') === today()) return;
+  Store.set('noticeDay', today());
+  const b = tx('button', 'fade-note', DAILY_NOTICE); b.type = 'button';
+  b.addEventListener('click', (ev) => { ev.stopPropagation(); b.classList.add('out'); setTimeout(() => b.remove(), 500); });
+  S.el.appendChild(b);
+  setTimeout(() => { b.classList.add('out'); setTimeout(() => b.remove(), 600); }, 6000);
+}
+function renderSettings(S, view, data) {
+  const sh = S.sheet; if (!sh) return;
+  clearInterval(S.waitTimer);
+  if (!Pass.isSet()) view = 'create';
+  else if (!Pass.isUnlocked() && view !== 'forgot') view = 'unlock';
+  else view = view || 'list';
+  S.view = view; sh.innerHTML = ''; sh.scrollTop = 0;
+  ({ create: viewCreate, unlock: viewUnlock, forgot: viewForgot, list: viewList, form: viewForm, eraseall: viewEraseAll })[view](S, sh, data || {});
+  if (view !== 'list' && view !== 'form') { sh.appendChild(tx('div', 'snote', SETTINGS_NOTE)); }
+}
+
+function viewCreate(S, sh) {
+  sh.appendChild(tx('h3', '', 'Create a passcode'));
+  sh.appendChild(tx('p', '', 'The passcode protects your contacts’ numbers. Use at least ' + PASS_MIN + ' characters (letters, numbers or a short phrase).'));
+  sh.appendChild(tx('p', 'swarn', FORGOT_TEXT));
+  const a = field('Passcode', 'password', { autocomplete: 'new-password' }), b = field('Type it again', 'password', { autocomplete: 'new-password' });
+  sh.append(a.wrap, b.wrap, showToggle([a.input, b.input]));
+  const err = tx('p', 'serr'); sh.appendChild(err);
+  sh.appendChild(btn('Save passcode', '', async () => {
+    const p = a.input.value;
+    if (Array.from(p).length < PASS_MIN) { err.textContent = 'Please use at least ' + PASS_MIN + ' characters.'; return; }
+    if (p !== b.input.value) { err.textContent = 'The two passcodes don’t match. Please type them again.'; return; }
+    err.textContent = 'Saving…'; await Pass.create(p); renderSettings(S, 'list');
+  }));
+}
+function showToggle(inputs) {
+  const w = tx('label', 'scheck'); const c = document.createElement('input'); c.type = 'checkbox';
+  c.addEventListener('change', () => inputs.forEach(i => { i.type = c.checked ? 'text' : 'password'; }));
+  w.append(c, tx('span', '', 'Show passcode')); return w;
+}
+function viewUnlock(S, sh) {
+  sh.appendChild(tx('h3', '', 'Enter your passcode'));
+  sh.appendChild(tx('p', '', 'Settings is locked to protect your contacts’ numbers.'));
+  const a = field('Passcode', 'password', { autocomplete: 'current-password' });
+  sh.append(a.wrap, showToggle([a.input]));
+  const err = tx('p', 'serr'); sh.appendChild(err);
+  const go = btn('Unlock', '', async () => {
+    const r = await Pass.check(a.input.value);
+    if (r === 'ok') { renderSettings(S, 'list'); return; }
+    a.input.value = ''; showWait();
+    if (r === 'wrong' && Pass.waitLeft() <= 0) err.textContent = 'That passcode isn’t right. Please try again.';
+  });
+  sh.appendChild(go);
+  a.input.addEventListener('keydown', (e) => { if (e.key === 'Enter') go.click(); });
+  const forgot = btn('Forgot passcode?', 'slink', () => renderSettings(S, 'forgot')); sh.appendChild(forgot);
+  function showWait() {
+    const left = Pass.waitLeft();
+    a.input.disabled = go.disabled = left > 0;
+    if (left > 0) err.textContent = 'Too many wrong tries. Please wait ' + Math.ceil(left / 1000) + ' seconds.';
+    else if (/wait/.test(err.textContent)) err.textContent = '';
+  }
+  showWait(); S.waitTimer = setInterval(showWait, 1000);
+}
+function viewForgot(S, sh) {
+  sh.appendChild(tx('h3', '', 'Forgot your passcode?'));
+  sh.appendChild(tx('p', '', FORGOT_TEXT));
+  sh.appendChild(tx('p', '', 'Your games, progress and stats stay as they are.'));
+  const a = field('To confirm, type ERASE', 'text', { caps: 'characters' }); sh.appendChild(a.wrap);
+  const err = tx('p', 'serr'); sh.appendChild(err);
+  sh.appendChild(btn('Erase saved contacts', 'danger', () => {
+    if (a.input.value.trim().toUpperCase() !== 'ERASE') { err.textContent = 'Please type the word ERASE to confirm.'; return; }
+    Pass.forget(); toast(S, 'Saved contacts erased'); renderSettings(S, 'create');
+  }));
+  sh.appendChild(btn('Cancel', 'secondary', () => renderSettings(S)));
+}
+function viewList(S, sh) {
+  const list = Contacts.list().sort((x, y) => x.name.localeCompare(y.name));
+  sh.appendChild(tx('h3', '', 'Your contacts (' + list.length + ' of ' + CONTACT_MAX + ')'));
+  if (!list.length) sh.appendChild(tx('p', '', 'No contacts yet. Add the people you call most, and they’ll appear in Loved Ones.'));
+  list.forEach(c => {
+    const r = tx('button', 'crow'); r.type = 'button';
+    r.appendChild(circleFor(c, 'cdot'));
+    const t = tx('span', 'ctext'); t.append(tx('span', 'cname', c.name), tx('span', 'cnum', c.phone)); r.appendChild(t);
+    r.appendChild(tx('span', 'carrow', '›'));
+    r.addEventListener('click', (ev) => { ev.stopPropagation(); renderSettings(S, 'form', { c }); });
+    sh.appendChild(r);
+  });
+  const add = btn('+ Add a contact', '', () => renderSettings(S, 'form', {}));
+  if (list.length >= CONTACT_MAX) { add.disabled = true; add.textContent = 'You have the maximum of ' + CONTACT_MAX + ' contacts'; }
+  sh.appendChild(add);
+  sh.appendChild(btn('Lock Settings now', 'secondary', () => { Pass.lock(); goHome(); }));
+  sh.appendChild(btn('Privacy & safety', 'slink', () => go('privacy')));
+  sh.appendChild(tx('div', 'snote', SETTINGS_NOTE));
+  sh.appendChild(btn('Erase everything on this phone', 'slink danger-link', () => renderSettings(S, 'eraseall')));
+}
+function circleFor(c, cls) {
+  const d = tx('span', cls);
+  if (isSafePhoto(c.photo)) d.style.backgroundImage = 'url("' + c.photo + '")';
+  else { d.style.background = accentFor(c); d.textContent = initialOf(c.name); }
+  return d;
+}
+function viewForm(S, sh, data) {
+  const c = data.c || null, edit = !!c;
+  let photo = edit && isSafePhoto(c.photo) ? c.photo : '', accent = edit ? (c.accent || '') : '';
+  sh.appendChild(tx('h3', '', edit ? 'Edit contact' : 'Add a contact'));
+  const nm = field('Name', 'text', { value: edit ? c.name : '', max: NAME_MAX, caps: 'words', placeholder: 'e.g. Grandma' });
+  const ph = field('WhatsApp number', 'tel', { value: edit ? c.phone : '+', inputmode: 'tel', placeholder: '+1 555 123 4567' });
+  sh.append(nm.wrap, ph.wrap, tx('p', 'shint', 'Start with + and the country code, for example +1 for Canada or +91 for India.'));
+  // photo
+  const prow = tx('div', 'prow'); const prev = tx('span', 'pprev'); prow.appendChild(prev);
+  const pbtns = tx('div', 'pbtns'); prow.appendChild(pbtns); sh.appendChild(tx('span', 'slabel', 'Photo (optional)')); sh.appendChild(prow);
+  const file = document.createElement('input'); file.type = 'file'; file.accept = 'image/*'; file.style.display = 'none'; sh.appendChild(file);
+  const choose = btn('Choose photo', 'secondary small', () => file.click());
+  const remove = btn('Remove photo', 'secondary small', () => { photo = ''; paintPhoto(); });
+  pbtns.append(choose, remove);
+  file.addEventListener('change', async () => {
+    const f = file.files && file.files[0]; file.value = '';
+    if (!f) return;
+    err.textContent = 'Preparing photo…';
+    try { photo = await makeContactPhoto(f); err.textContent = ''; paintPhoto(); }
+    catch (e) { err.textContent = 'Sorry, that picture couldn’t be used. Please try a different photo.'; }
+  });
+  // colour (used when there is no photo)
+  const sw = tx('div', 'swatches'); sh.appendChild(tx('span', 'slabel', 'Circle colour')); sh.appendChild(sw);
+  CONTACT_ACCENTS.forEach(col => {
+    const b = tx('button', 'swatch'); b.type = 'button'; b.style.background = col; b.dataset.col = col.toLowerCase(); b.setAttribute('aria-label', 'Colour ' + col);
+    b.addEventListener('click', (ev) => { ev.stopPropagation(); accent = col; paintPhoto(); });
+    sw.appendChild(b);
+  });
+  function paintPhoto() {
+    const tmp = { name: nm.input.value || '?', photo, accent };
+    prow.querySelector('.pprev').replaceWith(circleFor(tmp, 'pprev'));
+    remove.style.display = photo ? '' : 'none';
+    const cur = (accent || accentFor(tmp)).toLowerCase();
+    sw.querySelectorAll('.swatch').forEach(x => x.classList.toggle('on', x.dataset.col === cur));
+  }
+  nm.input.addEventListener('input', paintPhoto);
+  const err = tx('p', 'serr'); sh.appendChild(err);
+  paintPhoto();
+  sh.appendChild(btn('Test on WhatsApp', 'secondary', () => {
+    const m = Contacts.check(nm.input.value || 'x', ph.input.value); if (m) { err.textContent = m; return; }
+    err.textContent = ''; window.open(waLink(ph.input.value), '_blank', 'noopener');
+  }));
+  sh.appendChild(btn(edit ? 'Save changes' : 'Save contact', '', () => {
+    const m = Contacts.check(nm.input.value, ph.input.value); if (m) { err.textContent = m; return; }
+    const r = Contacts.upsert({ id: edit ? c.id : '', name: nm.input.value, phone: ph.input.value, accent, photo });
+    if (r === 'full') { err.textContent = 'You already have ' + CONTACT_MAX + ' contacts. Please remove one first.'; return; }
+    if (r === 'nospace') { err.textContent = 'This phone has no room left to save that. Try removing a photo.'; return; }
+    toast(S, edit ? 'Saved' : 'Contact added'); renderSettings(S, 'list');
+  }));
+  if (edit) sh.appendChild(btn('Delete contact', 'danger', () => {
+    showPanel(S, { title: 'Delete ' + c.name + '?', text: 'This removes them from Taarala Thota only. Your phone’s own contacts are not affected.',
+      buttons: [{ label: 'Keep', secondary: true }, { label: 'Delete', fn: () => { Contacts.remove(c.id); toast(S, 'Deleted'); renderSettings(S, 'list'); } }] });
+  }));
+  sh.appendChild(btn('Cancel', 'secondary', () => renderSettings(S, 'list')));
+}
+function viewEraseAll(S, sh) {
+  sh.appendChild(tx('h3', '', 'Erase everything on this phone?'));
+  sh.appendChild(tx('p', '', 'This removes everything Taarala Thota saved on this phone: contacts, photos, passcode, game progress, stats and settings.'));
+  sh.appendChild(tx('p', '', 'Your phone’s own contacts, photos and WhatsApp are not affected. This cannot be undone.'));
+  const a = field('To confirm, type ERASE', 'text', { caps: 'characters' }); sh.appendChild(a.wrap);
+  const err = tx('p', 'serr'); sh.appendChild(err);
+  sh.appendChild(btn('Erase everything', 'danger', () => {
+    if (a.input.value.trim().toUpperCase() !== 'ERASE') { err.textContent = 'Please type the word ERASE to confirm.'; return; }
+    eraseEverything(); try { Music.paint(); } catch (e) {}
+    goHome(); toast(SCREENS['home-view'], 'Everything was erased');
+  }));
+  sh.appendChild(btn('Cancel', 'secondary', () => renderSettings(S, 'list')));
+}
+
+// ============================================================
+function buildPrivacy() {
+  const S = defScreen('privacy', 'loved', { parent: 'home-view', name: 'Privacy & safety' });
+  addNav(S, { icons: true });
+  addText(S, 'loved-title', 90, 160, 560, 130, 74, 'Privacy & safety');
+  const sheet = el('div', 'sheet'); place(sheet, 45, 330, 763, 1470, S); S.art.appendChild(sheet);
+  const ol = tx('ol', 'plist'); PRIVACY_POINTS.forEach(p => ol.appendChild(tx('li', '', p))); sheet.appendChild(ol);
 }
 
 // ============================================================
@@ -2780,14 +3182,14 @@ function ckTick() {
 // START-UP
 // ============================================================
 function bootApp() {
-  buildHome(); buildGames(); buildLoved(); buildBubble(); buildMine(); buildChess(); buildCheckers();
+  buildHome(); buildGames(); buildLoved(); buildSettings(); buildPrivacy(); buildBubble(); buildMine(); buildChess(); buildCheckers();
   Music.armFirstTap();
   Music.paint();
   goHome();                                   // no sign-in: open straight onto Home
   // prevent double-tap zoom
   let lastTap = 0;
   document.addEventListener('touchend', (e) => { const n = Date.now(); if (n - lastTap < 300 && e.target.closest && !e.target.closest('input,textarea,select')) e.preventDefault(); lastTap = n; }, { passive: false });
-  if (TEST_MODE) window.MM = { go, goHome, goBack, SCREENS, CH, CK, BUB, MS, Store, Saved, Results, advance: (ms) => { CLOCK_SHIFT += ms; }, nowMs, Music, get cur() { return CUR; } };
+  if (TEST_MODE) window.MM = { go, goHome, goBack, SCREENS, CH, CK, BUB, MS, Store, Saved, Results, advance: (ms) => { CLOCK_SHIFT += ms; }, nowMs, Music, Contacts, Pass, get cur() { return CUR; } };
 }
 
 bootApp();

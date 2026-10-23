@@ -46,7 +46,7 @@ head = '''<!DOCTYPE html>
 
 js = '\n'.join([
     src('core.js').replace('/*PIC_JSON*/{}', json.dumps(pic)).replace('/*VER_JSON*/{}', json.dumps(ver)),
-    src('helpers.js'), src('audio.js'), src('gamekit.js'), src('screens_main.js'), src('bubble.js'), src('mine.js'),
+    src('helpers.js'), src('contacts.js'), src('audio.js'), src('gamekit.js'), src('screens_main.js'), src('settings.js'), src('bubble.js'), src('mine.js'),
     src('chess_engine.js'), src('checkers_engine.js'), src('chess_ui.js'), src('checkers_ui.js'), src('init.js'),
     'bootApp();'
 ])

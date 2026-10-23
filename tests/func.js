@@ -27,10 +27,10 @@ function ok(c, msg) { if (c) { pass++; console.log('PASS', msg); } else { fail++
   }
   await ev(() => MM.go('contact-view'));
   ok(await ev(() => document.querySelectorAll('#contact-view .medallion').length === 0 && !!document.querySelector('#contact-view .loved-empty')), 'Loved Ones starts empty, with a friendly message');
-  await ev(() => { CONTACTS = [{ name: 'Test Star', phone: '+10000000001' }, { name: '<b>Moon</b>', phone: '10000000002' }, { name: 'No Number', phone: '12' }]; MM.go('home-view'); MM.go('contact-view'); });
+  await ev(() => { localStorage.setItem('tt:contacts', JSON.stringify([{ id: 'a', name: 'Test Star', phone: '+10000000001' }, { id: 'b', name: '<b>Moon</b>', phone: '+10000000002' }, { id: 'c', name: 'No Number', phone: '12' }])); MM.go('home-view'); MM.go('contact-view'); });
   ok(await ev(() => document.querySelectorAll('#contact-view .medallion').length) === 2, 'Loved Ones shows only contacts with a valid number');
   ok(await ev(() => !document.querySelector('#contact-view .med-name b') && [...document.querySelectorAll('#contact-view .med-name')].some(n => n.textContent === '<b>Moon</b>')), 'typed names are shown as plain text, never as code');
-  await ev(() => { CONTACTS = []; });
+  await ev(() => { localStorage.removeItem('tt:contacts'); });
   await ev(() => MM.goBack()); ok(await ev(() => MM.cur === 'home-view'), 'Loved Ones Back -> Home');
 
   // ---- chess ----
