@@ -622,22 +622,27 @@ const Music = (function () {
     g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + dur + 0.02);
   }
-  // first tap anywhere starts the music (if it was on this session)
+  // first tap anywhere starts the music (if it is switched on).
+  // Phones only allow sound after a COMPLETED tap (finger lifted), so we listen for the end of the tap,
+  // not the moment the finger touches the screen.
+  const TAP_END = ['pointerup', 'touchend', 'click', 'keydown'];
   function armFirstTap() {
     const h = (e) => {
-      document.removeEventListener('pointerdown', h, true);
+      TAP_END.forEach(t => document.removeEventListener(t, h, true));
       if (e.target && e.target.closest && e.target.closest('[data-music]')) { armFirstTap(); return; }   // the music button decides by itself
       if (getPref() === 'on' && !on) start();
     };
-    document.addEventListener('pointerdown', h, true);
+    TAP_END.forEach(t => document.addEventListener(t, h, true));
   }
+  // safety net: if the phone paused the sound system (call, lock screen, another app), the next tap wakes it again
+  TAP_END.forEach(t => document.addEventListener(t, () => { try { if (on && ctx && ctx.state !== 'running') ctx.resume(); } catch (e) {} }, true));
   // silence without changing the person's on/off choice
   function pause() {
     on = false;
     if (ctx && master) { master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setTargetAtTime(0, ctx.currentTime, 0.15); }
     paint();
   }
-  return { start, stop, pause, toggle, wantsOn, isOn: () => on, blip, armFirstTap, paint, hz, A4 };
+  return { start, stop, pause, toggle, wantsOn, isOn: () => on, ctxState: () => ctx && ctx.state, blip, armFirstTap, paint, hz, A4 };
 })();
 
 // ============================================================
