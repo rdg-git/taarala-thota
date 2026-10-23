@@ -104,7 +104,7 @@ const Pass = {
 // any tap keeps an unlocked Settings open for another 10 minutes
 ['pointerup', 'keydown'].forEach(t => document.addEventListener(t, () => Pass.touch(), true));
 
-// "Erase everything on this phone": every saved thing of this app, nothing else on the phone
+// "Erase all Taarala Thota data": every item this app saved (all under the tt: label), nothing else on the phone
 function eraseEverything() {
   try { Object.keys(localStorage).filter(k => k.startsWith('tt:')).forEach(k => localStorage.removeItem(k)); } catch (e) {}
   try { Object.keys(sessionStorage).filter(k => k.startsWith('tt:')).forEach(k => sessionStorage.removeItem(k)); } catch (e) {}

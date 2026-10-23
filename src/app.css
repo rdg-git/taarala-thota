@@ -219,6 +219,8 @@ body.debug .hot { outline:2px dashed #3f3; background:rgba(60,255,60,.18); }
 .swatch { width:44px; height:44px; border-radius:50%; border:3px solid rgba(255,255,255,.35); cursor:pointer; padding:0; }
 .swatch.on { border-color:#fff4d6; box-shadow:0 0 0 3px #c99a4c; }
 .plist { margin:0; padding-left:26px; }
+.slist { margin:-4px 0 12px; padding-left:24px; }
+.slist li { margin:0 0 4px; }
 .plist li { margin:0 0 12px; padding-left:4px; }
 .plist li::marker { color:#ffd27a; font-weight:700; }
 .fade-note { position:absolute; left:50%; top:max(14px, env(safe-area-inset-top)); transform:translateX(-50%); z-index:95; width:min(92%,420px); padding:14px 18px; border-radius:16px; cursor:pointer;

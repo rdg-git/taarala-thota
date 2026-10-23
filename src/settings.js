@@ -3,8 +3,9 @@
 // Built on the Loved Ones night-sky picture with a dark frosted sheet on top.
 // All text is set with textContent: anything a person types is shown as plain text, never run as code.
 // ============================================================
-const SETTINGS_NOTE = 'Contacts saved here stay only on this phone, inside Taarala Thota. Anyone using this phone can call them from Loved Ones and see their names and photos, but only someone with the passcode can see or change the numbers. Your phone’s own contacts are never touched.';
-const FORGOT_TEXT = 'If you forget this passcode, the contacts you saved in Taarala Thota will be erased, and you’ll need to add them again. Your phone’s own contacts and WhatsApp are not affected.';
+const APP_NAME = 'Taarala Thota (Garden of Stars)';   // the name always travels with its meaning
+const SETTINGS_NOTE = 'Contacts saved here stay only on this phone, inside ' + APP_NAME + '. Anyone using this phone can call them from Loved Ones and see their names and photos, but only someone with the passcode can see or change the numbers. Your phone’s own contacts are never touched.';
+const FORGOT_TEXT = 'If you forget this passcode, the contacts you saved in ' + APP_NAME + ' will be erased, and you’ll need to add them again. Your phone’s own contacts and WhatsApp are not affected.';
 const DAILY_NOTICE = 'Contacts saved here stay only on this phone. Your phone’s own contacts are never touched.';
 const OFFICIAL_ADDRESS = '';   // filled in at launch
 const PRIVACY_POINTS = [
@@ -137,7 +138,7 @@ function viewList(S, sh) {
   sh.appendChild(btn('Lock Settings now', 'secondary', () => { Pass.lock(); goHome(); }));
   sh.appendChild(btn('Privacy & safety', 'slink', () => go('privacy')));
   sh.appendChild(tx('div', 'snote', SETTINGS_NOTE));
-  sh.appendChild(btn('Erase everything on this phone', 'slink danger-link', () => renderSettings(S, 'eraseall')));
+  sh.appendChild(btn('Erase all ' + APP_NAME + ' data', 'slink danger-link', () => renderSettings(S, 'eraseall')));
 }
 function circleFor(c, cls) {
   const d = tx('span', cls);
@@ -195,21 +196,24 @@ function viewForm(S, sh, data) {
     toast(S, edit ? 'Saved' : 'Contact added'); renderSettings(S, 'list');
   }));
   if (edit) sh.appendChild(btn('Delete contact', 'danger', () => {
-    showPanel(S, { title: 'Delete ' + c.name + '?', text: 'This removes them from Taarala Thota only. Your phone’s own contacts are not affected.',
+    showPanel(S, { title: 'Delete ' + c.name + '?', text: 'This removes them from ' + APP_NAME + ' only. Your phone’s own contacts are not affected.',
       buttons: [{ label: 'Keep', secondary: true }, { label: 'Delete', fn: () => { Contacts.remove(c.id); toast(S, 'Deleted'); renderSettings(S, 'list'); } }] });
   }));
   sh.appendChild(btn('Cancel', 'secondary', () => renderSettings(S, 'list')));
 }
 function viewEraseAll(S, sh) {
-  sh.appendChild(tx('h3', '', 'Erase everything on this phone?'));
-  sh.appendChild(tx('p', '', 'This removes everything Taarala Thota saved on this phone: contacts, photos, passcode, game progress, stats and settings.'));
-  sh.appendChild(tx('p', '', 'Your phone’s own contacts, photos and WhatsApp are not affected. This cannot be undone.'));
+  sh.appendChild(tx('h3', '', 'Erase all ' + APP_NAME + ' data?'));
+  sh.appendChild(tx('p', '', 'This erases only what this app saved in this browser on this phone:'));
+  const yes = tx('ul', 'slist'); ['your saved contacts and their photos', 'your passcode', 'game progress and stats', 'your settings (like music on or off)'].forEach(t => yes.appendChild(tx('li', '', t))); sh.appendChild(yes);
+  sh.appendChild(tx('p', '', 'It does not touch:'));
+  const no = tx('ul', 'slist'); ['your phone\u2019s own contacts or photo gallery', 'WhatsApp', 'other apps or websites', 'any backup files you saved'].forEach(t => no.appendChild(tx('li', '', t))); sh.appendChild(no);
+  sh.appendChild(tx('p', '', 'This app uses no cookies. This can\u2019t be undone.'));
   const a = field('To confirm, type ERASE', 'text', { caps: 'characters' }); sh.appendChild(a.wrap);
   const err = tx('p', 'serr'); sh.appendChild(err);
-  sh.appendChild(btn('Erase everything', 'danger', () => {
+  sh.appendChild(btn('Erase all app data', 'danger', () => {
     if (a.input.value.trim().toUpperCase() !== 'ERASE') { err.textContent = 'Please type the word ERASE to confirm.'; return; }
     eraseEverything(); try { Music.paint(); } catch (e) {}
-    goHome(); toast(SCREENS['home-view'], 'Everything was erased');
+    goHome(); toast(SCREENS['home-view'], 'All Taarala Thota data was erased');
   }));
   sh.appendChild(btn('Cancel', 'secondary', () => renderSettings(S, 'list')));
 }

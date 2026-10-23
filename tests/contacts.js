@@ -87,8 +87,8 @@ function png(w, h) {   // a small solid-colour PNG made on the fly (stands in fo
   ok(await ev(() => /Create a passcode/.test(document.querySelector('#settings .sheet').textContent)), 'forgot: asks to create a new passcode');
   // erase everything
   await fill('Passcode', 'new passcode 1'); await fill('Type it again', 'new passcode 1'); await clickText('Save passcode'); await wait(1200);
-  await clickText('Erase everything on this phone'); await fill('To confirm, type ERASE', 'ERASE'); await clickText('Erase everything'); await wait(300);
-  ok(await ev(() => Object.keys(localStorage).filter(k => k.startsWith('tt:')).length === 0 && MM.cur === 'home-view'), 'erase everything removes every saved item and returns Home');
+  await clickText('Erase all Taarala Thota'); await fill('To confirm, type ERASE', 'ERASE'); await clickText('Erase all app data'); await wait(300);
+  ok(await ev(() => Object.keys(localStorage).filter(k => k.startsWith('tt:')).length === 0 && MM.cur === 'home-view'), 'erase all app data removes every saved item and returns Home');
   // daily notice only once a day
   await ev(() => { localStorage.setItem('tt:noticeDay', JSON.stringify('x')); }); await ev(() => MM.go('settings')); await wait(200);
   await ev(() => MM.go('home-view')); await ev(() => document.querySelectorAll('.fade-note').forEach(e => e.remove())); await ev(() => MM.go('settings')); await wait(200);

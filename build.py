@@ -39,10 +39,10 @@ head = '''<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Taarala Thota">
+<meta name="apple-mobile-web-app-title" content="Taarala Thota">  <!-- Home Screen label: kept short, phones cut long names -->
 <meta name="theme-color" content="#FFF8E7">
 <meta name="referrer" content="no-referrer">
-<title>Taarala Thota</title>'''
+<title>Taarala Thota · Garden of Stars</title>'''
 
 js = '\n'.join([
     src('core.js').replace('/*PIC_JSON*/{}', json.dumps(pic)).replace('/*VER_JSON*/{}', json.dumps(ver)),
