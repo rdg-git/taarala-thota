@@ -4,20 +4,32 @@
 // 95% / 98% / 100% accuracy. Accuracy = popped / (popped + missed).
 // Bubbles still floating when time ends are not counted either way.
 // ============================================================
+
+// ------------------------------------------------------------
+// BUBBLE POP: SETTINGS PER LEVEL
+// Three levels, each lasting the same time. "gate" is the accuracy needed (95 / 98 / 100 %) to unlock the next.
+// pic = the level's picture; src = where bubbles rise from; dur = seconds a bubble takes to float across (smaller = faster);
+// the other numbers place the timer, star, Home and Back.
+// ------------------------------------------------------------
 const BUB = {
-  R: 48, LEN: 120, SPAWN: 1.05,
+  R: 48, LEN: 120, SPAWN: 0.75,        // SPAWN = seconds between new bubbles (about 1.4 per second)
   L: {
-    1: { pic: 'bubble-l1', src: [445, 1310], dur: 9.0, gate: 95, timer: [390, 65, 81, 145], star: [721, 266, 105, 129], home: [35, 206, 146, 55], back: [197, 206, 137, 55] },
-    2: { pic: 'bubble-l2', src: [135, 1113], dur: 7.2, gate: 98, timer: [402, 105, 72, 105], star: [740, 258, 76, 137], home: [39, 206, 142, 52], backPlank: [190, 206, 145, 52] },
-    3: { pic: 'bubble-l3', src: [426, 1371], dur: 5.6, gate: 100, timer: [385, 65, 89, 145], star: [732, 258, 81, 137], home: [31, 206, 161, 55], back: [202, 206, 129, 55] }
+    1: { pic: 'bubble-l1', src: [445, 1310], dur: 6.0, gate: 95, timer: [390, 65, 81, 145], star: [721, 266, 105, 129], home: [35, 206, 146, 55], back: [197, 206, 137, 55] },
+    2: { pic: 'bubble-l2', src: [135, 1113], dur: 4.8, gate: 98, timer: [402, 105, 72, 105], star: [740, 258, 76, 137], home: [39, 206, 142, 52], backPlank: [190, 206, 145, 52] },
+    3: { pic: 'bubble-l3', src: [426, 1371], dur: 3.7, gate: 100, timer: [385, 65, 89, 145], star: [732, 258, 81, 137], home: [31, 206, 161, 55], back: [202, 206, 129, 55] }
   },
   cur: null
 };
 const BUB_COLORS = ['#8fd6ff', '#ffb3d9', '#b9f0c0', '#ffe08a', '#d1b3ff', '#ffc78a'];
 
+// Which level is unlocked (saved as tt:bubble).
 function bubProgress() { const p = Store.get('bubble', { level: 1 }); return clamp(p.level || 1, 1, 3); }
 function bubSetProgress(n) { Store.set('bubble', { level: clamp(n, 1, 3) }); }
 
+// ------------------------------------------------------------
+// BUBBLE POP SCREENS
+// Builds the Bubble Pop home (level tiles 1-3, Stats) and one screen per level.
+// ------------------------------------------------------------
 function buildBubble() {
   // Bubble Pop home
   const H = defScreen('bubble-home', 'bubble-home', { parent: 'games', name: 'Bubble Pop' });
@@ -45,7 +57,10 @@ function buildBubble() {
   [1, 2, 3].forEach(n => {
     const C = BUB.L[n];
     const S = defScreen('bubble-l' + n, C.pic, { parent: 'bubble-home', name: 'Bubble Pop Level ' + n });
-    if (C.backPlank) { addHot(S, ...C.home, goHome, 'Home'); addPlank(S, C.backPlank[0], C.backPlank[1], C.backPlank[2], C.backPlank[3], 'back', goBack); }
+    if (C.backPlank) {
+      addHot(S, ...C.home, goHome, 'Home');
+      addPlank(S, C.backPlank[0], C.backPlank[1], C.backPlank[2], C.backPlank[3], 'back', goBack);
+    }
     else { addHot(S, ...C.home, goHome, 'Home'); addHot(S, ...C.back, goBack, 'Back'); }
     addTopMusic(S);
     S.layer = el('div', 'blayer'); place(S.layer, 0, 0, S.W, S.H, S); S.art.appendChild(S.layer);
@@ -57,6 +72,11 @@ function buildBubble() {
 }
 function startBubbleLevel(n) { go('bubble-l' + n); }
 
+// ------------------------------------------------------------
+// THE GAME LOOP
+// beginBubbleLevel starts the clock; bubFrame runs every animation frame, moving bubbles and making new ones;
+// popBub handles a tap; finishBubbleLevel works out accuracy and decides whether the next level unlocks.
+// ------------------------------------------------------------
 function beginBubbleLevel(n) {
   endBubbleLoop();
   const S = SCREENS['bubble-l' + n]; closePanel(S);
@@ -129,6 +149,11 @@ function popBub(G, b) {
   b.el.classList.add('pop'); setTimeout(() => b.el.remove(), 220);
   Music.blip(880 + Math.random() * 300, 1500, 0.12, 0.12);
 }
+
+// ------------------------------------------------------------
+// BUBBLE POP STATS
+// Saved as tt:bubble:stats: levels done, games, bubbles popped, best per level, last games.
+// ------------------------------------------------------------
 function bubRecord(n, popped, acc, pass) {
   const s = Store.get('bubble:stats', { games: 0, popped: 0, done: 0, best: {}, recent: [] });
   const a = Math.floor(acc * 10) / 10;
@@ -141,16 +166,18 @@ function paintBubbleStats(T) {
   T.statEls.forEach(x => x.remove()); T.statEls = [];
   const push = (e) => { T.statEls.push(e); return e; };
   const s = Store.get('bubble:stats', { games: 0, popped: 0, done: 0, best: {}, recent: [] });
-  [[105, s.done + '/3'], [325, String(s.games)], [541, String(s.popped)]].forEach(([x, v]) => push(addText(T, 'stat-num', x + 4, 682, 200, 66, 50, v)));
+  [[105, num(s.done) + '/3'], [325, String(num(s.games))], [541, String(num(s.popped))]].forEach(([x, v]) => push(addText(T, 'stat-num', x + 4, 682, 200, 66, 50, v)));
   [1, 2, 3].forEach((n, i) => {
-    const b = s.best[n];
-    push(addText(T, 'stat-num best', 322, 860 + i * 64, 410, 48, 34, b ? b.p + ' popped \u00b7 ' + (b.a % 1 ? b.a.toFixed(1) : b.a) + '%' : '\u2014'));
+    const b = s.best && s.best[n];
+    push(addText(T, 'stat-num best', 322, 860 + i * 64, 410, 48, 34, b ? num(b.p) + ' popped \u00b7 ' + (num(b.a) % 1 ? num(b.a).toFixed(1) : num(b.a)) + '%' : '\u2014'));
   });
-  s.recent.slice(-7).reverse().forEach((x, i) => {
+  (Array.isArray(s.recent) ? s.recent : []).slice(-7).reverse().forEach((x, i) => {
+    x = x || {}; const a = num(x.a);
     const row = push(addText(T, 'stat-row', 182, 1150 + i * 56.7, 550, 54, 29, ''));
-    row.innerHTML = '<span class="sr-l"><b class="' + (x.ok ? 'r-won' : 'r-forfeited') + '">' + (x.ok ? '\u2713' : '\u2022') + '</b> Level ' + x.n + ' \u00b7 ' + x.p + ' popped \u00b7 ' + (x.a % 1 ? x.a.toFixed(1) : x.a) + '%</span><span class="sr-r">' + fmtDay(x.t) + '</span>';
+    row.innerHTML = '<span class="sr-l"><b class="' + (x.ok ? 'r-won' : 'r-forfeited') + '">' + (x.ok ? '\u2713' : '\u2022') + '</b> Level ' + num(x.n) + ' \u00b7 ' + num(x.p) + ' popped \u00b7 ' + (a % 1 ? a.toFixed(1) : a) + '%</span><span class="sr-r">' + fmtDay(num(x.t)) + '</span>';
   });
 }
+// End of a level: accuracy = popped / (popped + missed). Meets the gate -> next level unlocks.
 function finishBubbleLevel() {
   const G = BUB.cur; if (!G) return; G.over = true; cancelAnimationFrame(G.raf);
   G.bubbles.forEach(b => b.el.remove()); G.bubbles = [];             // still floating at the end: not counted

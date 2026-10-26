@@ -13,7 +13,9 @@ const Contacts = {
     const a = Store.get('contacts', []);
     return Array.isArray(a) ? a.filter(c => c && typeof c.name === 'string' && typeof c.phone === 'string') : [];
   },
-  saveAll(a) { try { localStorage.setItem(Store.key('contacts'), JSON.stringify(a.slice(0, CONTACT_MAX))); return true; } catch (e) { return false; } },
+  saveAll(a) { try { localStorage.setItem(Store.key('contacts'), JSON.stringify(a.slice(0, CONTACT_MAX))); return true; } catch (e) {
+    return false;
+  } },
   // returns '' when fine, otherwise a friendly message
   check(name, phone) {
     name = String(name || '').trim(); phone = String(phone || '').trim();

@@ -2,6 +2,7 @@
 // SMALL SAFETY HELPERS (text and phone numbers)
 // ============================================================
 // Show any typed text as plain text: turns < > & " ' into harmless symbols.
+// Used wherever text could reach the page as HTML. Most of the app sets text with textContent instead, which is safer still.
 function escapeHtml(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 }
@@ -23,3 +24,7 @@ function accentFor(c) {
   return CONTACT_ACCENTS[h % CONTACT_ACCENTS.length];
 }
 function initialOf(name) { const t = String(name || '?').trim(); return t ? Array.from(t)[0].toUpperCase() : '?'; }
+// Saved numbers and words are checked before they are shown (a restored backup could contain anything):
+// Values restored from a backup file could be anything, so Stats screens only ever show real numbers and known words.
+function num(v) { const x = Number(v); return Number.isFinite(x) ? x : 0; }
+function known(map, k) { return Object.prototype.hasOwnProperty.call(map, k) ? k : null; }

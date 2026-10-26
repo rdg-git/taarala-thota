@@ -82,7 +82,10 @@ const Music = (function () {
   }
   function makeReverb() {
     const sr = ctx.sampleRate, len = Math.floor(sr * 3.2), buf = ctx.createBuffer(2, len, sr);
-    for (let c = 0; c < 2; c++) { const d = buf.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6); }
+    for (let c = 0; c < 2; c++) {
+      const d = buf.getChannelData(c);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6);
+    }
     const conv = ctx.createConvolver(); conv.buffer = buf;
     wet = ctx.createGain(); wet.gain.value = 0.32;
     wet.connect(conv); conv.connect(master);
@@ -138,7 +141,13 @@ const Music = (function () {
   function start() {
     if (!ensureCtx()) return;
     if (ctx.state === 'suspended') ctx.resume();
-    if (!started) { started = true; loadState(); nextVeena = ctx.currentTime + 0.2; nextFlute = ctx.currentTime + 3; timer = setInterval(schedule, 300); }
+    if (!started) {
+      started = true;
+      loadState();
+      nextVeena = ctx.currentTime + 0.2;
+      nextFlute = ctx.currentTime + 3;
+      timer = setInterval(schedule, 300);
+    }
     on = true; setPref('on');
     master.gain.cancelScheduledValues(ctx.currentTime);
     master.gain.setTargetAtTime(0.7, ctx.currentTime, 0.8);
@@ -151,7 +160,11 @@ const Music = (function () {
   }
   function wantsOn() { return on || (!started && getPref() === 'on'); }
   function toggle() { if (wantsOn()) stop(); else start(); }
-  function paint() { const w = wantsOn(); document.querySelectorAll('.music-state,.music-btn').forEach(e => e.classList.toggle('off', !w)); document.querySelectorAll('.music-btn').forEach(e => e.setAttribute('aria-pressed', w ? 'true' : 'false')); }
+  function paint() {
+    const w = wantsOn();
+    document.querySelectorAll('.music-state,.music-btn').forEach(e => e.classList.toggle('off', !w));
+    document.querySelectorAll('.music-btn').forEach(e => e.setAttribute('aria-pressed', w ? 'true' : 'false'));
+  }
   // small sound effects (pop, tap) share the same sound system
   function blip(f0, f1, dur, vol) {
     if (!on || !ctx || ctx.state !== 'running') return;

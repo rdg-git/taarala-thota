@@ -1,0 +1,29 @@
+{
+ "name": "Taarala Thota · Garden of Stars",
+ "short_name": "Taarala Thota",
+ "description": "A calm, ad-free garden of games and a private loved-ones shortcut. No sign-in, no ads and no tracking in the app; everything you save stays on your phone.",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "portrait",
+ "background_color": "#05060f",
+ "theme_color": "#05060f",
+ "icons": [
+  {
+   "src": "icons/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}

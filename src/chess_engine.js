@@ -480,8 +480,14 @@ function makeChessEngine(){
   // ------------------------------------------------------------- evaluation
   function passedBonus(i, c){
     var r = i >> 3, col = i & 7, enemy = c ? 1 : 9, rr, cc, adv;
-    if (c === 0) { for (rr = r - 1; rr >= 1; rr--) for (cc = col - 1; cc <= col + 1; cc++) if (cc >= 0 && cc < 8 && BD[rr * 8 + cc] === enemy) return 0; adv = 6 - r; }
-    else { for (rr = r + 1; rr <= 6; rr++) for (cc = col - 1; cc <= col + 1; cc++) if (cc >= 0 && cc < 8 && BD[rr * 8 + cc] === enemy) return 0; adv = r - 1; }
+    if (c === 0) {
+      for (rr = r - 1; rr >= 1; rr--) for (cc = col - 1; cc <= col + 1; cc++) if (cc >= 0 && cc < 8 && BD[rr * 8 + cc] === enemy) return 0;
+      adv = 6 - r;
+    }
+    else {
+      for (rr = r + 1; rr <= 6; rr++) for (cc = col - 1; cc <= col + 1; cc++) if (cc >= 0 && cc < 8 && BD[rr * 8 + cc] === enemy) return 0;
+      adv = r - 1;
+    }
     return adv > 0 && adv < 6 ? PASSED[adv] : 0;
   }
 
@@ -672,7 +678,13 @@ function makeChessEngine(){
     else { maxDepth = Math.random() < 0.5 ? 1 : 2; allScores = true; }
 
     // Reset search memory.
-    if (!TTH) { TTH = new Int32Array(TTSIZE); TTS = new Int32Array(TTSIZE); TTM = new Int32Array(TTSIZE); TTD = new Int8Array(TTSIZE); TTF = new Int8Array(TTSIZE); }
+    if (!TTH) {
+      TTH = new Int32Array(TTSIZE);
+      TTS = new Int32Array(TTSIZE);
+      TTM = new Int32Array(TTSIZE);
+      TTD = new Int8Array(TTSIZE);
+      TTF = new Int8Array(TTSIZE);
+    }
     TTF.fill(0);
     history = new Int32Array(2 * 4096);
     killers = [];

@@ -6,15 +6,15 @@ import json, hashlib, os
 
 def src(n): return open(os.path.join('src', n), encoding='utf-8').read()
 
-# picture sizes [width, height]; Hard Hidden-Comets reuses the Medium picture
+# picture sizes [width, height]
 pic = json.load(open('manifest.json'))
-pic['ms-hard'] = pic['ms-medium']
 # short fingerprint of every picture: when a picture changes, its address changes, so phones fetch the new one
 ver = {}
 for n in pic:
-    p = os.path.join('public', 'img', n + '.webp')
-    if os.path.exists(p): ver[n] = hashlib.md5(open(p, 'rb').read()).hexdigest()[:8]
-ver['ms-hard'] = ver.get('ms-medium', '')
+    for ext in ('webp', 'avif'):
+        p = os.path.join('public', 'img', n + '.' + ext)
+        if os.path.exists(p): ver.setdefault(n, {})[ext] = hashlib.md5(open(p, 'rb').read()).hexdigest()[:8]
+        else: print('note: missing picture', n + '.' + ext)
 
 # fonts kept inside the app (public/fonts). Only fonts that are present are declared.
 # weight ranges match what the app used before (Caveat 500-700, Fraunces 400-600), so text looks the same
@@ -40,17 +40,44 @@ head = '''<!DOCTYPE html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Taarala Thota">  <!-- Home Screen label: kept short, phones cut long names -->
-<meta name="theme-color" content="#FFF8E7">
+<meta name="theme-color" content="#05060f">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="referrer" content="no-referrer">
 <title>Taarala Thota · Garden of Stars</title>'''
 
 js = '\n'.join([
     src('core.js').replace('/*PIC_JSON*/{}', json.dumps(pic)).replace('/*VER_JSON*/{}', json.dumps(ver)),
-    src('helpers.js'), src('contacts.js'), src('audio.js'), src('gamekit.js'), src('screens_main.js'), src('settings.js'), src('bubble.js'), src('mine.js'),
+    src('helpers.js'), src('contacts.js'), src('audio.js'), src('gamekit.js'), src('screens_main.js'), src('settings.js'), src('backup.js'), src('pwa.js'), src('bubble.js'), src('mine.js'),
     src('chess_engine.js'), src('checkers_engine.js'), src('chess_ui.js'), src('checkers_ui.js'), src('init.js'),
-    'bootApp();'
+    'detectAvif(bootApp);'
 ])
-html = head + '\n<style>\n' + font_css + src('app.css') + '\n</style>\n</head>\n<body>\n<script>\n' + js + '\n</script>\n</body>\n</html>\n'
+# code and styles live in their own files, so the strict security rules can forbid any code inside the page
+css = font_css + src('app.css')
+def write(name, text):
+    open(os.path.join('public', name), 'w', encoding='utf-8', newline='\n').write(text)
+    return name + '?v=' + hashlib.md5(text.encode('utf-8')).hexdigest()[:8]
+css_url, js_url = write('app.css', css), write('app.js', js + '\n')
+html = head + '\n<link rel="stylesheet" href="' + css_url + '">\n<script src="' + js_url + '" defer></script>\n</head>\n<body>\n</body>\n</html>\n'
 os.makedirs('public', exist_ok=True)
 open(os.path.join('public', 'index.html'), 'w', encoding='utf-8', newline='\n').write(html)
 print('wrote public/index.html', len(html.encode('utf-8')), 'bytes')
+
+# ---- installable app: manifest + offline helper (service worker) ----
+manifest = {
+    'name': 'Taarala Thota \u00b7 Garden of Stars', 'short_name': 'Taarala Thota',
+    'description': 'A calm, ad-free garden of games and a private loved-ones shortcut. No sign-in, no ads and no tracking in the app; everything you save stays on your phone.',
+    'start_url': './', 'scope': './', 'display': 'standalone', 'orientation': 'portrait',
+    'background_color': '#05060f', 'theme_color': '#05060f',
+    'icons': [{'src': 'icons/icon-192.png', 'sizes': '192x192', 'type': 'image/png'},
+              {'src': 'icons/icon-512.png', 'sizes': '512x512', 'type': 'image/png'},
+              {'src': 'icons/icon-maskable-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'}]}
+open(os.path.join('public', 'manifest.webmanifest'), 'w', encoding='utf-8', newline='\n').write(json.dumps(manifest, indent=1, ensure_ascii=False))
+core = ['index.html', css_url, js_url, 'manifest.webmanifest', 'icons/icon-192.png', 'icons/apple-touch-icon.png']
+core += ["fonts/%s?v=%s" % (f, hashlib.md5(open(os.path.join('public', 'fonts', f), 'rb').read()).hexdigest()[:8]) for _, f, _, _ in FONTS if os.path.exists(os.path.join('public', 'fonts', f))]
+assets = sorted('img/%s.%s?v=%s' % (n, ext, h) for n in ver for ext, h in ver[n].items())
+version = hashlib.sha256((html + css + js + json.dumps(core) + json.dumps(assets) + json.dumps(manifest)).encode('utf-8')).hexdigest()[:12]
+sw = src('sw.js').replace('__VERSION__', version).replace('__CORE__', json.dumps(core)).replace('__ASSETS__', json.dumps(assets))
+open(os.path.join('public', 'sw.js'), 'w', encoding='utf-8', newline='\n').write(sw)
+print('wrote public/sw.js (version %s, %d core files, %d pictures)' % (version, len(core), len(assets)))

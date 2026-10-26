@@ -1,6 +1,7 @@
 // ============================================================
 // CHESS screens (rules and computer player come from chess_engine.js)
 // ============================================================
+// Chess pieces drawn in code (shapes only; colours come from app.css).
 const CHESS_PATHS = {
   P: '<circle cx="22.5" cy="12.5" r="5.2"/><path d="M17.8 20.5c-.8 3.800-3.800 5-3.800 10.500h17c0-5.500-3-6.700-3.800-10.500z"/><path d="M11.500 38.500c0-3.500 2.500-5 3-7.500h16c.5 2.500 3 4 3 7.500z"/>',
   R: '<path d="M10 38.500v-3.800h25v3.800z"/><path d="M13 34.700l1.600-16.200h15.800l1.600 16.200z"/><path d="M12 18.500v-8.500h4.200v2.800h3.300V10h6v2.800h3.300V10H33v8.500z"/>',
@@ -14,11 +15,17 @@ function chessPieceSVG(code) {
 }
 const CH_VAL = { P: 1, N: 3, B: 3, R: 5, Q: 9, K: 0 };
 
+// ------------------------------------------------------------
+// CHESS STATE
+// CH.G is the current game (also saved as tt:chess:game so it survives closing the app).
+// busy = the computer is thinking; gen changes whenever a game restarts so late computer replies are ignored.
+// ------------------------------------------------------------
 const CH = { ai: null, E: null, G: null, sel: null, legal: [], busy: false, gen: 0, S: null, flip: false, pendingLevel: null, justForfeited: false, declined: null };
 
 function chsInit() {
   CH.ai = makeAI(makeChessEngine); CH.E = CH.ai.E;
 }
+// A saved game that is still within its 60 minutes (or null).
 function chsActive() { const g = Saved.get('chess'); return g && !Saved.expired(g) ? g : null; }
 // if a saved game ran past 60 minutes, record Forfeited once and tidy up
 function chsExpireIfNeeded() {
@@ -26,6 +33,11 @@ function chsExpireIfNeeded() {
   if (g && Saved.expired(g) && !g.over) { Results.add('chess', 'forfeited', g.level); Saved.clear('chess'); CH.justForfeited = true; }
 }
 
+// ------------------------------------------------------------
+// CHESS SCREENS
+// Entry (two pictures: with and without a Resume tile), choose side, the board, and Stats.
+// All tap areas sit over painted signs and lanterns; the numbers are picture pixels.
+// ------------------------------------------------------------
 function buildChess() {
   if (typeof makeChessEngine !== 'function') return;
   chsInit();
@@ -45,7 +57,10 @@ function buildChess() {
     addHot(S, withResume ? 300 : 310, 1185, withResume ? 255 : 242, 250, () => go('chs-stats'), 'Stats');
     S.onShow = () => {
       if (S.sub) { const g = chsActive(); if (g) S.sub.textContent = LEVEL_NAME[g.level] + ' · ' + Saved.minsLeft(g) + ' min left'; }
-      if (CH.justForfeited) { CH.justForfeited = false; showPanel(S, { icon: '⏳', title: 'Game Forfeited', text: '60 minutes since your last move', buttons: [{ label: 'Chess Home' }] }); }
+      if (CH.justForfeited) {
+        CH.justForfeited = false;
+        showPanel(S, { icon: '⏳', title: 'Game Forfeited', text: '60 minutes since your last move', buttons: [{ label: 'Chess Home' }] });
+      }
     };
   });
   // ---- choose side ----
@@ -77,6 +92,10 @@ function buildChess() {
   Ticker.fns.add(chsTick);
 }
 
+// ------------------------------------------------------------
+// STARTING A GAME
+// Only one game at a time: starting a new one forfeits the current one (after asking).
+// ------------------------------------------------------------
 function chsPickLevel(level) {
   CH.pendingLevel = level;
   if (chsActive()) {
@@ -84,13 +103,22 @@ function chsPickLevel(level) {
       buttons: [{ label: 'Keep Current Game', secondary: true }, { label: 'Start New Game', fn: () => { chsForfeitCurrent(); go('chs-side'); } }] });
   } else go('chs-side');
 }
-function chsForfeitCurrent() { const old = Saved.get('chess'); if (old && !old.over) Results.add('chess', 'forfeited', old.level); Saved.clear('chess'); }
+function chsForfeitCurrent() {
+  const old = Saved.get('chess');
+  if (old && !old.over) Results.add('chess', 'forfeited', old.level);
+  Saved.clear('chess');
+}
 function chsStart(side) {
   const E = CH.E;
   CH.G = { state: E.initialState(), level: CH.pendingLevel || 'easy', side, last: nowMs(), undo: [], capHuman: [], capComp: [], over: false };
   Saved.set('chess', CH.G);
   go('chs-board', { fresh: true });
 }
+
+// ------------------------------------------------------------
+// THE BOARD
+// Shows the saved game, flips the board if the person plays Charcoal, and lets the computer move if it is its turn.
+// ------------------------------------------------------------
 function chsShowBoard(p) {
   const S = CH.S;
   S.art.classList.remove('dim'); closePanel(S);
@@ -126,14 +154,21 @@ function chsRender() {
     const idx = chsSq(i), c = cells[i], p = st.board[idx];
     let cls = 'ccell';
     if (CH.sel === idx) cls += ' sel';
-    const lm = CH.legal.find(m => m.to === idx); if (lm) cls += lm.capture ? ' destcap' : ' dest';
+    // move hints (where the selected piece can go) on Easy only; Medium and Hard highlight just the selected piece
+    const lm = G.level === 'easy' && CH.legal.find(m => m.to === idx); if (lm) cls += lm.capture ? ' destcap' : ' dest';
     if (last && (last.from === idx || last.to === idx)) cls += ' last';
     if (sts.inCheck && sts.kingSquare === idx) cls += ' chk';
     c.className = cls;
     c.innerHTML = p ? chessPieceSVG(p) : '';
   }
   // captured pieces on the two wooden planks
-  const draw = (box, arr) => { box.innerHTML = ''; arr.slice().sort((a, b) => CH_VAL[b[1]] - CH_VAL[a[1]]).forEach(code => { const s = el('span', 'cap', chessPieceSVG(code)); box.appendChild(s); }); };
+  const draw = (box, arr) => {
+    box.innerHTML = '';
+    arr.slice().sort((a, b) => CH_VAL[b[1]] - CH_VAL[a[1]]).forEach(code => {
+      const s = el('span', 'cap', chessPieceSVG(code));
+      box.appendChild(s);
+    });
+  };
   draw(S.topCap, G.capComp); draw(S.botCap, G.capHuman);
   // turn sign
   let main = '';
@@ -145,9 +180,13 @@ function chsRender() {
   if (!chk || G.over) hideBanner(S);
   S.lastChk = chk ? st : null;
   S.undoTop.style.display = G.level === 'easy' ? '' : 'none';
-  S.undoTop.style.display = G.level === 'easy' ? '' : 'none';
   S.undoTop.classList.toggle('off', !chsCanUndo()); S.undoTop.disabled = !chsCanUndo();
 }
+
+// ------------------------------------------------------------
+// A PERSON'S MOVE
+// First tap selects a piece (on Easy it also marks where it can go), second tap moves. Pawn promotion asks which piece.
+// ------------------------------------------------------------
 function chsTap(i) {
   const G = CH.G; if (!G || G.over || CH.busy) return;
   const st = G.state, E = CH.E; if (st.turn !== G.side) return;
@@ -181,6 +220,12 @@ function chsHumanMove(m) {
   G.state = ns; G.last = nowMs(); CH.sel = null; CH.legal = [];
   Saved.set('chess', G); chsRender(); chsAfterMove(false);
 }
+
+// ------------------------------------------------------------
+// AFTER EVERY MOVE
+// Checks the official end-of-game rules (checkmate, stalemate, draws) from chess_engine.js,
+// offers a claimable draw when the rules allow, and otherwise asks the computer for its reply.
+// ------------------------------------------------------------
 function chsAfterMove(fromShow) {
   const G = CH.G, E = CH.E, S = CH.S; if (!G || G.over) return;
   const sts = E.status(G.state);
@@ -196,6 +241,7 @@ function chsAfterMove(fromShow) {
     }
   }
 }
+// Asks the background helper for the computer's move, then waits at least PACE_MS so it never feels rushed.
 function chsComputer() {
   const G = CH.G, S = CH.S, gen = ++CH.gen; CH.busy = true; chsRender();
   const t0 = Date.now(), level = G.level;
@@ -211,6 +257,11 @@ function chsComputer() {
     }, wait);
   });
 }
+
+// ------------------------------------------------------------
+// END OF GAME
+// The wording for every way a game can end, then recording the result.
+// ------------------------------------------------------------
 const CHS_TEXT = {
   checkmate: ['Checkmate', ''], stalemate: ['Stalemate', 'No safe move is left, so it is a draw.'],
   insufficient: ['Draw', 'There are not enough pieces left to checkmate.'], fivefold: ['Draw', 'The same position happened five times.'],
@@ -220,7 +271,11 @@ const CHS_TEXT = {
 function chsEnd(sts) {
   const G = CH.G, S = CH.S; G.over = true; CH.busy = false; CH.gen++;
   let res = 'draw', title, text;
-  if (sts.result === 'checkmate') { res = sts.winner === G.side ? 'won' : 'lost'; title = res === 'won' ? 'You Won!' : 'You Lost'; text = res === 'won' ? 'Checkmate. Well played!' : 'Checkmate. Good try, play again soon!'; }
+  if (sts.result === 'checkmate') {
+    res = sts.winner === G.side ? 'won' : 'lost';
+    title = res === 'won' ? 'You Won!' : 'You Lost';
+    text = res === 'won' ? 'Checkmate. Well played!' : 'Checkmate. Good try, play again soon!';
+  }
   else { const t = CHS_TEXT[sts.result] || ['Draw', '']; title = 'Draw'; text = t[1]; }
   Results.add('chess', res, G.level); Saved.clear('chess');
   chsRender(); S.art.classList.add('dim');
@@ -233,6 +288,11 @@ function chsReset() {
   showPanel(S, { title: 'Start a new game?', text: 'Starting a new game will forfeit your current game. Your current progress will be lost.', buttons: [
     { label: 'Keep Current Game', secondary: true }, { label: 'Start New Game', fn: () => { chsForfeitCurrent(); CH.G = null; go('chs-entry'); } }] });
 }
+
+// ------------------------------------------------------------
+// UNDO (Easy only)
+// Each tap takes back the person's last move together with the computer's reply; it can go all the way back to the start.
+// ------------------------------------------------------------
 function chsCanUndo() { const G = CH.G; return !!(G && !G.over && !CH.busy && G.level === 'easy' && G.undo.length && G.state.turn === G.side); }
 function chsUndoTap() {
   const G = CH.G; if (!G || G.over) return;
@@ -245,6 +305,7 @@ function chsUndo() {
   const u = G.undo.pop(); G.state = u.state; G.capHuman = u.capHuman; G.capComp = u.capComp; G.last = nowMs();
   CH.sel = null; CH.legal = []; Saved.set('chess', G); chsRender();
 }
+// Once a second: enforces the 60-minute rule while the app is open.
 function chsTick() {
   const S = CH.S; if (!S) return;
   if (S.el.classList.contains('active') && CH.G && !CH.G.over && Saved.expired(CH.G)) {
@@ -253,5 +314,12 @@ function chsTick() {
     chsRender(); S.art.classList.add('dim'); closePanel(S);
     showPanel(S, { icon: '⏳', title: 'Game Forfeited', text: '60 minutes since your last move', buttons: [{ label: 'Chess Home', fn: () => go('chs-entry') }] });
   }
-  ['chs-entry-r'].forEach(id => { const E = SCREENS[id]; if (E && E.el.classList.contains('active') && E.sub) { const g = chsActive(); if (g) E.sub.textContent = LEVEL_NAME[g.level] + ' · ' + Saved.minsLeft(g) + ' min left'; else go('chs-entry'); } });
+  ['chs-entry-r'].forEach(id => {
+    const E = SCREENS[id];
+    if (E && E.el.classList.contains('active') && E.sub) {
+      const g = chsActive();
+      if (g) E.sub.textContent = LEVEL_NAME[g.level] + ' · ' + Saved.minsLeft(g) + ' min left';
+      else go('chs-entry');
+    }
+  });
 }

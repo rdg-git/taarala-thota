@@ -2,6 +2,7 @@
 // INTERNATIONAL CHECKERS 10x10 screens (rules and computer player: checkers_engine.js)
 // You play White (light pieces, move first, start at the bottom).
 // ============================================================
+// Checkers pieces (men and kings) drawn in code.
 function ckPieceSVG(p) {
   const white = p === 'w' || p === 'W', king = p === 'W' || p === 'B';
   const f1 = white ? '#fbf3dc' : '#4a4a55', f2 = white ? '#d9c590' : '#17171d', ring = white ? '#a8873f' : '#c9ac68';
@@ -11,8 +12,18 @@ function ckPieceSVG(p) {
   if (king) s += '<path d="M28 62 24 38l14 12 12-18 12 18 14-12-4 24z" fill="#f2c14e" stroke="#8a5a10" stroke-width="2.500" stroke-linejoin="round"/>';
   return s + '</svg>';
 }
+
+// ------------------------------------------------------------
+// INTERNATIONAL CHECKERS STATE
+// Same pattern as Chess. Rules (10x10 board, flying kings, maximum capture, FMJD draw rules) are in checkers_engine.js.
+// cands / step: during a multi-capture the person taps the landing squares one by one.
+// ------------------------------------------------------------
 const CK = { ai: null, E: null, G: null, sel: null, cands: [], step: 0, busy: false, gen: 0, S: null, pendingLevel: null, justForfeited: false };
 
+// ------------------------------------------------------------
+// CHECKERS SCREENS
+// Reuses the Chess entry picture with a CHECKERS sign drawn over it, plus board, "start new game?", result and Stats screens.
+// ------------------------------------------------------------
 function buildCheckers() {
   if (typeof makeCheckersEngine !== 'function') return;
   CK.ai = makeAI(makeCheckersEngine); CK.E = CK.ai.E;
@@ -55,7 +66,12 @@ function buildCheckers() {
     addText(B, 'kb-lbl', 49, 430 + i * 71.3 + 17, 40, 36, 26, String(10 - i));
     addText(B, 'kb-lbl', 89 + i * 71.3 + 17, 1148, 36, 40, 26, 'abcdefghij'[i]);
   }
-  for (let i = 0; i < 100; i++) { const c = el('button', 'kcell'); c.type = 'button'; c.addEventListener('click', () => ckTap(i)); B.boardEl.appendChild(c); }
+  for (let i = 0; i < 100; i++) {
+    const c = el('button', 'kcell');
+    c.type = 'button';
+    c.addEventListener('click', () => ckTap(i));
+    B.boardEl.appendChild(c);
+  }
   B.onShow = (p) => ckShowBoard(p);
   B.onHide = () => { CK.gen++; CK.busy = false; if (CK.ai) CK.ai.cancel(); closePanel(B); };
   // result cards (pictures)
@@ -75,8 +91,18 @@ function buildCheckers() {
 function ckActive() { const g = Saved.get('checkers'); return g && !Saved.expired(g) ? g : null; }
 function ckExpireIfNeeded() {
   const g = Saved.get('checkers');
-  if (g && Saved.expired(g) && !g.over) { Results.add('checkers', 'forfeited', g.level); CK.lastLevel = g.level; Saved.clear('checkers'); CK.justForfeited = true; }
+  if (g && Saved.expired(g) && !g.over) {
+    Results.add('checkers', 'forfeited', g.level);
+    CK.lastLevel = g.level;
+    Saved.clear('checkers');
+    CK.justForfeited = true;
+  }
 }
+
+// ------------------------------------------------------------
+// STARTING A GAME
+// Only one game at a time; starting another forfeits the current one (after asking).
+// ------------------------------------------------------------
 function ckPickLevel(level) {
   CK.pendingLevel = level;
   if (ckActive()) go('ck-replace'); else ckStart(level);
@@ -93,12 +119,18 @@ function ckShowBoard() {
   if (!g) { go('ck-entry'); return; }
   CK.G = g; ckRender(); ckAfterMove();
 }
+
+// ------------------------------------------------------------
+// THE BOARD
+// Draws every square, the selected piece, (Easy only) where it can land, and the last move.
+// ------------------------------------------------------------
 function ckRender() {
   const S = CK.S, G = CK.G, E = CK.E, st = G.state, cells = S.boardEl.children;
   const sts = E.status(st), last = st.lastMove;
   // squares to highlight as destinations
   const dest = {};
-  if (CK.sel != null) CK.cands.forEach(m => { const sq = CK.step === 0 ? m.to : m.path[CK.step]; dest[sq] = 1; });
+  // move hints (where the selected piece can land) on Easy only; Medium and Hard highlight just the selected piece
+  if (CK.sel != null && G.level === 'easy') CK.cands.forEach(m => { const sq = CK.step === 0 ? m.to : m.path[CK.step]; dest[sq] = 1; });
   for (let i = 0; i < 100; i++) {
     const r = Math.floor(i / 10), c = i % 10, p = st.board[i], c0 = cells[i];
     let cls = 'kcell';
@@ -121,6 +153,11 @@ function ckRender() {
   S.undoTop.style.display = G.level === 'easy' ? '' : 'none';
   const can = ckCanUndo(); S.undoTop.classList.toggle('off', !can); S.undoTop.disabled = !can;
 }
+
+// ------------------------------------------------------------
+// A PERSON'S MOVE
+// Tap a piece, then tap where it lands. Captures are compulsory and the longest capture must be taken.
+// ------------------------------------------------------------
 function ckTap(i) {
   const G = CK.G; if (!G || G.over || CK.busy) return;
   const st = G.state, E = CK.E; if (st.turn !== 'w') return;
@@ -145,6 +182,11 @@ function ckHumanMove(m) {
   G.state = E.applyMove(G.state, m); G.last = nowMs(); CK.sel = null; CK.cands = []; CK.step = 0;
   Saved.set('checkers', G); ckRender(); ckAfterMove();
 }
+
+// ------------------------------------------------------------
+// AFTER EVERY MOVE
+// Checks win/draw rules, then asks the computer for its reply.
+// ------------------------------------------------------------
 function ckAfterMove() {
   const G = CK.G, E = CK.E; if (!G || G.over) return;
   const sts = E.status(G.state);
@@ -165,6 +207,11 @@ function ckComputer() {
     }, wait);
   });
 }
+
+// ------------------------------------------------------------
+// END OF GAME
+// Shows the result picture and records the result.
+// ------------------------------------------------------------
 function ckEnd(sts) {
   const G = CK.G; G.over = true; CK.busy = false; CK.gen++;
   let res = 'draw';
@@ -178,6 +225,11 @@ function ckReset() {
   if (!G || G.over) { go('ck-entry'); return; }
   CK.pendingLevel = G.level; go('ck-replace');
 }
+
+// ------------------------------------------------------------
+// UNDO (Easy only)
+// Each tap takes back the person's last move together with the computer's reply; it can go all the way back to the start.
+// ------------------------------------------------------------
 function ckCanUndo() { const G = CK.G; return !!(G && !G.over && !CK.busy && G.level === 'easy' && G.undo.length && G.state.turn === 'w'); }
 function ckUndoTap() { if (ckCanUndo()) ckUndo(); }
 function ckUndo() {
@@ -185,6 +237,7 @@ function ckUndo() {
   const u = G.undo.pop(); G.state = u.state; G.capHuman = u.capHuman; G.capComp = u.capComp; G.last = nowMs();
   CK.sel = null; CK.cands = []; CK.step = 0; Saved.set('checkers', G); ckRender();
 }
+// Once a second: enforces the 60-minute rule while the app is open.
 function ckTick() {
   const S = CK.S; if (!S) return;
   if (S.el.classList.contains('active') && CK.G && !CK.G.over && Saved.expired(CK.G)) {
@@ -193,5 +246,9 @@ function ckTick() {
     ckRender(); S.art.classList.add('dim'); go('ck-result-forfeit');
   }
   const E = SCREENS['ck-entry-r'];
-  if (E && E.el.classList.contains('active') && E.sub) { const g = ckActive(); if (g) E.sub.textContent = LEVEL_NAME[g.level] + ' · ' + Saved.minsLeft(g) + ' min left'; else go('ck-entry'); }
+  if (E && E.el.classList.contains('active') && E.sub) {
+    const g = ckActive();
+    if (g) E.sub.textContent = LEVEL_NAME[g.level] + ' · ' + Saved.minsLeft(g) + ' min left';
+    else go('ck-entry');
+  }
 }

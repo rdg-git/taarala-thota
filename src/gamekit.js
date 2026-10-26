@@ -3,14 +3,30 @@
 // computer-player helper (runs in the background so the screen never freezes),
 // results history ("Stats"), 60-minute resume rule
 // ============================================================
+
+// ------------------------------------------------------------
+// SHARED RULES FOR CHESS AND CHECKERS
+// RESUME_MS: an unfinished game can be resumed for 60 minutes after the LAST MOVE, then it is forfeited.
+// PACE_MS: the computer waits at least this long before replying, so Easy feels relaxed.
+// ------------------------------------------------------------
 const RESUME_MS = 60 * 60 * 1000;
 const PACE_MS = { easy: 2000, medium: 1000, hard: 0 };      // minimum time before the computer replies
 const LEVEL_NAME = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
 
+// ------------------------------------------------------------
+// COMPUTER PLAYER IN THE BACKGROUND
+// The engine's thinking runs in a Web Worker (a background helper) so the screen never freezes.
+// If the phone refuses background helpers, it falls back to thinking on the main page.
+// The security rules allow this helper (worker-src blob:) and nothing else from outside.
+// ------------------------------------------------------------
 function makeAI(factory) {
   let w = null, id = 0, pending = {};
   const E = factory();
-  function fallback() { const p = pending; pending = {}; Object.keys(p).forEach(k => { try { p[k].cb(E.bestMove(p[k].state, p[k].level)); } catch (e) { p[k].cb(null); } }); }
+  function fallback() {
+    const p = pending;
+    pending = {};
+    Object.keys(p).forEach(k => { try { p[k].cb(E.bestMove(p[k].state, p[k].level)); } catch (e) { p[k].cb(null); } });
+  }
   try {
     const src = '(function(){var E=(' + factory.toString() + ')();onmessage=function(e){var m=e.data,r=null;try{r=E.bestMove(m.state,m.level,m.opts)}catch(x){}postMessage({id:m.id,move:r})}})()';
     w = new Worker(URL.createObjectURL(new Blob([src], { type: 'application/javascript' })));
@@ -29,19 +45,31 @@ function makeAI(factory) {
 }
 
 // results history: newest last; only the last 10 are shown/counted
+
+// ------------------------------------------------------------
+// RESULTS HISTORY AND TOTALS (shown on the Stats screens)
+// Results keeps the last 10 games per game; Totals keeps running counts. Stored under tt:<game>:stats / :totals.
+// ------------------------------------------------------------
 const Results = {
-  list(game) { return Store.get(game + ':stats', []); },
+  list(game) { const l = Store.get(game + ':stats', []); return Array.isArray(l) ? l.filter(x => x && typeof x === 'object') : []; },
   add(game, result, level, extra) {
     const l = this.list(game); l.push(Object.assign({ r: result, d: level, t: nowMs() }, extra || {}));
     Store.set(game + ':stats', l.slice(-10));
   },
-  counts(game) { const c = { won: 0, lost: 0, forfeited: 0, draw: 0 }; this.list(game).slice(-10).forEach(x => { if (c[x.r] != null) c[x.r]++; }); return c; }
+  counts(game) {
+    const c = { won: 0, lost: 0, forfeited: 0, draw: 0 };
+    this.list(game).slice(-10).forEach(x => { if (c[x.r] != null) c[x.r]++; });
+    return c;
+  }
 };
 const Totals = {
   get(game) { return Object.assign({ won: 0, lost: 0, forfeited: 0 }, Store.get(game + ':totals', {})); },
   bump(game, r) { const t = this.get(game); if (t[r] != null) t[r]++; Store.set(game + ':totals', t); }
 };
-function fmtDay(ts) { const d = new Date(ts); return d.getDate() + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()]; }
+function fmtDay(ts) {
+  const d = new Date(ts);
+  return d.getDate() + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()];
+}
 const RESULT_WORD = { won: 'Won', lost: 'Lost', forfeited: 'Forfeited', draw: 'Draw' };
 
 // saved game: {state, level, side, last (time of last move), undo:[...], capHuman:[], capComp:[]}
@@ -54,6 +82,7 @@ const Saved = {
 };
 
 // Fill the Stats screen numbers and the 10 Recent Games rows
+// Draws a Stats screen for Chess or Checkers. geo = where each number and row sits on that Stats picture.
 function paintStats(S, game, geo) {
   const c = Results.counts(game);
   S.statEls.forEach(x => x.remove()); S.statEls = [];
@@ -63,9 +92,9 @@ function paintStats(S, game, geo) {
   });
   const list = Results.list(game).slice(-10).reverse();
   for (let i = 0; i < 10; i++) {
-    const x = list[i]; if (!x) continue;
+    const x = list[i]; if (!x || !known(RESULT_WORD, x.r)) continue;
     const y = geo.rowY + i * geo.rowH;
     const row = push(addText(S, 'stat-row', geo.rowX, y, geo.rowW, geo.rowH, geo.rowFs, ''));
-    row.innerHTML = '<span class="sr-l"><b class="r-' + x.r + '">' + RESULT_WORD[x.r] + '</b> · ' + LEVEL_NAME[x.d] + '</span><span class="sr-r">' + fmtDay(x.t) + '</span>';
+    row.innerHTML = '<span class="sr-l"><b class="r-' + x.r + '">' + RESULT_WORD[x.r] + '</b> · ' + (LEVEL_NAME[known(LEVEL_NAME, x.d)] || '') + '</span><span class="sr-r">' + fmtDay(num(x.t)) + '</span>';
   }
 }
