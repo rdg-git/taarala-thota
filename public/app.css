@@ -243,3 +243,19 @@ body.debug .hot { outline:2px dashed #3f3; background:rgba(60,255,60,.18); }
 .sheet, .loved-scroll { touch-action:pan-y; }                  /* except scrolling the Settings / Privacy panels and Loved Ones */
 input, textarea { user-select:text; -webkit-user-select:text; -webkit-touch-callout:default; touch-action:manipulation; }
 .plink { color:#ffd27a; text-decoration:underline; }
+
+/* ============ "Turn your phone upright" card (phones turned sideways), in the garden's own style ============ */
+.upright-card { position:fixed; inset:0; z-index:500; display:none; align-items:center; justify-content:center; padding:16px; overflow:hidden; background:#05060f; }
+.upright-card.show { display:flex; }
+.upright-bg { position:absolute; inset:-4%; background-size:cover; background-position:center 62%; filter:blur(2.5px) brightness(.82) saturate(1.15); }
+.upright-card::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 50%, rgba(5,6,18,.05) 0%, rgba(5,6,18,.55) 100%); pointer-events:none; }
+.upright-panel { position:relative; z-index:1; display:flex; align-items:center; gap:22px; max-width:560px; padding:18px 26px; border-radius:22px;
+  background:rgba(8,10,28,.58); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border:1px solid rgba(227,184,102,.6);
+  box-shadow:0 0 40px rgba(255,190,100,.22), 0 14px 40px rgba(0,0,0,.55); text-align:left; }
+.upright-phone { width:84px; height:84px; flex:0 0 auto; filter:drop-shadow(0 0 12px rgba(255,200,110,.55)); }
+.upright-turn { transform-origin:32px 30px; animation:tt-rotate 2.6s ease-in-out infinite; }
+.upright-title { font-family:'Caveat',cursive; font-weight:700; font-size:40px; line-height:1.05; color:#fff1d0; text-shadow:0 0 22px rgba(255,210,150,.6); }
+.upright-sub { font-family:'Fraunces',Georgia,serif; font-size:16px; line-height:1.45; color:#ecdcb6; }
+.upright-words { display:flex; flex-direction:column; gap:6px; }
+@keyframes tt-rotate { 0%, 22% { transform:rotate(-90deg); } 58%, 100% { transform:rotate(0deg); } }
+@media (prefers-reduced-motion: reduce) { .upright-turn { animation:none; } }

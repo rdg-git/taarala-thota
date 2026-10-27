@@ -9,6 +9,7 @@ function bootApp() {
   goHome();                                   // no sign-in: open straight onto Home
   setupPWA();
   setupSteadyScreen();
+  setupUprightCard();
   // prevent double-tap zoom
   let lastTap = 0;
   document.addEventListener('touchend', (e) => { const n = Date.now(); if (n - lastTap < 300 && e.target.closest && !e.target.closest('input,textarea,select')) e.preventDefault(); lastTap = n; }, { passive: false });
@@ -46,4 +47,32 @@ function setupSteadyScreen() {
     showPanel(SCREENS['home-view'], { title: 'Leave Taarala Thota (Garden of Stars)?', text: 'Your games and contacts stay saved on this phone.',
       buttons: [{ label: 'Stay', secondary: true }, { label: 'Leave', fn: () => { leaving = true; history.go(-2); } }] });
   });
+}
+
+// ------------------------------------------------------------
+// TURN YOUR PHONE UPRIGHT
+// Every picture is painted for an upright phone. When a PHONE is turned sideways (short side under 500 px),
+// a calm card covers the app and Bubble Pop pauses; it all continues the moment the phone is upright again.
+// Tablets turned sideways keep playing (the upright picture is large enough there).
+// ------------------------------------------------------------
+let SIDEWAYS = false;
+function setupUprightCard() {
+  // themed like the rest of the garden: blurred night-sky picture, glowing handwritten title, frosted gold-edged panel,
+  // and the phone drawn in the carved-wood medallion style of the music button
+  const card = el('div', 'upright-card'); card.setAttribute('role', 'alert');
+  const bg = el('div', 'upright-bg'); bg.style.backgroundImage = 'url("' + picUrl('home') + '")'; card.appendChild(bg);
+  const panel = el('div', 'upright-panel');
+  panel.innerHTML = '<svg viewBox="0 0 64 64" class="upright-phone"><defs><linearGradient id="upw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a2b"/><stop offset="1" stop-color="#4b2c12"/></linearGradient></defs>' +
+    '<circle cx="32" cy="32" r="29" fill="url(#upw)" stroke="#d9a95a" stroke-width="3"/>' +
+    '<g class="upright-turn"><rect x="23" y="13" width="18" height="34" rx="4" fill="#2a1608" stroke="#ffe3a3" stroke-width="2.6"/><circle cx="32" cy="42" r="1.8" fill="#ffe3a3"/></g></svg>';
+  const words = el('div', 'upright-words');
+  words.appendChild(Object.assign(document.createElement('div'), { className: 'upright-title', textContent: 'Turn your phone upright' }));
+  words.appendChild(Object.assign(document.createElement('div'), { className: 'upright-sub', textContent: 'The garden is painted for upright screens. Your game is paused and nothing is lost.' }));
+  panel.appendChild(words);
+  card.appendChild(panel);
+  document.body.appendChild(card);
+  const mq = window.matchMedia('(orientation: landscape) and (max-height: 500px)');
+  const apply = () => { SIDEWAYS = mq.matches; card.classList.toggle('show', SIDEWAYS); };
+  apply();
+  if (mq.addEventListener) mq.addEventListener('change', apply); else mq.addListener(apply);
 }

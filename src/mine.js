@@ -92,16 +92,21 @@ function newMineGame(S) {
   S.boardEl.style.fontSize = 'calc(var(--u) * ' + Math.round(C.board[2] / n * 0.52) + ')';
   for (let i = 0; i < n * n; i++) {
     const b = el('button', 'mscell'); b.type = 'button'; b.dataset.i = i;
-    let timer = null, fired = false, sx = 0, sy = 0;
+    // Tap = open. Press and hold (about half a second) = flag (not in Gentle). A finger that slides away cancels.
+    let timer = null, fired = false, armed = false, sx = 0, sy = 0;
     b.addEventListener('pointerdown', (ev) => {
-      fired = false; sx = ev.clientX; sy = ev.clientY;
-      if (S.mode === 'gentle') return;
+      fired = false; armed = true; sx = ev.clientX; sy = ev.clientY;
+      if (S.mode === 'gentle') return;                      // Gentle has no flags: a tap simply opens
       timer = setTimeout(() => { fired = true; timer = null; mineFlag(S, i); }, 450);
     });
     const cancel = () => { if (timer) { clearTimeout(timer); timer = null; } };
-    b.addEventListener('pointermove', (ev) => { if (timer && Math.hypot(ev.clientX - sx, ev.clientY - sy) > 12) cancel(); });
-    b.addEventListener('pointerleave', cancel); b.addEventListener('pointercancel', cancel);
-    b.addEventListener('pointerup', () => { if (timer) { cancel(); mineOpen(S, i); } });
+    b.addEventListener('pointermove', (ev) => { if (armed && Math.hypot(ev.clientX - sx, ev.clientY - sy) > 12) { cancel(); armed = false; } });
+    b.addEventListener('pointerleave', () => { cancel(); armed = false; }); b.addEventListener('pointercancel', () => { cancel(); armed = false; });
+    b.addEventListener('pointerup', () => {
+      if (S.mode === 'gentle') { if (armed) mineOpen(S, i); armed = false; return; }
+      if (timer) { cancel(); mineOpen(S, i); }               // released before the hold time: open
+      armed = false;
+    });
     b.addEventListener('contextmenu', (ev) => { ev.preventDefault(); });
     S.boardEl.appendChild(b);
   }

@@ -119,6 +119,7 @@ function bubMake(G) {
 }
 function bubFrame(now) {
   const G = BUB.cur; if (!G || G.over) return;
+  if (SIDEWAYS) { G.last = now; G.raf = requestAnimationFrame(bubFrame); return; }   // paused while the "turn upright" card shows
   const dt = Math.min(0.1, (now - G.last) / 1000); G.last = now; G.t += dt;
   const S = G.S, C = BUB.L[G.n], u = S.scale;
   if (G.t >= BUB.LEN) { finishBubbleLevel(); return; }
