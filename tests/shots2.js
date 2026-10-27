@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // Step 2 screenshots: node tests/shots2.js <outdir>
 const { chromium } = require('playwright');
 const fs = require('fs');

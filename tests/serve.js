@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // Tiny local web server for tests: serves public/ and applies the rules in public/_headers
 // (the same file Cloudflare reads), so security rules are tested before they go live.
 // Usage: node tests/serve.js [port]   or   require('./serve').start(port)

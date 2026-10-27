@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 """Makes the smaller AVIF copy of every picture in public/img (the WebP files stay as the fallback).
 Usage: python3 tools/make_pictures.py      (needs Pillow with AVIF support)
 Quality 62 was chosen after a side-by-side check: same look, about a third smaller."""

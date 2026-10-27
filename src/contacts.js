@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // ============================================================
 // CONTACTS + PASSCODE (kept only on this phone, never sent anywhere)
 // - Contacts: name, WhatsApp number, circle colour. Readable by the app so

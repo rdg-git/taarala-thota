@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // Step 6 checks: security rules are sent and the whole app works under them; blocked things stay blocked.
 const { chromium } = require('playwright');
 const http = require('http'), zlib = require('zlib');

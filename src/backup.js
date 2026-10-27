@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // ============================================================
 // BACKUP & RESTORE (the file is made on this phone and saved wherever the person chooses;
 // it never passes through anyone else)

@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
+# Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 """Builds public/index.html from the pieces in src/.
 Run:  python3 build.py
 Everything the app needs is inside this project: no outside scripts, styles or fonts."""
 import json, hashlib, os
 
-def src(n): return open(os.path.join('src', n), encoding='utf-8').read()
+STAMP = 'Taarala Thota (Garden of Stars) \u00a9 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.'
+# each source file starts with the copyright line; it is taken out when joining and written once at the top of each built file
+def src(n): return open(os.path.join('src', n), encoding='utf-8').read().replace('// ' + STAMP + '\n', '').replace('/* ' + STAMP + ' */\n', '')
 
 # picture sizes [width, height]
 pic = json.load(open('manifest.json'))
@@ -33,6 +36,7 @@ for fam, f, w, st in FONTS:
         print('note: font file missing, system font used instead:', f)
 
 head = '''<!DOCTYPE html>
+<!-- ''' + STAMP + ''' -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -48,13 +52,14 @@ head = '''<!DOCTYPE html>
 <title>Taarala Thota · Garden of Stars</title>'''
 
 js = '\n'.join([
+    '// ' + STAMP,
     src('core.js').replace('/*PIC_JSON*/{}', json.dumps(pic)).replace('/*VER_JSON*/{}', json.dumps(ver)),
     src('helpers.js'), src('contacts.js'), src('audio.js'), src('gamekit.js'), src('screens_main.js'), src('settings.js'), src('backup.js'), src('pwa.js'), src('bubble.js'), src('mine.js'),
     src('chess_engine.js'), src('checkers_engine.js'), src('chess_ui.js'), src('checkers_ui.js'), src('init.js'),
     'detectAvif(bootApp);'
 ])
 # code and styles live in their own files, so the strict security rules can forbid any code inside the page
-css = font_css + src('app.css')
+css = '/* ' + STAMP + ' */\n' + font_css + src('app.css')
 def write(name, text):
     open(os.path.join('public', name), 'w', encoding='utf-8', newline='\n').write(text)
     return name + '?v=' + hashlib.md5(text.encode('utf-8')).hexdigest()[:8]
@@ -78,6 +83,6 @@ core = ['index.html', css_url, js_url, 'manifest.webmanifest', 'icons/icon-192.p
 core += ["fonts/%s?v=%s" % (f, hashlib.md5(open(os.path.join('public', 'fonts', f), 'rb').read()).hexdigest()[:8]) for _, f, _, _ in FONTS if os.path.exists(os.path.join('public', 'fonts', f))]
 assets = sorted('img/%s.%s?v=%s' % (n, ext, h) for n in ver for ext, h in ver[n].items())
 version = hashlib.sha256((html + css + js + json.dumps(core) + json.dumps(assets) + json.dumps(manifest)).encode('utf-8')).hexdigest()[:12]
-sw = src('sw.js').replace('__VERSION__', version).replace('__CORE__', json.dumps(core)).replace('__ASSETS__', json.dumps(assets))
+sw = '// ' + STAMP + '\n' + src('sw.js').replace('__VERSION__', version).replace('__CORE__', json.dumps(core)).replace('__ASSETS__', json.dumps(assets))
 open(os.path.join('public', 'sw.js'), 'w', encoding='utf-8', newline='\n').write(sw)
 print('wrote public/sw.js (version %s, %d core files, %d pictures)' % (version, len(core), len(assets)))

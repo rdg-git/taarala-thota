@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // Runs every test file one after another with the local server. Usage: node tests/run_all.js
 const { start } = require('./serve'), { execFile } = require('child_process'), path = require('path');
 const run = (f) => new Promise(r => execFile('node', [f], { encoding: 'utf8', timeout: 400000 }, (e, so, se) => r((so || '') + (e ? (se || '') + '\nCRASHED' : ''))));   // async, so the server keeps answering

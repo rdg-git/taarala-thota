@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // ============================================================
 // HIDDEN COMETS (a minesweeper-style game): Gentle 4x4 (no losing), Medium 9x9 (10 comets), Hard 12x12 (22 comets)
 // Tap = open.  Press and hold (about half a second) = flag.

@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 /* =====================================================================
    INTERNATIONAL CHECKERS (10x10 draughts, FMJD rules) - engine + computer
    ---------------------------------------------------------------------

@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // ============================================================
 // SETTINGS (passcode-protected) and PRIVACY & SAFETY page
 // Built on the Loved Ones night-sky picture with a dark frosted sheet on top.
@@ -350,7 +351,7 @@ function viewRestore(S, sh) {
 
 // ------------------------------------------------------------
 // PRIVACY & SAFETY PAGE
-// The 10 points (PRIVACY_POINTS above), opened from the link at the bottom of Home.
+// The points (PRIVACY_POINTS above), opened from the link at the bottom of Home, ending with the maker's signature.
 // ------------------------------------------------------------
 function buildPrivacy() {
   const S = defScreen('privacy', 'loved', { parent: 'home-view', name: 'Privacy & safety' });
@@ -365,4 +366,11 @@ function buildPrivacy() {
     if (i) links.append(' \u00b7 '); links.appendChild(a);
   });
   sheet.appendChild(links);
+  // the maker's signature: seal, "Made with care by rdg" with its shooting star, and the copyright line
+  const mk = tx('div', 'maker'), seal = tx('div', 'maker-big'); seal.innerHTML = makerSealSvg(); mk.appendChild(seal);
+  const sig = tx('div', 'maker-sig'); sig.appendChild(tx('div', 'maker-by', 'Made with care by'));
+  sig.appendChild(tx('div', 'maker-rdg', 'rdg'));
+  const trail = tx('div', 'maker-trail'); trail.innerHTML = makerTrailSvg(); sig.appendChild(trail);
+  sig.appendChild(tx('div', 'maker-copy', MAKER_CREDIT)); mk.appendChild(sig);
+  sheet.appendChild(mk);
 }

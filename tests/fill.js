@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // Screen fill: on every screen and several phone sizes, no dark side strips where avoidable,
 // and nothing you can tap or read is cut off at the top or bottom.
 const { chromium } = require('playwright');

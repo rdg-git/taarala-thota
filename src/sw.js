@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // ============================================================
 // OFFLINE HELPER (service worker) for Taarala Thota · Garden of Stars
 // - Keeps a copy of the app's own files on the phone so games work without internet.

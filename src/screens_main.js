@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // ============================================================
 // HOME, GAMES, LOVED ONES
 // ============================================================
@@ -5,7 +6,7 @@
 // ------------------------------------------------------------
 // HOME
 // The painted Play and Family doors are tap areas. The app adds: the Settings gear (top right, opens with
-// the passcode), the "Privacy & safety" link (bottom), and the music button over the painted note.
+// the passcode), the "Privacy & safety" link (bottom), the music button over the painted note, and the maker's seal (bottom right).
 // When Home appears it may show ONE card: "new version ready" first, otherwise the backup reminder.
 // ------------------------------------------------------------
 function buildHome() {
@@ -31,6 +32,9 @@ function buildHome() {
   place(pl, 246, 1748, 360, 72, S); pl.style.fontSize = 'calc(var(--u) * 38)';
   pl.addEventListener('click', (ev) => { ev.stopPropagation(); go('privacy'); });
   S.art.appendChild(pl);
+  // the maker's seal, faint in the bottom-right corner (decoration only: it can't be tapped)
+  const seal = el('div', 'maker-seal'); seal.innerHTML = makerSealSvg();
+  place(seal, 748, 1752, 70, 70, S); S.art.appendChild(seal);
   S.onShow = () => {
     Music.paint();
     setTimeout(() => { if (CUR !== 'home-view') return; if (PWA.updateReady && !PWA.dismissed) showUpdateCard(); else maybeRemindBackup(S); }, 700);

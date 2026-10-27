@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // ============================================================
 // BUBBLE POP  (3 levels x 120 seconds)
 // Only the travel speed increases between levels. To move on you need

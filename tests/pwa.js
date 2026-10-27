@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // Step 5 checks: installable app, offline play, "new version" card (Home only, never forced), data kept, button sizes.
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');

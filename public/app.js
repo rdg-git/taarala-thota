@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // ============================================================
 // CORE: helpers, storage, picture-screen system, navigation
 // ============================================================
@@ -50,7 +51,7 @@ const Store = {
 // ------------------------------------------------------------
 // ---- picture sizes [width,height] (filled by build script) ----
 const PIC = {"bubble-home": [853, 1844], "bubble-l1": [853, 1844], "bubble-l2": [853, 1844], "bubble-l3": [853, 1844], "checkers-board": [852, 1846], "checkers-draw": [900, 1748], "checkers-forfeit": [900, 1748], "checkers-lost": [900, 1748], "checkers-replace": [853, 1844], "checkers-stats": [853, 1844], "checkers-won": [900, 1748], "chess-board": [853, 1844], "chess-entry-noresume": [853, 1844], "chess-entry-resume": [853, 1844], "chess-side": [853, 1844], "chess-stats": [853, 1843], "games": [936, 1681], "home": [853, 1844], "ms-home": [853, 1844], "loved": [851, 1847], "ms-board": [853, 1844], "ms-stats": [852, 1846], "bubble-stats": [852, 1846]};
-const PICV = {"bubble-home": {"webp": "b18aafc3", "avif": "e6b994e6"}, "bubble-l1": {"webp": "30d4ebc8", "avif": "14c2200b"}, "bubble-l2": {"webp": "da3d8aa4", "avif": "f252b225"}, "bubble-l3": {"webp": "61c3f6f4", "avif": "87e91e1a"}, "checkers-board": {"webp": "8feec79d", "avif": "906b253c"}, "checkers-draw": {"webp": "207b2c53", "avif": "d527563a"}, "checkers-forfeit": {"webp": "be67d4cd", "avif": "4ccbb5c8"}, "checkers-lost": {"webp": "30e2da6a", "avif": "303facc3"}, "checkers-replace": {"webp": "36848a6a", "avif": "f176f147"}, "checkers-stats": {"webp": "52bd0319", "avif": "e151dde7"}, "checkers-won": {"webp": "3c4397eb", "avif": "e4d34864"}, "chess-board": {"webp": "2f0daef1", "avif": "e0c3c2e4"}, "chess-entry-noresume": {"webp": "1a617596", "avif": "f44b4599"}, "chess-entry-resume": {"webp": "615a724b", "avif": "52b7a774"}, "chess-side": {"webp": "376bda1b", "avif": "72730886"}, "chess-stats": {"webp": "708ef9fb", "avif": "d48e0f15"}, "games": {"webp": "fcd85c68", "avif": "0f5d56c9"}, "home": {"webp": "4341f932", "avif": "f17b7a4a"}, "ms-home": {"webp": "8c523ba1", "avif": "5ce44206"}, "loved": {"webp": "a7c523c4", "avif": "1ea7ccb3"}, "ms-board": {"webp": "3d9ce581", "avif": "646531af"}, "ms-stats": {"webp": "923426e8", "avif": "ca8f86ae"}, "bubble-stats": {"webp": "053b9bfa", "avif": "c05c8992"}};          // fingerprints: {name: {webp: '...', avif: '...'}}
+const PICV = {"bubble-home": {"webp": "d113975c", "avif": "3f549fc7"}, "bubble-l1": {"webp": "ac253054", "avif": "5508c812"}, "bubble-l2": {"webp": "bb3a7435", "avif": "648c8635"}, "bubble-l3": {"webp": "09cf1fcb", "avif": "1f2ca55d"}, "checkers-board": {"webp": "84129473", "avif": "f98ba8bc"}, "checkers-draw": {"webp": "1e7817c6", "avif": "37c1ff94"}, "checkers-forfeit": {"webp": "0408982b", "avif": "9ed47b73"}, "checkers-lost": {"webp": "3e8fd28c", "avif": "b2669767"}, "checkers-replace": {"webp": "be2d5b2f", "avif": "c660f4bc"}, "checkers-stats": {"webp": "593e1c5b", "avif": "ce4d0755"}, "checkers-won": {"webp": "246f5020", "avif": "92f8b085"}, "chess-board": {"webp": "69248f23", "avif": "8b78d3be"}, "chess-entry-noresume": {"webp": "d2104577", "avif": "e567d01f"}, "chess-entry-resume": {"webp": "e712fb23", "avif": "78bcc9c0"}, "chess-side": {"webp": "2210eff0", "avif": "560cc06e"}, "chess-stats": {"webp": "07a558c4", "avif": "96e9ef0c"}, "games": {"webp": "d19d8c12", "avif": "de966ab8"}, "home": {"webp": "aab1c2e4", "avif": "e56907c0"}, "ms-home": {"webp": "e6988136", "avif": "2bef222e"}, "loved": {"webp": "12a30f2a", "avif": "e9dab910"}, "ms-board": {"webp": "59d3ec71", "avif": "77e09ac9"}, "ms-stats": {"webp": "e3ca83b5", "avif": "ad3bbc63"}, "bubble-stats": {"webp": "de6d6abf", "avif": "d5b31da3"}};          // fingerprints: {name: {webp: '...', avif: '...'}}
 // Pictures come in two formats: AVIF (about a third smaller) for phones that can show it, WebP for the rest.
 let PIC_EXT = 'webp';
 function picUrl(name) { const v = PICV[name] && PICV[name][PIC_EXT]; return 'img/' + name + '.' + PIC_EXT + (v ? '?v=' + v : ''); }
@@ -110,7 +111,7 @@ function setPic(S, pic) {
 // (painted signs, lanterns, boards). Buttons and titles floating near the top or bottom edge move inwards,
 // and the Settings / Privacy panels get shorter, so nothing is ever cut off.
 const FILL_CROP = 0.16, EDGE = 200, SAFE = 6;
-const FLOATING = '.gear-btn, .privacy-link, .game-title, .loved-title';
+const FLOATING = '.gear-btn, .privacy-link, .game-title, .loved-title, .maker-seal';
 function layoutScreen(S) {
   const vw = window.innerWidth, vh = window.innerHeight;
   let sc = Math.min(vw / S.W, vh / S.H), cropTop = 0, cropBot = 0;
@@ -408,6 +409,32 @@ function initialOf(name) { const t = String(name || '?').trim(); return t ? Arra
 // Values restored from a backup file could be anything, so Stats screens only ever show real numbers and known words.
 function num(v) { const x = Number(v); return Number.isFinite(x) ? x : 0; }
 function known(map, k) { return Object.prototype.hasOwnProperty.call(map, k) ? k : null; }
+
+// ------------------------------------------------------------
+// MAKER'S MARK (who made this app)
+// The rdg seal: a ring of twelve stars, the letters r d g drawn as a constellation, and a shooting star.
+// Shown faintly in the bottom corner of Home and, with the signature and copyright line, on the Privacy page.
+// The drawing is fixed text written here (nothing typed by a person goes into it).
+// ------------------------------------------------------------
+const MAKER_CREDIT = '\u00a9 2026 Rukmini Gandepalli (@rdg-git)';
+let makerSealCount = 0;
+function makerSealSvg() {
+  const id = 'mkTrail' + (++makerSealCount);      // each copy gets its own colour-fade name, so every copy draws correctly
+  return '<svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" x2="1"><stop offset="0" stop-color="#e8be6a" stop-opacity="0"/><stop offset="1" stop-color="#e8be6a"/></linearGradient></defs>' +
+    '<g fill="none" stroke="#e8be6a"><circle cx="50" cy="50" r="46" stroke-width="1.6"/><circle cx="50" cy="50" r="39" stroke-width=".7"/></g>' +
+    '<g fill="#ffe3a3"><circle cx="50.0" cy="7.5" r="1.8"/><circle cx="71.2" cy="13.2" r="1.1"/><circle cx="86.8" cy="28.7" r="1.1"/><circle cx="92.5" cy="50.0" r="1.8"/><circle cx="86.8" cy="71.2" r="1.1"/><circle cx="71.2" cy="86.8" r="1.1"/><circle cx="50.0" cy="92.5" r="1.8"/><circle cx="28.8" cy="86.8" r="1.1"/><circle cx="13.2" cy="71.3" r="1.1"/><circle cx="7.5" cy="50.0" r="1.8"/><circle cx="13.2" cy="28.7" r="1.1"/><circle cx="28.7" cy="13.2" r="1.1"/></g>' +
+    '<g transform="translate(16,14) scale(.68)"><g fill="none" stroke="#e8be6a" stroke-width="1.2" stroke-opacity=".75" stroke-linejoin="round"><polyline points="14,68 14,42"/><polyline points="14,50 21,42 28,42"/><polyline points="54,26 54,68 44,68 38,60 40,51 48,48 54,50"/><polyline points="84,50 76,47 68,50 66,58 72,63 80,61 84,56"/><polyline points="84,47 84,76 78,83 68,82"/></g>' +
+    '<g fill="#ffe3a3"><circle cx="14" cy="68" r="2.2"/><circle cx="14" cy="42" r="2.6"/><circle cx="21" cy="42" r="1.8"/><circle cx="28" cy="42" r="2.2"/><circle cx="54" cy="68" r="2.4"/><circle cx="44" cy="68" r="1.8"/><circle cx="38" cy="60" r="2.2"/><circle cx="40" cy="51" r="1.8"/><circle cx="48" cy="48" r="2"/><circle cx="54" cy="50" r="1.8"/><circle cx="54" cy="26" r="2"/><circle cx="76" cy="47" r="1.8"/><circle cx="68" cy="50" r="2"/><circle cx="66" cy="58" r="1.8"/><circle cx="72" cy="63" r="2.2"/><circle cx="80" cy="61" r="1.8"/><circle cx="84" cy="47" r="2"/><circle cx="84" cy="76" r="2"/><circle cx="78" cy="83" r="1.8"/><circle cx="68" cy="82" r="2.4"/></g></g>' +
+    '<path d="M22 76 Q48 86 76 70" fill="none" stroke="url(#' + id + ')" stroke-width="1.6" stroke-linecap="round"/>' +
+    '<path d="M77 62.9 l1.8 5 5 1.8-5 1.8-1.8 5-1.8-5-5-1.8 5-1.8z" fill="#fff1c8"/></svg>';
+}
+// the shooting-star line under the handwritten "rdg" signature
+function makerTrailSvg() {
+  const id = 'mkTrail' + (++makerSealCount);
+  return '<svg viewBox="0 0 100 30" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" x2="1"><stop offset="0" stop-color="#e8be6a" stop-opacity="0"/><stop offset="1" stop-color="#e8be6a"/></linearGradient></defs>' +
+    '<path d="M2 12 Q50 26 88 8" fill="none" stroke="url(#' + id + ')" stroke-width="2.4" stroke-linecap="round"/>' +
+    '<path d="M90 2 l2 5.4 5.4 2-5.4 2-2 5.4-2-5.4-5.4-2 5.4-2z" fill="#fff1c8"/></svg>';
+}
 
 // ============================================================
 // CONTACTS + PASSCODE (kept only on this phone, never sent anywhere)
@@ -830,7 +857,7 @@ function paintStats(S, game, geo) {
 // ------------------------------------------------------------
 // HOME
 // The painted Play and Family doors are tap areas. The app adds: the Settings gear (top right, opens with
-// the passcode), the "Privacy & safety" link (bottom), and the music button over the painted note.
+// the passcode), the "Privacy & safety" link (bottom), the music button over the painted note, and the maker's seal (bottom right).
 // When Home appears it may show ONE card: "new version ready" first, otherwise the backup reminder.
 // ------------------------------------------------------------
 function buildHome() {
@@ -856,6 +883,9 @@ function buildHome() {
   place(pl, 246, 1748, 360, 72, S); pl.style.fontSize = 'calc(var(--u) * 38)';
   pl.addEventListener('click', (ev) => { ev.stopPropagation(); go('privacy'); });
   S.art.appendChild(pl);
+  // the maker's seal, faint in the bottom-right corner (decoration only: it can't be tapped)
+  const seal = el('div', 'maker-seal'); seal.innerHTML = makerSealSvg();
+  place(seal, 748, 1752, 70, 70, S); S.art.appendChild(seal);
   S.onShow = () => {
     Music.paint();
     setTimeout(() => { if (CUR !== 'home-view') return; if (PWA.updateReady && !PWA.dismissed) showUpdateCard(); else maybeRemindBackup(S); }, 700);
@@ -1291,7 +1321,7 @@ function viewRestore(S, sh) {
 
 // ------------------------------------------------------------
 // PRIVACY & SAFETY PAGE
-// The 10 points (PRIVACY_POINTS above), opened from the link at the bottom of Home.
+// The points (PRIVACY_POINTS above), opened from the link at the bottom of Home, ending with the maker's signature.
 // ------------------------------------------------------------
 function buildPrivacy() {
   const S = defScreen('privacy', 'loved', { parent: 'home-view', name: 'Privacy & safety' });
@@ -1306,6 +1336,13 @@ function buildPrivacy() {
     if (i) links.append(' \u00b7 '); links.appendChild(a);
   });
   sheet.appendChild(links);
+  // the maker's signature: seal, "Made with care by rdg" with its shooting star, and the copyright line
+  const mk = tx('div', 'maker'), seal = tx('div', 'maker-big'); seal.innerHTML = makerSealSvg(); mk.appendChild(seal);
+  const sig = tx('div', 'maker-sig'); sig.appendChild(tx('div', 'maker-by', 'Made with care by'));
+  sig.appendChild(tx('div', 'maker-rdg', 'rdg'));
+  const trail = tx('div', 'maker-trail'); trail.innerHTML = makerTrailSvg(); sig.appendChild(trail);
+  sig.appendChild(tx('div', 'maker-copy', MAKER_CREDIT)); mk.appendChild(sig);
+  sheet.appendChild(mk);
 }
 
 // ============================================================

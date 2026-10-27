@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // Step 4 checks: every picture loads (smaller AVIF where supported, WebP fallback exists), Hidden Comets words, comets.
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');

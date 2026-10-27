@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // ============================================================
 // INTERNATIONAL CHECKERS 10x10 screens (rules and computer player: checkers_engine.js)
 // You play White (light pieces, move first, start at the bottom).

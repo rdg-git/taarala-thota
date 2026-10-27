@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 """Rebuilds public/fonts/*.woff from the official Google Fonts downloads (SIL Open Font License).
 Usage: python3 tools/make_fonts.py <folder with Caveat/ and Fraunces/ from fonts.google.com>
 Keeps only Latin letters and the weights the app uses, so the files stay small."""

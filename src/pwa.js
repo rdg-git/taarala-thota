@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // ============================================================
 // INSTALLABLE APP: register the offline helper, keep pictures for offline play,
 // and show "A new version is ready" on Home only (never during a game, never forced).

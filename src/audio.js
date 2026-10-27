@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // ============================================================
 // MUSIC ENGINE: 432 Hz Veena + Bansuri flute, made live (no audio files)
 // - Tuning: A4 = 432 Hz (so the note D, our "Sa", is exactly 288 Hz).

@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // ============================================================
 // CORE: helpers, storage, picture-screen system, navigation
 // ============================================================
@@ -110,7 +111,7 @@ function setPic(S, pic) {
 // (painted signs, lanterns, boards). Buttons and titles floating near the top or bottom edge move inwards,
 // and the Settings / Privacy panels get shorter, so nothing is ever cut off.
 const FILL_CROP = 0.16, EDGE = 200, SAFE = 6;
-const FLOATING = '.gear-btn, .privacy-link, .game-title, .loved-title';
+const FLOATING = '.gear-btn, .privacy-link, .game-title, .loved-title, .maker-seal';
 function layoutScreen(S) {
   const vw = window.innerWidth, vh = window.innerHeight;
   let sc = Math.min(vw / S.W, vh / S.H), cropTop = 0, cropBot = 0;

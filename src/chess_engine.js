@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 /* ==========================================================================
    Chess engine: rules + computer opponent.
    Self-contained on purpose: the page copies this function's text into a

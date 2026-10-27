@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // Step 2 checks: Settings, passcode, contacts, photos, Loved Ones, erase, Privacy page.  node tests/contacts.js
 const { chromium } = require('playwright');
 const zlib = require('zlib');

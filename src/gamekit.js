@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // ============================================================
 // GAME KIT shared by Chess and Checkers:
 // computer-player helper (runs in the background so the screen never freezes),

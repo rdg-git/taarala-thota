@@ -1,3 +1,4 @@
+// Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // Step 3 checks: backup, restore, tampered files, reminder.  node tests/backup.js
 const { chromium } = require('playwright');
 const fs = require('fs'), os = require('os'), path = require('path');
