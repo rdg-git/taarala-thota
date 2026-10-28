@@ -144,7 +144,8 @@ function layoutScreen(S) {
   });
   S.art.querySelectorAll('.sheet').forEach(e => {                 // panels end above the visible bottom edge
     const g = e._pg; if (!g) return;
-    const top = Math.max(g[1], cropTop + 20), bottom = Math.min(g[1] + g[3], S.H - cropBot - 24);
+    // the panel's top moves down with the page title (which moves inward by the trimmed amount), so the title is never hidden
+    const top = Math.max(g[1] + cropTop, cropTop + 20), bottom = Math.min(g[1] + g[3], S.H - cropBot - 24);
     e.style.top = (top / S.H * 100) + '%'; e.style.height = ((bottom - top) / S.H * 100) + '%';
   });
   const crop = cropTop;
@@ -1415,7 +1416,8 @@ function buildFeedback() {
     try { res = await fetch('api/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text, release: APP_RELEASE }) }); } catch (e) {}
     if (res && res.ok) {
       box.value = ''; msg.textContent = 'Thank you! Your feedback was sent. 🌟';
-      setTimeout(() => { send.disabled = false; }, 30000);         // a short pause before the next message
+      S.pauseUntil = Date.now() + 10000;                           // a short pause before the next message (the server also limits each day)
+      setTimeout(() => { send.disabled = false; S.pauseUntil = 0; if (/few seconds/.test(msg.textContent)) msg.textContent = ''; }, 10000);
       return;
     }
     send.disabled = false;
@@ -1423,7 +1425,8 @@ function buildFeedback() {
       : 'Couldn’t send right now. Please check your internet and try again; your message is still here.';
   });
   sheet.appendChild(send); sheet.appendChild(msg);
-  S.onShow = () => { allowZoom(true); msg.textContent = ''; };
+  // coming back during the short pause: say why Send is resting, never leave it silently greyed out
+  S.onShow = () => { allowZoom(true); msg.textContent = S.pauseUntil > Date.now() ? 'Thanks! You can send another message in a few seconds.' : ''; };
   S.onHide = () => allowZoom(false);
 }
 

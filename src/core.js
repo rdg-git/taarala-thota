@@ -143,7 +143,8 @@ function layoutScreen(S) {
   });
   S.art.querySelectorAll('.sheet').forEach(e => {                 // panels end above the visible bottom edge
     const g = e._pg; if (!g) return;
-    const top = Math.max(g[1], cropTop + 20), bottom = Math.min(g[1] + g[3], S.H - cropBot - 24);
+    // the panel's top moves down with the page title (which moves inward by the trimmed amount), so the title is never hidden
+    const top = Math.max(g[1] + cropTop, cropTop + 20), bottom = Math.min(g[1] + g[3], S.H - cropBot - 24);
     e.style.top = (top / S.H * 100) + '%'; e.style.height = ((bottom - top) / S.H * 100) + '%';
   });
   const crop = cropTop;

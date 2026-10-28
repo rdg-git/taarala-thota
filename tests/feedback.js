@@ -23,6 +23,9 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   ok(sent && Object.keys(sent).sort().join() === 'message,release' && sent.message === 'More levels please <b>bold</b>' && sent.release === (await p.evaluate(() => APP_RELEASE)), 'only the message and the app release are sent');
   ok(/Thank you/.test(await p.textContent('#feedback .fb-msg')) && (await p.inputValue('#feedback textarea')) === '', 'thank-you shown and the box cleared');
   ok(await p.evaluate(() => document.querySelector('#feedback .sbtn:not(.fb-open)').disabled), 'short pause before another message');
+  await p.evaluate(() => { goBack(); openFeedback('privacy'); }); await p.waitForTimeout(200);
+  ok(/few seconds/.test(await p.textContent('#feedback .fb-msg')), 'coming back during the pause explains it (never a silent grey button)');
+  await p.evaluate(() => { goBack(); openFeedback('settings'); }); await p.waitForTimeout(200);
   // failure keeps the message
   await p.evaluate(() => { document.querySelectorAll('#feedback .sbtn').forEach(x => x.disabled = false); });
   reply = 500; await p.fill('#feedback textarea', 'keep me'); await p.locator('#feedback .sbtn', { hasText: 'Send' }).click(); await p.waitForTimeout(400);
@@ -30,5 +33,12 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   await p.evaluate(() => goBack()); await p.waitForTimeout(200);
   ok(await p.evaluate(() => MM.cur === 'settings'), 'Back returns to where you came from (Settings)');
   ok(errs.length === 0, 'no page errors ' + errs.join(' | '));
+  // page titles are never hidden behind the panel, on short screens too
+  for (const [w, h] of [[1143, 720], [375, 667], [390, 844]]) {
+    const q = await (await b.newContext({ viewport: { width: w, height: h }, serviceWorkers: 'block' })).newPage();
+    await q.goto('http://localhost:8765/index.html?test=1'); await q.waitForTimeout(600);
+    const bad = await q.evaluate(() => ['feedback', 'privacy', 'settings'].filter(i => { MM.go(i); const t = document.querySelector('#' + i + ' .loved-title').getBoundingClientRect(), s = document.querySelector('#' + i + ' .sheet').getBoundingClientRect(); return t.bottom > s.top + 2; }));
+    ok(bad.length === 0, w + 'x' + h + ': page titles visible above the panel ' + bad.join(' '));
+  }
   await b.close(); console.log('RESULT', n - f, 'passed', f, 'failed');
 })();
