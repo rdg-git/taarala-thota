@@ -1,14 +1,15 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // ============================================================
 // BUBBLE POP  (3 levels x 120 seconds)
-// Only the travel speed increases between levels. To move on you need
-// 95% / 98% / 100% accuracy. Accuracy = popped / (popped + missed).
+// Only the travel speed increases between levels. Every level is open to everyone (like Chess).
+// Each level has an accuracy goal, 95% / 98% / 100%: reaching it completes the level and earns its gold star.
+// Accuracy = popped / (popped + missed).
 // Bubbles still floating when time ends are not counted either way.
 // ============================================================
 
 // ------------------------------------------------------------
 // BUBBLE POP: SETTINGS PER LEVEL
-// Three levels, each lasting the same time. "gate" is the accuracy needed (95 / 98 / 100 %) to unlock the next.
+// Three levels, each lasting the same time. "gate" is the accuracy goal (95 / 98 / 100 %) that completes the level.
 // pic = the level's picture; src = where bubbles rise from; dur = seconds a bubble takes to float across (smaller = faster);
 // the other numbers place the timer, star, Home and Back.
 // ------------------------------------------------------------
@@ -23,9 +24,19 @@ const BUB = {
 };
 const BUB_COLORS = ['#8fd6ff', '#ffb3d9', '#b9f0c0', '#ffe08a', '#d1b3ff', '#ffc78a'];
 
-// Which level is unlocked (saved as tt:bubble).
-function bubProgress() { const p = Store.get('bubble', { level: 1 }); return clamp(p.level || 1, 1, 3); }
-function bubSetProgress(n) { Store.set('bubble', { level: clamp(n, 1, 3) }); }
+// Saved as tt:bubble: { level: the level Continue plays next, done: levels completed (gold stars) }.
+// Older saves only had "level" (the highest unlocked), meaning every level below it was completed.
+function bubSaved() { const p = Store.get('bubble', null); return p && typeof p === 'object' ? p : {}; }
+function bubProgress() { return clamp(num(bubSaved().level) || 1, 1, 3); }
+function bubDone() {
+  const p = bubSaved();
+  if (Array.isArray(p.done)) return [1, 2, 3].filter(n => p.done.includes(n));
+  return [1, 2, 3].filter(n => n < bubProgress());
+}
+function bubSetProgress(n, doneLevel) {
+  const done = bubDone(); if (doneLevel && !done.includes(doneLevel)) done.push(doneLevel);
+  Store.set('bubble', { level: clamp(n, 1, 3), done: done.sort() });
+}
 
 // ------------------------------------------------------------
 // BUBBLE POP SCREENS
@@ -37,11 +48,13 @@ function buildBubble() {
   addNav(H, { home: [35, 100, 210, 82], back: [35, 195, 210, 84] });
   addHot(H, 322, 520, 205, 330, () => startBubbleLevel(bubProgress()), 'Continue');
   [[55, 990, 245, 275], [310, 985, 240, 280], [565, 990, 240, 275]].forEach((r, i) => {
-    addHot(H, r[0], r[1], r[2], r[3], () => {
-      if (i + 1 <= bubProgress()) startBubbleLevel(i + 1);
-      else toast(H, 'Finish the earlier level first');
-    }, 'Level ' + (i + 1));
+    addHot(H, r[0], r[1], r[2], r[3], () => startBubbleLevel(i + 1), 'Level ' + (i + 1));   // every level open
+    // gold star on the stone plaque once the level is completed
+    const st = el('div', 'bub-star'); st.setAttribute('aria-hidden', 'true');
+    st.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2.2l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z" fill="#ffd45e" stroke="#7a4a12" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+    place(st, r[0] + r[2] - 92, 1166, 58, 58, H); H.art.appendChild(st);
   });
+  H.onShow = () => { const d = bubDone(); H.art.querySelectorAll('.bub-star').forEach((s, i) => s.classList.toggle('on', d.includes(i + 1))); };
   const T = defScreen('bubble-stats', 'bubble-stats', { parent: 'bubble-home', name: 'Bubble Pop stats' });
   addNav(T, { icons: true });
   T.statEls = [];
@@ -179,7 +192,8 @@ function paintBubbleStats(T) {
     row.innerHTML = '<span class="sr-l"><b class="' + (x.ok ? 'r-won' : 'r-forfeited') + '">' + (x.ok ? '\u2713' : '\u2022') + '</b> Level ' + num(x.n) + ' \u00b7 ' + num(x.p) + ' popped \u00b7 ' + (a % 1 ? a.toFixed(1) : a) + '%</span><span class="sr-r">' + fmtDay(num(x.t)) + '</span>';
   });
 }
-// End of a level: accuracy = popped / (popped + missed). Meets the gate -> next level unlocks.
+// End of a level: accuracy = popped / (popped + missed). Meets the goal -> level completed (gold star),
+// and Continue moves on to the next level (back to level 1 after level 3).
 function finishBubbleLevel() {
   const G = BUB.cur; if (!G) return; G.over = true; cancelAnimationFrame(G.raf);
   G.bubbles.forEach(b => b.el.remove()); G.bubbles = [];             // still floating at the end: not counted
@@ -189,10 +203,10 @@ function finishBubbleLevel() {
   bubRecord(G.n, G.popped, acc, pass);
   const info = 'Popped ' + G.popped + ' · Missed ' + G.missed + ' · Accuracy ' + accTxt + ' (need ' + C.gate + '%)';
   if (pass && G.n === 3) {
-    bubSetProgress(1);
+    bubSetProgress(1, 3);
     showPanel(S, { icon: '✨', title: 'Bubble Pop Complete!', text: info, buttons: [{ label: 'Bubble Pop Home', fn: () => go('bubble-home') }] });
   } else if (pass) {
-    bubSetProgress(Math.max(bubProgress(), G.n + 1));
+    bubSetProgress(G.n + 1, G.n);
     showPanel(S, { icon: '⭐', title: 'Level ' + G.n + ' Complete!', text: info,
       buttons: [{ label: 'Bubble Pop Home', secondary: true, fn: () => go('bubble-home') }, { label: 'Next Level', fn: () => startBubbleLevel(G.n + 1) }] });
   } else {

@@ -1,6 +1,7 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // Tiny local web server for tests: serves public/ and applies the rules in public/_headers
 // (the same file Cloudflare reads), so security rules are tested before they go live.
+// Like Cloudflare, it redirects .../index.html to .../ (this once broke the offline helper, so tests must see it).
 // Usage: node tests/serve.js [port]   or   require('./serve').start(port)
 const http = require('http'), fs = require('fs'), path = require('path');
 const ROOT = path.join(__dirname, '..', 'public');
@@ -17,6 +18,9 @@ function rules() {   // parse _headers: "path pattern" lines followed by indente
 }
 function start(port) {
   const srv = http.createServer((req, res) => {
+    // like Cloudflare Pages: an address ending in /index.html is permanently redirected to the folder address (/)
+    const q = req.url.indexOf('?');
+    if (/\/index\.html$/.test(req.url.split('?')[0])) { res.writeHead(308, { Location: req.url.split('?')[0].replace(/index\.html$/, '') + (q >= 0 ? req.url.slice(q) : '') }); res.end(); return; }
     let u = decodeURIComponent(req.url.split('?')[0]); if (u.endsWith('/')) u += 'index.html';
     const file = path.join(ROOT, u);
     if (!file.startsWith(ROOT) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); res.end('not found'); return; }

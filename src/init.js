@@ -11,6 +11,7 @@ function bootApp() {
   setupPWA();
   setupSteadyScreen();
   setupUprightCard();
+  setupDeskCard();
   // prevent double-tap zoom
   let lastTap = 0;
   document.addEventListener('touchend', (e) => { const n = Date.now(); if (n - lastTap < 300 && e.target.closest && !e.target.closest('input,textarea,select')) e.preventDefault(); lastTap = n; }, { passive: false });
@@ -21,7 +22,7 @@ function bootApp() {
 
 // ------------------------------------------------------------
 // STEADY SCREEN
-// Stray touches (a child tapping fast, a palm on the screen) should never move or leave the app:
+// Stray touches (fast tapping, a palm on the screen) should never move or leave the app:
 // - no long-press menus, no pinch-zoom (iPhone), no text selection outside typing boxes;
 // - Android's back swipe / back button (and iPhone Safari's edge swipe) goes back ONE screen inside the app;
 //   on Home it asks before leaving. (The phone's own Home gesture can't be blocked by any app: for that,
@@ -76,4 +77,43 @@ function setupUprightCard() {
   const apply = () => { SIDEWAYS = mq.matches; card.classList.toggle('show', SIDEWAYS); };
   apply();
   if (mq.addEventListener) mq.addEventListener('change', apply); else mq.addListener(apply);
+}
+
+// ------------------------------------------------------------
+// BEST ON YOUR PHONE (laptops and desktop computers only)
+// The garden is painted for phone screens. On a computer whose main pointer is a mouse or trackpad (touch-screen laptops included),
+// a welcome card shows a QR code with this site's own address (made by the app, see qr.js) so a phone can
+// open it, and a "Continue on this screen" button. Phones and tablets never see it.
+// "Continue" is remembered only until the browser tab is closed (tt:deskok in session storage).
+// ------------------------------------------------------------
+function isComputerScreen() {
+  const mq = (q) => window.matchMedia && window.matchMedia(q).matches;
+  // main pointer is a mouse or trackpad (a touch-screen laptop also has touch, but its main pointer is still the trackpad);
+  // phones and tablets have touch as their main pointer, so they never match
+  return mq('(pointer: fine)') && mq('(hover: hover)');
+}
+function setupDeskCard() {
+  if (TEST_MODE && !QS.has('desk')) return;                    // automatic tests skip it unless they ask for it
+  if (!isComputerScreen()) return;
+  try { if (sessionStorage.getItem('tt:deskok') === '1') return; } catch (e) {}
+  const addr = location.origin + location.pathname.replace(/index\.html$/, '');
+  const card = el('div', 'desk-card'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-label', 'Best on your phone');
+  const bg = el('div', 'upright-bg'); bg.style.backgroundImage = 'url("' + picUrl('home') + '")'; card.appendChild(bg);
+  const panel = el('div', 'desk-panel');
+  const qr = el('div', 'desk-qr'); qr.innerHTML = qrSvg(addr);
+  const words = el('div', 'desk-words');
+  const t = (cls, text) => Object.assign(document.createElement('div'), { className: cls, textContent: text });
+  words.appendChild(t('upright-title', 'Best on your phone'));
+  words.appendChild(t('upright-sub', 'Taarala Thota is painted for phone screens. Point your phone\u2019s camera at this code to open it there.'));
+  words.appendChild(t('desk-addr', 'Or type this address on your phone: ' + location.host));
+  const go = el('button', 'desk-btn'); go.type = 'button'; go.textContent = 'Continue on this screen';
+  const close = () => { try { sessionStorage.setItem('tt:deskok', '1'); } catch (e) {} card.remove(); document.removeEventListener('keydown', onKey); };
+  const onKey = (e) => { if (e.key === 'Escape') close(); };
+  go.addEventListener('click', (e) => { e.stopPropagation(); close(); });
+  document.addEventListener('keydown', onKey);
+  words.appendChild(go);
+  if (qr.innerHTML) panel.appendChild(qr);
+  panel.appendChild(words); card.appendChild(panel);
+  document.body.appendChild(card);
+  setTimeout(() => go.focus(), 50);
 }

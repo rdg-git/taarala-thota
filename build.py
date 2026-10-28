@@ -55,7 +55,7 @@ js = '\n'.join([
     '// ' + STAMP,
     src('core.js').replace('/*PIC_JSON*/{}', json.dumps(pic)).replace('/*VER_JSON*/{}', json.dumps(ver)),
     src('helpers.js'), src('contacts.js'), src('audio.js'), src('gamekit.js'), src('screens_main.js'), src('settings.js'), src('backup.js'), src('pwa.js'), src('bubble.js'), src('mine.js'),
-    src('chess_engine.js'), src('checkers_engine.js'), src('chess_ui.js'), src('checkers_ui.js'), src('init.js'),
+    src('chess_engine.js'), src('checkers_engine.js'), src('chess_ui.js'), src('checkers_ui.js'), src('qr.js'), src('init.js'),
     'detectAvif(bootApp);'
 ])
 # code and styles live in their own files, so the strict security rules can forbid any code inside the page
@@ -70,6 +70,7 @@ open(os.path.join('public', 'index.html'), 'w', encoding='utf-8', newline='\n').
 print('wrote public/index.html', len(html.encode('utf-8')), 'bytes')
 
 # ---- installable app: manifest + offline helper (service worker) ----
+# The page is kept as './' (not 'index.html'): Cloudflare redirects index.html to ./, and browsers refuse to show a redirected page from the offline copy.
 manifest = {
     'name': 'Taarala Thota \u00b7 Garden of Stars', 'short_name': 'Taarala Thota',
     'description': 'A calm, ad-free garden of games and a private loved-ones shortcut. No sign-in, no ads and no tracking in the app; everything you save stays on your phone.',
@@ -79,7 +80,7 @@ manifest = {
               {'src': 'icons/icon-512.png', 'sizes': '512x512', 'type': 'image/png'},
               {'src': 'icons/icon-maskable-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'}]}
 open(os.path.join('public', 'manifest.webmanifest'), 'w', encoding='utf-8', newline='\n').write(json.dumps(manifest, indent=1, ensure_ascii=False))
-core = ['index.html', css_url, js_url, 'manifest.webmanifest', 'icons/icon-192.png', 'icons/apple-touch-icon.png']
+core = ['./', css_url, js_url, 'manifest.webmanifest', 'icons/icon-192.png', 'icons/apple-touch-icon.png']
 core += ["fonts/%s?v=%s" % (f, hashlib.md5(open(os.path.join('public', 'fonts', f), 'rb').read()).hexdigest()[:8]) for _, f, _, _ in FONTS if os.path.exists(os.path.join('public', 'fonts', f))]
 assets = sorted('img/%s.%s?v=%s' % (n, ext, h) for n in ver for ext, h in ver[n].items())
 version = hashlib.sha256((html + css + js + json.dumps(core) + json.dumps(assets) + json.dumps(manifest)).encode('utf-8')).hexdigest()[:12]

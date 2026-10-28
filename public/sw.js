@@ -6,8 +6,8 @@
 // - A new version is downloaded quietly but only starts when the person taps "Update now".
 // (build.py fills in VERSION, CORE and ASSETS)
 // ============================================================
-const VERSION = '8bf41dc97028';
-const CORE = ["index.html", "app.css?v=b4a6b691", "app.js?v=1bb0f16f", "manifest.webmanifest", "icons/icon-192.png", "icons/apple-touch-icon.png", "fonts/caveat.woff?v=a49450ff", "fonts/fraunces.woff?v=451247d5", "fonts/fraunces-italic.woff?v=ade54699"];          // the page, styles, code, fonts, icons, manifest
+const VERSION = '5baab9a80b0f';
+const CORE = ["./", "app.css?v=a0407259", "app.js?v=8a77af3c", "manifest.webmanifest", "icons/icon-192.png", "icons/apple-touch-icon.png", "fonts/caveat.woff?v=a49450ff", "fonts/fraunces.woff?v=451247d5", "fonts/fraunces-italic.woff?v=ade54699"];          // the page, styles, code, fonts, icons, manifest
 const ASSETS = ["img/bubble-home.avif?v=3f549fc7", "img/bubble-home.webp?v=d113975c", "img/bubble-l1.avif?v=5508c812", "img/bubble-l1.webp?v=ac253054", "img/bubble-l2.avif?v=648c8635", "img/bubble-l2.webp?v=bb3a7435", "img/bubble-l3.avif?v=1f2ca55d", "img/bubble-l3.webp?v=09cf1fcb", "img/bubble-stats.avif?v=d5b31da3", "img/bubble-stats.webp?v=de6d6abf", "img/checkers-board.avif?v=f98ba8bc", "img/checkers-board.webp?v=84129473", "img/checkers-draw.avif?v=37c1ff94", "img/checkers-draw.webp?v=1e7817c6", "img/checkers-forfeit.avif?v=9ed47b73", "img/checkers-forfeit.webp?v=0408982b", "img/checkers-lost.avif?v=b2669767", "img/checkers-lost.webp?v=3e8fd28c", "img/checkers-replace.avif?v=c660f4bc", "img/checkers-replace.webp?v=be2d5b2f", "img/checkers-stats.avif?v=ce4d0755", "img/checkers-stats.webp?v=593e1c5b", "img/checkers-won.avif?v=92f8b085", "img/checkers-won.webp?v=246f5020", "img/chess-board.avif?v=8b78d3be", "img/chess-board.webp?v=69248f23", "img/chess-entry-noresume.avif?v=e567d01f", "img/chess-entry-noresume.webp?v=d2104577", "img/chess-entry-resume.avif?v=78bcc9c0", "img/chess-entry-resume.webp?v=e712fb23", "img/chess-side.avif?v=560cc06e", "img/chess-side.webp?v=2210eff0", "img/chess-stats.avif?v=96e9ef0c", "img/chess-stats.webp?v=07a558c4", "img/games.avif?v=de966ab8", "img/games.webp?v=d19d8c12", "img/home.avif?v=e56907c0", "img/home.webp?v=aab1c2e4", "img/loved.avif?v=e9dab910", "img/loved.webp?v=12a30f2a", "img/ms-board.avif?v=77e09ac9", "img/ms-board.webp?v=59d3ec71", "img/ms-home.avif?v=2bef222e", "img/ms-home.webp?v=e6988136", "img/ms-stats.avif?v=ad3bbc63", "img/ms-stats.webp?v=e3ca83b5"];      // every picture address (both formats), each with a fingerprint
 const CORE_CACHE = 'tt-core-' + VERSION, ASSET_CACHE = 'tt-assets';
 
@@ -41,7 +41,14 @@ self.addEventListener('fetch', (e) => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;     // never touch anything outside this app
   if (req.mode === 'navigate') {                                              // the page itself: the installed copy, so updates wait for "Update now"
-    e.respondWith(caches.open(CORE_CACHE).then(c => c.match('index.html')).then(r => r || fetch(req)));
+    e.respondWith((async () => {
+      try {
+        let r = await (await caches.open(CORE_CACHE)).match('./');
+        // browsers refuse to show a page that came through a redirect, so hand over a clean copy of it
+        if (r && r.redirected) r = new Response(await r.blob(), { status: r.status, statusText: r.statusText, headers: r.headers });
+        return r || await fetch(req);
+      } catch (err) { return fetch(req); }
+    })());
     return;
   }
   e.respondWith((async () => {

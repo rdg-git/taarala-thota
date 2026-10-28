@@ -140,13 +140,13 @@ All in the browser's storage for this site, labels starting with `tt:`. Nothing 
 - **Offline helper** (`sw.js`): only handles this app's own files, never personal data.
 - **Rule for every change**: no personal names, emails, phone numbers or keys anywhere in the project.
 
-## 7. Steady screen (children and stray touches)
+## 7. Steady screen (stray touches)
 
 - No dragging, pinch-zoom, bouncing, text selection or long-press menus (`app.css` "Steady screen" + `setupSteadyScreen` in `init.js`).
   Panels and Loved Ones still scroll; typing boxes behave normally.
 - The phone's back swipe / back button goes back one screen inside the app; on Home it asks before leaving.
 - The phone's own Home gesture (iPhone swipe up) cannot be blocked by any app. The Privacy & safety page explains
-  Guided Access (iPhone) and App pinning (Android) for parents.
+  Guided Access (iPhone) and App pinning (Android) for anyone sharing their phone.
 
 ## 8. Updates and offline
 

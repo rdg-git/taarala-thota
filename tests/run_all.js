@@ -2,7 +2,7 @@
 // Runs every test file one after another with the local server. Usage: node tests/run_all.js
 const { start } = require('./serve'), { execFile } = require('child_process'), path = require('path');
 const run = (f) => new Promise(r => execFile('node', [f], { encoding: 'utf8', timeout: 400000 }, (e, so, se) => r((so || '') + (e ? (se || '') + '\nCRASHED' : ''))));   // async, so the server keeps answering
-const TESTS = ['func', 'func2', 'chess_rules', 'music_off', 'music_firsttap', 'privacy', 'contacts', 'backup', 'pictures', 'preload', 'pwa', 'security', 'fill', 'hints', 'steady', 'taps', 'upright'];
+const TESTS = ['func', 'func2', 'chess_rules', 'music_off', 'music_firsttap', 'privacy', 'contacts', 'backup', 'pictures', 'preload', 'pwa', 'security', 'fill', 'hints', 'steady', 'taps', 'upright', 'desk', 'reload', 'bubble_levels'];
 (async () => {
   const srv = await start(8765); let bad = 0;
   for (const t of TESTS) {

@@ -41,7 +41,14 @@ self.addEventListener('fetch', (e) => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;     // never touch anything outside this app
   if (req.mode === 'navigate') {                                              // the page itself: the installed copy, so updates wait for "Update now"
-    e.respondWith(caches.open(CORE_CACHE).then(c => c.match('index.html')).then(r => r || fetch(req)));
+    e.respondWith((async () => {
+      try {
+        let r = await (await caches.open(CORE_CACHE)).match('./');
+        // browsers refuse to show a page that came through a redirect, so hand over a clean copy of it
+        if (r && r.redirected) r = new Response(await r.blob(), { status: r.status, statusText: r.statusText, headers: r.headers });
+        return r || await fetch(req);
+      } catch (err) { return fetch(req); }
+    })());
     return;
   }
   e.respondWith((async () => {
