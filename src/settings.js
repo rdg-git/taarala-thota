@@ -14,7 +14,7 @@ const APP_NAME = 'Taarala Thota (Garden of Stars)';   // the name always travels
 const SETTINGS_NOTE = 'Contacts saved here stay only on this phone, inside ' + APP_NAME + '. Anyone using this phone can call them from Loved Ones and see their names and photos, but only someone with the passcode can see or change the numbers. Your phone’s own contacts are never touched.';
 const FORGOT_TEXT = 'If you forget this passcode, the contacts you saved in ' + APP_NAME + ' will be erased, and you’ll need to add them again. Your phone’s own contacts and WhatsApp are not affected.';
 const DAILY_NOTICE = 'Contacts saved here stay only on this phone. Your phone’s own contacts are never touched.';
-const OFFICIAL_ADDRESS = '';   // filled in at launch
+const OFFICIAL_ADDRESS = 'taarala-thota.pages.dev';   // the app's one official address (people's saved data belongs to it)
 const PRIVACY_POINTS = [
   // Application data (what the app saves) is kept apart from infrastructure data (what any website's host handles):
   'Your saved data stays on this phone: contacts and their photos, your passcode, game progress, stats and settings are stored only in this browser on this phone. The app never sends them anywhere, and the creator cannot see them.',
