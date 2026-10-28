@@ -71,8 +71,16 @@ function buildSettings() {
   addText(S, 'loved-title', 100, 150, 520, 140, 92, 'Settings');
   const sheet = el('div', 'sheet'); place(sheet, 45, 330, 763, 1470, S); S.art.appendChild(sheet);
   S.sheet = sheet; S.view = null;
-  S.onShow = () => { S.view = null; renderSettings(S); dailyNotice(S); };   // S.pendingView (e.g. 'backup') opens after unlocking
-  S.onHide = () => { clearInterval(S.waitTimer); };
+  S.onShow = () => {
+    S.view = null; renderSettings(S); dailyNotice(S);                       // S.pendingView (e.g. 'backup') opens after unlocking
+    // after 10 minutes without a tap here, show the passcode page again
+    clearInterval(S.idleTimer);
+    S.idleTimer = setInterval(() => { if (CUR === 'settings' && Pass.isSet() && !Pass.isUnlocked() && !/^(unlock|create|forgot)$/.test(S.view)) renderSettings(S); }, 15000);
+  };
+  // leaving Settings (Home, Back, the back gesture, any other screen) locks it straight away
+  S.onHide = () => { clearInterval(S.waitTimer); clearInterval(S.idleTimer); Pass.lock(); };
+  // only taps inside Settings keep it unlocked (taps in games don't)
+  ['pointerup', 'keydown'].forEach(t => S.el.addEventListener(t, () => Pass.touch(), true));
 }
 // The once-a-day reminder that fades after 6 seconds (remembered as tt:noticeDay).
 function dailyNotice(S) {
@@ -99,6 +107,31 @@ function renderSettings(S, view, data) {
   S.view = view; sh.innerHTML = ''; sh.scrollTop = 0;
   ({ create: viewCreate, unlock: viewUnlock, forgot: viewForgot, list: viewList, form: viewForm, eraseall: viewEraseAll, backup: viewBackup, restore: viewRestore })[view](S, sh, data || {});
   if (/^(create|unlock|forgot)$/.test(view)) { sh.appendChild(tx('div', 'snote', SETTINGS_NOTE)); }
+  const ub = tx('div', 'supd'); sh.insertBefore(ub, sh.firstChild); S.updBox = ub; refreshUpdateBox(S);
+}
+// App update: the first thing on every Settings page, even before the passcode (updating never touches saved data).
+// Kept compact. Up to date: one quiet line that can't be tapped. Update waiting: Update now, then Update later and What's new.
+function refreshUpdateBox(S) {
+  const ub = S.updBox; if (!ub || !ub.isConnected) return;
+  ub.innerHTML = '';
+  const ready = !!(PWA.reg && PWA.reg.waiting && navigator.serviceWorker && navigator.serviceWorker.controller);
+  ub.classList.toggle('ready', ready);
+  if (!ready) { ub.appendChild(tx('div', 'supd-ok', '\u2713 Your app is up to date')); return; }
+  if (S.updLater) {                         // after "Update later": one small line, so the page gets its space back
+    const line = tx('div', 'supd-line'); line.appendChild(tx('span', '', 'Update waiting'));
+    line.appendChild(btn('Update now', 'small', applyUpdate)); ub.appendChild(line); return;
+  }
+  ub.appendChild(tx('div', 'supd-title', 'New update available'));
+  ub.appendChild(btn('Update now', 'small', applyUpdate));
+  const row = tx('div', 'supd-row');
+  row.appendChild(btn('Update later', 'secondary small', () => { PWA.dismissed = true; S.updLater = true; refreshUpdateBox(S); }));
+  let box = null;
+  const wn = btn('What\u2019s new', 'secondary small', async () => {          // tap again to hide the list
+    if (box) { box.remove(); box = null; wn.textContent = 'What\u2019s new'; return; }
+    box = await whatsNewBox(); ub.appendChild(box); wn.textContent = 'Hide what\u2019s new';
+  });
+  row.appendChild(wn);
+  ub.appendChild(row);
 }
 
 // ------------------------------------------------------------

@@ -156,6 +156,7 @@ function layoutScreen(S) {
     const left = right ? (x + w) * sc - size : 30 * sc + slot * (size + GAP);
     Object.assign(b.style, { left: left + 'px', top: top + 'px', width: size + 'px', height: size + 'px' });
   });
+  if (typeof placeUpdateBadge === 'function') placeUpdateBadge(S);
 }
 function layoutAll() { for (const k in SCREENS) layoutScreen(SCREENS[k]); }
 window.addEventListener('resize', layoutAll);
@@ -365,10 +366,10 @@ function closePanel(S) {
   if (S.panel && S.panel.parentNode) S.panel.parentNode.removeChild(S.panel);
   S.panel = null;
 }
-function toast(S, msg) {
+function toast(S, msg, ms) {
   const t = el('div', 'toast', msg);
   S.el.appendChild(t);
-  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 400); }, 1800);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 400); }, ms || 1800);
 }
 
 // Run code for one second-tick while a screen is open

@@ -59,7 +59,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   await ev(() => { MM.go('games'); MM.go('home-view'); }); await wait(1000);
   ok(await ev(() => !document.querySelector('#home-view .panel-card')), 'no reminder right after a backup');
   // wipe, set a NEW passcode, restore
-  await ev(async () => { Object.keys(localStorage).filter(k => k.startsWith('tt:')).forEach(k => localStorage.removeItem(k)); localStorage.setItem('tt:noticeDay', JSON.stringify('x')); await MM.Pass.create('new pass code 2'); MM.go('home-view'); MM.go('settings'); });
+  await ev(async () => { Object.keys(localStorage).filter(k => k.startsWith('tt:')).forEach(k => localStorage.removeItem(k)); localStorage.setItem('tt:noticeDay', JSON.stringify('x')); await MM.Pass.create('new pass code 2'); MM.go('home-view'); MM.Pass.unlockedUntil = MM.nowMs() + 600000; MM.go('settings'); });
   await wait(400); await clickText('Restore from a backup');
   await clickText('Open backup'); ok(/choose the backup file/.test(await errText()), 'asks for a file first');
   await p.setInputFiles('#settings input[type=file]', file);
@@ -74,7 +74,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   const tampered = JSON.parse(txt); tampered.data = (tampered.data[0] === 'A' ? 'B' : 'A') + tampered.data.slice(1); fs.writeFileSync(path.join(tmp, 't.ttbackup'), JSON.stringify(tampered));
   fs.writeFileSync(path.join(tmp, 'x.ttbackup'), 'hello, I am not a backup');
   fs.writeFileSync(path.join(tmp, 'big.ttbackup'), Buffer.alloc(16 * 1024 * 1024, 65));
-  await ev(() => { MM.go('home-view'); MM.go('settings'); }); await wait(300); await clickText('Restore from a backup');
+  await ev(() => { MM.go('home-view'); MM.Pass.unlockedUntil = MM.nowMs() + 600000; MM.go('settings'); }); await wait(300); await clickText('Restore from a backup');
   for (const [fn, re, label] of [['t.ttbackup', /doesn.t open/, 'a changed (tampered) backup is refused'], ['x.ttbackup', /isn.t a Taarala Thota backup/, 'a file that is not a backup is refused'], ['big.ttbackup', /too big/, 'an oversized file is refused']]) {
     await p.setInputFiles('#settings input[type=file]', path.join(tmp, fn)); await fill('Backup password', 'backup pass 9'); await clickText('Open backup'); await wait(1200);
     ok(re.test(await errText()), label);

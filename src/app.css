@@ -288,3 +288,36 @@ input, textarea { user-select:text; -webkit-user-select:text; -webkit-touch-call
 .bub-star { position:absolute; z-index:6; pointer-events:none; opacity:0; transform:scale(.6); transition:opacity .3s, transform .3s; filter:drop-shadow(0 0 calc(var(--u)*10) rgba(255,210,90,.85)); }
 .bub-star.on { opacity:1; transform:scale(1); }
 .bub-star svg { width:100%; height:100%; display:block; }
+
+/* ---- "What's new" list inside the update card ---- */
+.wn-box { text-align:left; margin:2px 0 10px; padding:10px 12px; border-radius:12px; background:rgba(255,255,255,.55); border:1px solid rgba(201,154,76,.55);
+  max-height:40vh; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; touch-action:pan-y; }   /* a long list scrolls by finger inside the card */
+.wn-title { font-weight:700; font-size:14px; color:#3a2410; margin-bottom:4px; }
+.wn-date { font-weight:700; font-size:13px; color:#7a5220; margin:8px 0 2px; }
+.wn-list { margin:0; padding-left:20px; font-size:14px; line-height:1.38; color:#4a3218; }
+.wn-list li { margin:0 0 5px; }
+
+/* ---- "App update", compact, at the top of every Settings page ---- */
+.supd { margin:0 0 14px; padding:10px 12px; border-radius:14px; background:rgba(255,240,210,.06); border:1px solid rgba(227,184,102,.35); }
+.supd-ok { text-align:center; font-size:15px; color:#cdbb92; }
+.supd.ready { border-color:rgba(255,210,120,.8); box-shadow:0 0 14px rgba(255,200,110,.25); }
+.supd-title { font-weight:700; font-size:17px; color:#ffe3a3; margin:0 0 2px; }
+.supd .sbtn.small { margin-top:8px; }
+.supd-row { display:flex; gap:8px; }
+.supd-row .sbtn { flex:1 1 0; }
+.supd .wn-box { margin:10px 0 0; background:rgba(255,240,210,.08); border-color:rgba(227,184,102,.45); max-height:none; overflow:visible; }
+.supd .wn-title { color:#ffe3a3; }
+.supd .wn-date { color:#e8c27a; }
+.supd .wn-list { color:#f3e3bd; }
+
+.supd-line { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:15px; color:#ffe3a3; }
+.supd-line .sbtn.small { width:auto; margin:0; padding:6px 16px; min-height:40px; }
+/* ---- "Update" pill below the top-right corner button (while a new version waits) ---- */
+.upd-badge { position:absolute; z-index:8; padding:4px 0; border:0; background:none; cursor:pointer; min-height:44px; display:flex; align-items:center; }
+.upd-badge[hidden] { display:none; }
+.upd-badge span { display:flex; align-items:center; gap:3px; padding:4px 10px 4px 6px; border-radius:999px; font-family:'Fraunces',Georgia,serif; font-weight:700; font-size:13px; color:#3a2208;
+  background:radial-gradient(circle at 30% 25%,#fff3c4,#f2c14e 60%,#d29a2a); border:1.5px solid #fff1c8; box-shadow:0 0 10px rgba(255,200,90,.9), 0 2px 4px rgba(0,0,0,.6);
+  animation:upd-glow 2.4s ease-in-out infinite; }
+.upd-badge svg { width:15px; height:15px; display:block; }
+@keyframes upd-glow { 0%,100% { box-shadow:0 0 6px rgba(255,200,90,.6), 0 2px 4px rgba(0,0,0,.6); } 50% { box-shadow:0 0 16px rgba(255,210,110,1), 0 2px 4px rgba(0,0,0,.6); } }
+@media (prefers-reduced-motion: reduce) { .upd-badge span { animation:none; } }

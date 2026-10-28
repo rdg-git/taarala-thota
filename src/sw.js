@@ -4,11 +4,13 @@
 // - Keeps a copy of the app's own files on the phone so games work without internet.
 // - Never stores or sends anything personal: it only handles this app's own public files.
 // - A new version is downloaded quietly but only starts when the person taps "Update now".
-// (build.py fills in VERSION, CORE and ASSETS)
+// - Carries this version's "What's new" notes and hands them to the page when asked.
+// (build.py fills in VERSION, CORE, ASSETS and NOTES)
 // ============================================================
 const VERSION = '__VERSION__';
 const CORE = __CORE__;          // the page, styles, code, fonts, icons, manifest
 const ASSETS = __ASSETS__;      // every picture address (both formats), each with a fingerprint
+const NOTES = __NOTES__;        // "What's new" for every release, newest first (from src/whats_new.json)
 const CORE_CACHE = 'tt-core-' + VERSION, ASSET_CACHE = 'tt-assets';
 
 self.addEventListener('install', (e) => {
@@ -26,6 +28,7 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('message', (e) => {
   const m = e.data || {};
   if (m.type === 'skip-waiting') self.skipWaiting();
+  if (m.type === 'notes' && e.ports && e.ports[0]) e.ports[0].postMessage({ notes: NOTES });   // "What's new" for the update card
   if (m.type === 'warm' && Array.isArray(m.urls)) {        // quietly keep the pictures this phone uses, for offline play
     e.waitUntil((async () => {
       const ac = await caches.open(ASSET_CACHE);

@@ -32,19 +32,33 @@ const SW = path.join(__dirname, '..', 'public', 'sw.js');
     ok(broken === 0, 'with no internet, every visited picture shows');
     ok(await ev(() => document.querySelectorAll('#contact-view .medallion').length === 1), 'with no internet, saved contacts are there');
     await ctx.setOffline(false);
+    await ev(() => MM.go('settings')); await wait(300);
+    ok(await ev(() => /up to date/.test(document.querySelector('#settings .supd').textContent) && !document.querySelector('#settings .supd button') && document.querySelector('#settings .sheet').firstChild.classList.contains('supd')), 'Settings: "up to date" line at the top, nothing to press');
+    await ev(() => MM.go('home-view'));
     // a new version is published
-    fs.writeFileSync(SW, orig.replace(/const VERSION = '[^']+'/, "const VERSION = 'test-new-version'"));
+    fs.writeFileSync(SW, orig.replace(/const VERSION = '[^']+'/, "const VERSION = 'test-new-version'")
+      .replace('const NOTES = [', 'const NOTES = [{"release": "2099-01-01", "notes": ["Test note for a newer release."]}, '));
     await ev(() => MM.go('chs-entry-n')); await wait(300);
     await ev(async () => { const r = await navigator.serviceWorker.getRegistration(); await r.update(); }); await wait(2500);
     ok(await ev(() => MM.PWA.updateReady), 'new version found and downloaded in the background');
     ok(await ev(() => !document.querySelector('.panel-card')), 'no update card on a game screen');
     await ev(() => MM.go('home-view')); await wait(1200);
     ok(await ev(() => /new version is ready/.test((document.querySelector('#home-view .panel-card') || {}).textContent || '')), 'update card shows on Home');
+    await ev(() => MM.go('settings')); await wait(300);
+    ok(await ev(() => !!document.querySelector('#settings .supd') && /New update available/.test(document.querySelector('#settings .supd').textContent) && document.querySelector('#settings .sheet').firstChild.classList.contains('supd') && ![...document.querySelectorAll('#settings .supd .sbtn')].find(b => b.textContent === 'Update now').disabled), 'Settings: Update now at the top, before the passcode');
+    ok(await ev(() => [...document.querySelectorAll('#settings .supd .sbtn')].some(b => b.textContent === 'Update later')), 'Settings: Update later is offered too');
+    await ev(() => MM.go('home-view')); await wait(1200);
     await p.locator('#home-view .panel-btn', { hasText: 'Later' }).click(); await wait(300);
+    ok(await ev(() => /update anytime from Settings/.test((document.querySelector('#home-view .toast') || {}).textContent || '')), 'Later: says you can update anytime from Settings');
     await ev(() => { MM.go('games'); MM.go('home-view'); }); await wait(1200);
     ok(await ev(() => !document.querySelector('#home-view .panel-card')), 'Later: not shown again in this visit');
     ok(await ev(async () => (await caches.keys()).some(k => !/test-new-version/.test(k) && k.startsWith('tt-core-'))), 'old version keeps running until the person chooses');
     await p.reload(); await wait(1500);
+    await p.locator('#home-view .panel-btn', { hasText: 'What' }).click(); await wait(600);
+    const wn = await ev(() => [...document.querySelectorAll('#home-view .wn-list li')].map(li => li.textContent));
+    const expected = ['Test note for a newer release.'];   // only releases newer than the one running
+    ok(wn.length === expected.length && wn.every((t, i) => t === expected[i]), "What's new lists the new version's notes (" + wn.length + ')');
+    ok(await ev(() => !!document.querySelector('#home-view .panel-card') && ![...document.querySelectorAll('#home-view .panel-btn')].some(b => /new/.test(b.textContent))), "after reading What's new, the card stays open with Later and Update now");
     await p.locator('#home-view .panel-btn', { hasText: 'Update now' }).click();
     await p.waitForLoadState('load'); await wait(2000);
     ok(await ev(async () => (await caches.keys()).includes('tt-core-test-new-version')), 'Update now: the new version is running');

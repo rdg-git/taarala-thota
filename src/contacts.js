@@ -6,7 +6,7 @@
 // - Passcode: never stored. Only a salted PBKDF2 fingerprint is kept, so it cannot be read back.
 // ============================================================
 const CONTACT_MAX = 20, NAME_MAX = 40, PASS_MIN = 8;
-const UNLOCK_MINUTES = 10;                 // locks again after 10 minutes without a tap (or when the app closes)
+const UNLOCK_MINUTES = 10;                 // locks when you leave Settings, after 10 minutes without a tap in Settings, or when the app closes
 const PBKDF2_ROUNDS = 210000;
 
 const Contacts = {
@@ -104,8 +104,7 @@ const Pass = {
   // "Forgot passcode?": erases saved contacts and the passcode. Games and stats stay.
   forget() { Contacts.eraseAll(); Store.del('pass'); Store.del('passlock'); this.lock(); }
 };
-// any tap keeps an unlocked Settings open for another 10 minutes
-['pointerup', 'keydown'].forEach(t => document.addEventListener(t, () => Pass.touch(), true));
+// (taps inside Settings keep it unlocked for another 10 minutes: see buildSettings in settings.js)
 
 // "Erase all Taarala Thota data": every item this app saved (all under the tt: label), nothing else on the phone
 function eraseEverything() {
