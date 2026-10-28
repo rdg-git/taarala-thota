@@ -3,15 +3,20 @@
 What changed in each release of Taarala Thota (Garden of Stars), newest first.
 Before updating, the app’s "What’s new" shows the entries newer than the version on the phone.
 
+## 2026-10-28e
+
+- Anonymous visit counting (no cookies, no personal tracking). A one-time welcome note explains it, and you can turn it off anytime on the Privacy & Safety page or in Settings. Browsers that send a “Global Privacy Control” signal are never counted.
+- Share feedback anonymously from the Privacy & Safety page or Settings: one box, no name or email.
+
 ## 2026-10-28d
 
-- The Privacy & safety page now shows the app’s official address: taarala-thota.pages.dev.
+- The Privacy & Safety page now shows the app’s official address: taarala-thota.pages.dev.
 
 ## 2026-10-28c
 
-- Clearer advice on the Privacy & safety page about keeping your data safe.
-- The Privacy & safety page now explains the one-time picture download that lets games work offline.
-- You can zoom with two fingers on the Settings and Privacy & safety pages.
+- Clearer advice on the Privacy & Safety page about keeping your data safe.
+- The Privacy & Safety page now explains the one-time picture download that lets games work offline.
+- You can zoom with two fingers on the Settings and Privacy & Safety pages.
 
 ## 2026-10-28b
 
@@ -25,11 +30,11 @@ Before updating, the app’s "What’s new" shows the entries newer than the ver
 - Update anytime from Settings, even after tapping Later.
 - The app now reopens reliably every time.
 - On a laptop, a card offers a QR code to open the app on your phone.
-- Small wording updates on the Privacy & safety page.
+- Small wording updates on the Privacy & Safety page.
 
 ## 2026-10-27
 
-- A maker's seal on Home and a signature on the Privacy & safety page.
+- A maker's seal on Home and a signature on the Privacy & Safety page.
 - The phone turned sideways shows a calm 'turn upright' card, and Bubble Pop pauses.
 - Hidden Comets: tiles on the Gentle level now open with a single tap.
 

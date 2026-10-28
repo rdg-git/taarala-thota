@@ -1,5 +1,5 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
-// Two-finger zoom: allowed on the Settings and Privacy & safety pages only; everywhere else the screen stays steady.
+// Two-finger zoom: allowed on the Settings and Privacy & Safety pages only; everywhere else the screen stays steady.
 const { chromium } = require('playwright');
 let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m); if (!c) f++; };
 (async () => {

@@ -6,7 +6,7 @@
 // ------------------------------------------------------------
 // HOME
 // The painted Play and Family doors are tap areas. The app adds: the Settings gear (top right, opens with
-// the passcode), the "Privacy & safety" link (bottom), the music button over the painted note, and the maker's seal (bottom right).
+// the passcode), the "Privacy & Safety" link (bottom), the music button over the painted note, and the maker's seal (bottom right).
 // When Home appears it may show ONE card: "new version ready" first, otherwise the backup reminder.
 // ------------------------------------------------------------
 function buildHome() {
@@ -27,8 +27,8 @@ function buildHome() {
     '<circle cx="32" cy="32" r="7" fill="#5e3716"/></svg>';
   gear.addEventListener('click', (ev) => { ev.stopPropagation(); go('settings'); });
   S.art.appendChild(gear);
-  // small "Privacy & safety" link at the bottom
-  const pl = el('button', 'privacy-link'); pl.type = 'button'; pl.textContent = 'Privacy & safety';
+  // small "Privacy & Safety" link at the bottom
+  const pl = el('button', 'privacy-link'); pl.type = 'button'; pl.textContent = 'Privacy & Safety';
   place(pl, 246, 1748, 360, 72, S); pl.style.fontSize = 'calc(var(--u) * 38)';
   pl.addEventListener('click', (ev) => { ev.stopPropagation(); go('privacy'); });
   S.art.appendChild(pl);

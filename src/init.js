@@ -3,7 +3,7 @@
 // START-UP
 // ============================================================
 function bootApp() {
-  buildHome(); buildGames(); buildLoved(); buildSettings(); buildPrivacy(); buildBubble(); buildMine(); buildChess(); buildCheckers();
+  buildHome(); buildGames(); buildLoved(); buildSettings(); buildPrivacy(); buildFeedback(); buildBubble(); buildMine(); buildChess(); buildCheckers();
   if (!Store.get('since', 0)) Store.set('since', nowMs());   // first time this phone opened the app (for the backup reminder)
   Music.armFirstTap();
   Music.paint();
@@ -12,6 +12,8 @@ function bootApp() {
   setupSteadyScreen();
   setupUprightCard();
   setupDeskCard();
+  Visits.start();                             // anonymous visit count (only if allowed and the welcome note was seen; see visits.js)
+  showWelcome();                              // one-time welcome note on the first visit
   // prevent double-tap zoom
   let lastTap = 0;
   document.addEventListener('touchend', (e) => { const n = Date.now(); if (n - lastTap < 300 && e.target.closest && !e.target.closest('input,textarea,select')) e.preventDefault(); lastTap = n; }, { passive: false });
@@ -24,12 +26,12 @@ function bootApp() {
 // STEADY SCREEN
 // Stray touches (fast tapping, a palm on the screen) should never move or leave the app:
 // - no long-press menus, no pinch-zoom (iPhone), no text selection outside typing boxes;
-//   except: the Settings and Privacy & safety pages (just text, no games) can be zoomed with two fingers, for easier reading;
+//   except: the Settings and Privacy & Safety pages (just text, no games) can be zoomed with two fingers, for easier reading;
 // - Android's back swipe / back button (and iPhone Safari's edge swipe) goes back ONE screen inside the app;
 //   on Home it asks before leaving. (The phone's own Home gesture can't be blocked by any app: for that,
-//   the Privacy & safety page explains Guided Access on iPhone and App pinning on Android.)
+//   the Privacy & Safety page explains Guided Access on iPhone and App pinning on Android.)
 // ------------------------------------------------------------
-// Two-finger zoom is allowed only on the text pages (Settings, Privacy & safety). Leaving them zooms back to normal.
+// Two-finger zoom is allowed only on the text pages (Settings, Privacy & Safety). Leaving them zooms back to normal.
 let ZOOM_OK = false;
 const VIEW_STEADY = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
 const VIEW_ZOOM = 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover';
