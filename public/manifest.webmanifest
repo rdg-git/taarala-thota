@@ -1,7 +1,7 @@
 {
  "name": "Taarala Thota · Garden of Stars",
  "short_name": "Taarala Thota",
- "description": "A calm, ad-free garden of games and a private loved-ones shortcut. No sign-in, no ads and no tracking in the app; everything you save stays on your phone.",
+ "description": "A calm, ad-free garden of games and a private loved-ones shortcut. No sign-in, no ads and no personal tracking; everything you save stays on your phone.",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",

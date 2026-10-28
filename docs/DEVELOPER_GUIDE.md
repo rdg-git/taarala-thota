@@ -1,7 +1,9 @@
 # Taarala Thota · Garden of Stars — Developer Guide
 
 A calm, ad-free set of games plus a private "loved ones" shortcut to WhatsApp.
-No sign-in, no ads, no tracking, no server: everything a person saves stays in their own phone's browser.
+No sign-in, no ads, no personal tracking: everything a person saves stays in their own phone's browser. The only server code
+is one small function that receives anonymous feedback (section 6).
+The only outside service is anonymous visit counting (Cloudflare Web Analytics), with an off switch (section 6).
 This guide is the starting point for anyone continuing development. Each code file also carries
 section-by-section notes right where each part begins.
 
@@ -22,6 +24,7 @@ section-by-section notes right where each part begins.
 |---|---|
 | `src/` | All source code (edit here, never in `public/app.js`). |
 | `public/` | The built website: `index.html`, `app.js`, `app.css`, `img/`, `fonts/`, `icons/`, `_headers`, `sw.js`, `manifest.webmanifest`. |
+| `functions/api/feedback.js` | The only server code: receives anonymous feedback and stores it in the `FEEDBACK_DB` database (Cloudflare D1). Runs on Cloudflare Pages Functions. |
 | `public/_headers` | Security rules and caching rules (read by Cloudflare and by the local test server). |
 | `manifest.json` | Size of every picture (width, height). |
 | `build.py` | Builds `public/` from `src/`. |
@@ -39,8 +42,9 @@ section-by-section notes right where each part begins.
 | `audio.js` | The 432 Hz veena + bansuri music, made live in code (no sound files). |
 | `gamekit.js` | Shared by Chess and Checkers: computer player in the background, results history, 60-minute resume rule, Stats. |
 | `screens_main.js` | Home, Games menu, Loved Ones. |
-| `settings.js` | Settings screen (passcode pages, contacts, backups, erase) and the Privacy & safety page. |
+| `settings.js` | Settings screen (passcode pages, contacts, backups, erase) and the Privacy & Safety page. |
 | `backup.js` | Locked backup files, safe restore, 6-day backup reminder. |
+| `visits.js` | Anonymous visit counting (Cloudflare Web Analytics): loaded only when allowed, only on the official address; the on/off switch used on Privacy & Safety and in Settings; Global Privacy Control respected. |
 | `pwa.js` | Installable app: registers the offline helper, keeps pictures for offline play, "new version ready" card. |
 | `bubble.js` | Bubble Pop (3 levels of 2 minutes, all open; accuracy goals 95/98/100 % earn a gold star; bubbles cross in 6.0 / 4.8 / 3.7 s, a new one about every 0.75 s). |
 | `mine.js` | Hidden Comets (minesweeper-style; Gentle never loses). |
@@ -112,6 +116,8 @@ All in the browser's storage for this site, labels starting with `tt:`. Nothing 
 | `tt:contacts` | Contacts: id, name, WhatsApp number, circle colour, optional small JPEG photo. |
 | `tt:pass` | Passcode **fingerprint** only (PBKDF2-SHA256, salted). The passcode itself is never stored. |
 | `tt:passlock` | Wrong-try counter and waiting time. |
+| `tt:welcome` | The one-time welcome note was seen (visit counting starts only after this). Reset by "Erase all". |
+| `tt:count` | Visit counting choice (`"off"` = don't count). In backups; kept by "Forgot passcode"; reset by "Erase all". |
 | `tt:music` | Music on/off. (`tt:music_pos` in session storage: where the melody was.) |
 | `tt:bubble`, `tt:bubble:stats` | Bubble Pop: level Continue plays next and completed levels (stars); Bubble Pop stats. |
 | `tt:<game>:game` | A Chess/Checkers game in progress (resume within 60 min of the last move). |
@@ -122,14 +128,26 @@ All in the browser's storage for this site, labels starting with `tt:`. Nothing 
 
 ## 6. Security and privacy model
 
-- **No server, no accounts, no analytics.** There is no central data to steal.
-- **Application data vs. hosting data** (stated on the Privacy & safety page, `PRIVACY_POINTS` in `settings.js`):
+- **No accounts, and no server for personal data.** There is no central store of people's data to steal.
+- **Anonymous feedback** (`functions/api/feedback.js`, screen in `settings.js`): one box, opened from Privacy & Safety and
+  Settings. Only the message and the app release are sent. Stored: time, release, source (app/preview), message. Never
+  stored: name, email, IP, browser details. Accepted only from the app's own addresses; at most 10,000 characters; at most
+  300 messages a day in total. Setup: a Cloudflare D1 database (`taarala-feedback`) bound to the Pages project as
+  `FEEDBACK_DB` (Production and Preview). Read messages in the Cloudflare dashboard: D1 → taarala-feedback → Console:
+  `SELECT * FROM feedback ORDER BY id DESC;`
+- **Anonymous visit counting** (`visits.js`): Cloudflare Web Analytics counts visits, referrers, countries and device types
+  (by Cloudflare's description: no cookies or phone storage, no fingerprinting, no unique-visitor tracking). No in-app events
+  are ever sent. The app loads the counting code itself and only when allowed: never on test previews or local machines,
+  never when the person switched it off (switch on Privacy & Safety and in Settings, every change confirmed), never when the
+  browser sends Global Privacy Control. `WA_TOKEN` in `visits.js` holds the Cloudflare site token (public). Do not also turn on
+  Cloudflare's automatic Web Analytics for the Pages project: it would ignore the switch.
+- **Application data vs. hosting data** (stated on the Privacy & Safety page, `PRIVACY_POINTS` in `settings.js`):
   everything the app saves stays in the phone's browser and is never sent anywhere. Separately, like any website,
   the hosting service (Cloudflare) handles basic technical information (IP address, browser type, time) when files
   are downloaded; that is outside the app and outside the creator's control, covered by the host's own privacy
   policy. Keep this distinction in any public wording: never claim "no data is processed at all".
 - **Strict security rules** (`public/_headers`): the page may only load the app's own files; no outside
-  scripts, styles, fonts or connections; no other site may show the app inside its page; no camera,
+  scripts, styles, fonts or connections (one exception: Cloudflare's visit-counting script and its counting address); no other site may show the app inside its page; no camera,
   microphone or location. Code and styles live in files, so no code is allowed inside the page itself.
 - **Plain text only**: anything a person types is set with `textContent` (or escaped), never run as code.
 - **Contacts**: Loved Ones shows names/photos without a passcode by design; numbers need the passcode.
@@ -143,10 +161,10 @@ All in the browser's storage for this site, labels starting with `tt:`. Nothing 
 ## 7. Steady screen (stray touches)
 
 - No dragging, pinch-zoom, bouncing, text selection or long-press menus (`app.css` "Steady screen" + `setupSteadyScreen` in `init.js`).
-  Exception: Settings and Privacy & safety allow two-finger zoom (`allowZoom` in `init.js`).
+  Exception: Settings and Privacy & Safety allow two-finger zoom (`allowZoom` in `init.js`).
   Panels and Loved Ones still scroll; typing boxes behave normally.
 - The phone's back swipe / back button goes back one screen inside the app; on Home it asks before leaving.
-- The phone's own Home gesture (iPhone swipe up) cannot be blocked by any app. The Privacy & safety page explains
+- The phone's own Home gesture (iPhone swipe up) cannot be blocked by any app. The Privacy & Safety page explains
   Guided Access (iPhone) and App pinning (Android) for anyone sharing their phone.
 
 ## 8. Updates and offline
@@ -175,20 +193,20 @@ Found in the security and quality review (28 Oct 2026). Each item says what rema
   access to the unlocked device could read them with browser developer tools (easy on a computer, hard on a phone).
   Encrypting them would mean asking for the passcode on every call from Loved Ones, which defeats the purpose.
 - **No recovery without a backup.** Nothing is stored anywhere else, so cleared browser data cannot be recovered
-  except from the person's own backup file (6-day reminder; Privacy & safety point 11).
+  except from the person's own backup file (6-day reminder; Privacy & Safety point 11).
 - **The phone's own Home gesture can't be blocked** by a web app; Guided Access / App pinning are explained instead.
 - **One-time picture download (about 5 MB)** on the first visit so every game works offline; it counts toward mobile
-  data. Explained on the Privacy & safety page.
+  data. Explained on the Privacy & Safety page.
 
 **Open, worth improving**
 - **Automated tests run in Chromium only** (Chrome, Edge, Android). iPhone Safari is checked by hand on a real phone.
-- **Two-finger zoom is off on game screens** (steady screen). It is allowed on Settings and Privacy & safety only, so
+- **Two-finger zoom is off on game screens** (steady screen). It is allowed on Settings and Privacy & Safety only, so
   people who need larger text can zoom there. A "larger text" setting would help further.
 - **Security rules allow inline styles** (`style-src 'unsafe-inline'`; scripts are still strictly limited to the app's
   own files). Low risk; tightening needs every style attribute moved into the stylesheet.
 
 **Before launch**
-- Short legal review of the Privacy & safety wording. (`OFFICIAL_ADDRESS` is set to taarala-thota.pages.dev.)
+- Short legal review of the Privacy & Safety wording. (`OFFICIAL_ADDRESS` is set to taarala-thota.pages.dev.)
 - Replace the temporary app icon (cut from the Home picture); the Games picture still shows a small painted mine-ball
   and flag on the Hidden Comets tile.
 - README, case study and LICENSE; GitHub branch protection and secret scanning; delete the test site.

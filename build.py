@@ -56,7 +56,7 @@ js = '\n'.join([
     '// ' + STAMP,
     "const APP_RELEASE = '%s';   // this version's release label (newest entry in src/whats_new.json)" % APP_RELEASE,
     src('core.js').replace('/*PIC_JSON*/{}', json.dumps(pic)).replace('/*VER_JSON*/{}', json.dumps(ver)),
-    src('helpers.js'), src('contacts.js'), src('audio.js'), src('gamekit.js'), src('screens_main.js'), src('settings.js'), src('backup.js'), src('pwa.js'), src('bubble.js'), src('mine.js'),
+    src('helpers.js'), src('contacts.js'), src('audio.js'), src('gamekit.js'), src('screens_main.js'), src('settings.js'), src('backup.js'), src('pwa.js'), src('visits.js'), src('bubble.js'), src('mine.js'),
     src('chess_engine.js'), src('checkers_engine.js'), src('chess_ui.js'), src('checkers_ui.js'), src('qr.js'), src('init.js'),
     'detectAvif(bootApp);'
 ])
@@ -75,7 +75,7 @@ print('wrote public/index.html', len(html.encode('utf-8')), 'bytes')
 # The page is kept as './' (not 'index.html'): Cloudflare redirects index.html to ./, and browsers refuse to show a redirected page from the offline copy.
 manifest = {
     'name': 'Taarala Thota \u00b7 Garden of Stars', 'short_name': 'Taarala Thota',
-    'description': 'A calm, ad-free garden of games and a private loved-ones shortcut. No sign-in, no ads and no tracking in the app; everything you save stays on your phone.',
+    'description': 'A calm, ad-free garden of games and a private loved-ones shortcut. No sign-in, no ads and no personal tracking; everything you save stays on your phone.',
     'start_url': './', 'scope': './', 'display': 'standalone', 'orientation': 'portrait',
     'background_color': '#05060f', 'theme_color': '#05060f',
     'icons': [{'src': 'icons/icon-192.png', 'sizes': '192x192', 'type': 'image/png'},

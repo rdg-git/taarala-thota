@@ -1,9 +1,11 @@
 # ============================================================
 # Security rules sent with every page (Cloudflare reads this file; tests/serve.js applies it locally too).
-# The app may only load its own files. No outside scripts, styles, fonts or connections.
+# The app may only load its own files. No outside scripts, styles, fonts or connections, with one exception:
+# Cloudflare's anonymous visit counting (script from static.cloudflareinsights.com, counts sent to cloudflareinsights.com),
+# which the app loads only when counting is allowed (see src/visits.js).
 # ============================================================
 /*
-  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
+  Content-Security-Policy: default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: no-referrer

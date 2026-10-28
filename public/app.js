@@ -1,5 +1,5 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
-const APP_RELEASE = '2026-10-28d';   // this version's release label (newest entry in src/whats_new.json)
+const APP_RELEASE = '2026-10-28e';   // this version's release label (newest entry in src/whats_new.json)
 // ============================================================
 // CORE: helpers, storage, picture-screen system, navigation
 // ============================================================
@@ -858,7 +858,7 @@ function paintStats(S, game, geo) {
 // ------------------------------------------------------------
 // HOME
 // The painted Play and Family doors are tap areas. The app adds: the Settings gear (top right, opens with
-// the passcode), the "Privacy & safety" link (bottom), the music button over the painted note, and the maker's seal (bottom right).
+// the passcode), the "Privacy & Safety" link (bottom), the music button over the painted note, and the maker's seal (bottom right).
 // When Home appears it may show ONE card: "new version ready" first, otherwise the backup reminder.
 // ------------------------------------------------------------
 function buildHome() {
@@ -879,8 +879,8 @@ function buildHome() {
     '<circle cx="32" cy="32" r="7" fill="#5e3716"/></svg>';
   gear.addEventListener('click', (ev) => { ev.stopPropagation(); go('settings'); });
   S.art.appendChild(gear);
-  // small "Privacy & safety" link at the bottom
-  const pl = el('button', 'privacy-link'); pl.type = 'button'; pl.textContent = 'Privacy & safety';
+  // small "Privacy & Safety" link at the bottom
+  const pl = el('button', 'privacy-link'); pl.type = 'button'; pl.textContent = 'Privacy & Safety';
   place(pl, 246, 1748, 360, 72, S); pl.style.fontSize = 'calc(var(--u) * 38)';
   pl.addEventListener('click', (ev) => { ev.stopPropagation(); go('privacy'); });
   S.art.appendChild(pl);
@@ -989,7 +989,7 @@ const OFFICIAL_ADDRESS = 'taarala-thota.pages.dev';   // the app's one official 
 const PRIVACY_POINTS = [
   // Application data (what the app saves) is kept apart from infrastructure data (what any website's host handles):
   'Your saved data stays on this phone: contacts and their photos, your passcode, game progress, stats and settings are stored only in this browser on this phone. The app never sends them anywhere, and the creator cannot see them.',
-  'The app itself has no sign-in, no ads, no analytics and no tracking.',
+  'The app has no sign-in, no ads and no personal tracking. To know roughly how many people visit, it counts visits anonymously with Cloudflare Web Analytics, which by Cloudflare’s description uses no cookies, stores nothing on your phone and builds no personal profile. It never sees anything you save in the app or what you do in it. You can switch counting off below or in Settings. If your browser sends a “Global Privacy Control” signal, your visits are never counted.',
   'Like every website, the app is delivered by a hosting service (Cloudflare). When your phone downloads the app or checks for an update, the hosting service automatically handles basic technical information, such as your internet (IP) address, browser type and the time, to deliver and protect the site. This never includes your saved data. The creator does not receive these details (apart from overall totals the hosting service may show, such as the number of visits) and has no control or oversight over how the hosting service handles them: that is covered by the hosting service\u2019s own privacy policy.',
   'Contacts you save here exist only in this app. Your phone’s own contacts and WhatsApp are never changed.',
   'Anyone using this phone can call your saved contacts from Loved Ones and see their names and photos. Seeing or changing numbers needs your passcode.',
@@ -999,6 +999,7 @@ const PRIVACY_POINTS = [
   'On iPhone, add the app to your Home Screen, so your data is kept even if you don’t open it for a while.',
   'So the games work without internet, the app quietly saves its pictures on your phone (about 5 MB) the first time it opens. On mobile data this counts toward your data plan; on Wi-Fi it costs nothing extra.',
   'Closing the app or your browser keeps everything. Clearing your browser’s site data (cookies and site data), removing the app, or using a private/incognito window deletes it all, unless you have a backup. To bring it back: set a passcode, then Settings → Restore from a backup.',
+  'Feedback you send from the app is anonymous: we don’t ask for your name or email, and nothing about you is stored with it. It is kept by the app’s hosting service (Cloudflare) so the creator can read it. Please don’t include personal details.',
   'Tapping a contact only opens WhatsApp. Nothing is ever sent automatically. Once WhatsApp opens, WhatsApp\u2019s own privacy policy applies.',
   'Sharing your phone with someone? Keep the screen on this app: on iPhone turn on Guided Access (Settings \u2192 Accessibility \u2192 Guided Access), open the app and triple-click the side button; on Android turn on App pinning (Settings \u2192 Security \u2192 App pinning) and pin the app from the recent-apps view. To stop the screen turning sideways, use your phone\u2019s Rotation Lock (iPhone: Control Center; Android: quick settings, \u201cAuto-rotate\u201d off).',
   'Only use the official address' + (OFFICIAL_ADDRESS ? ': ' + OFFICIAL_ADDRESS + '.' : ' shared by the creator.') + ' Copies elsewhere aren’t ours.'
@@ -1081,6 +1082,8 @@ function renderSettings(S, view, data) {
   ({ create: viewCreate, unlock: viewUnlock, forgot: viewForgot, list: viewList, form: viewForm, eraseall: viewEraseAll, backup: viewBackup, restore: viewRestore })[view](S, sh, data || {});
   if (/^(create|unlock|forgot)$/.test(view)) { sh.appendChild(tx('div', 'snote', SETTINGS_NOTE)); }
   const ub = tx('div', 'supd'); sh.insertBefore(ub, sh.firstChild); S.updBox = ub; refreshUpdateBox(S);
+  const vs = visitSwitch(S); vs.classList.add('in-settings'); ub.after(vs);       // visit counting: before the passcode too
+  const fb = feedbackButton('settings'); fb.classList.add('in-settings'); vs.after(fb);   // anonymous feedback, also before the passcode
 }
 // App update: the first thing on every Settings page, even before the passcode (updating never touches saved data).
 // Kept compact. Up to date: one quiet line that can't be tapped. Update waiting: Update now, then Update later and What's new.
@@ -1192,7 +1195,7 @@ function viewList(S, sh) {
   sh.appendChild(btn('Restore from a backup', 'secondary', () => renderSettings(S, 'restore')));
   sh.appendChild(tx('h3', 'sgap', 'Safety'));
   sh.appendChild(btn('Lock Settings now', 'secondary', () => { Pass.lock(); goHome(); }));
-  sh.appendChild(btn('Privacy & safety', 'slink', () => go('privacy')));
+  sh.appendChild(btn('Privacy & Safety', 'slink', () => go('privacy')));
   sh.appendChild(tx('div', 'snote', SETTINGS_NOTE));
   sh.appendChild(btn('Erase all ' + APP_NAME + ' data', 'slink danger-link', () => renderSettings(S, 'eraseall')));
 }
@@ -1276,7 +1279,7 @@ function viewEraseAll(S, sh) {
   sh.appendChild(tx('h3', '', 'Erase all ' + APP_NAME + ' data?'));
   sh.appendChild(tx('p', '', 'This erases only what this app saved in this browser on this phone:'));
   const yes = tx('ul', 'slist');
-  ['your saved contacts and their photos', 'your passcode', 'game progress and stats', 'your settings (like music on or off)'].forEach(t => yes.appendChild(tx('li', '', t)));
+  ['your saved contacts and their photos', 'your passcode', 'game progress and stats', 'your settings (like music on or off, and visit counting, which turns back on)'].forEach(t => yes.appendChild(tx('li', '', t)));
   sh.appendChild(yes);
   sh.appendChild(tx('p', '', 'It does not touch:'));
   const no = tx('ul', 'slist');
@@ -1360,11 +1363,12 @@ function viewRestore(S, sh) {
 // The points (PRIVACY_POINTS above), opened from the link at the bottom of Home, ending with the maker's signature.
 // ------------------------------------------------------------
 function buildPrivacy() {
-  const S = defScreen('privacy', 'loved', { parent: 'home-view', name: 'Privacy & safety' });
+  const S = defScreen('privacy', 'loved', { parent: 'home-view', name: 'Privacy & Safety' });
   addNav(S, { icons: true });
-  addText(S, 'loved-title', 90, 160, 560, 130, 74, 'Privacy & safety');
+  addText(S, 'loved-title', 90, 160, 560, 130, 74, 'Privacy & Safety');
   const sheet = el('div', 'sheet'); place(sheet, 45, 330, 763, 1470, S); S.art.appendChild(sheet);
   const ol = tx('ol', 'plist'); PRIVACY_POINTS.forEach(p => ol.appendChild(tx('li', '', p))); sheet.appendChild(ol);
+  ol.children[1].appendChild(visitSwitch(S));                    // the visit-counting switch, right under the point that explains it
   // links to the outside services mentioned above (they open in a new tab; nothing is sent by the app)
   const links = tx('p', 'shint', 'More about the services mentioned: ');
   [['Cloudflare privacy policy', 'https://www.cloudflare.com/privacypolicy/'], ['WhatsApp privacy policy', 'https://www.whatsapp.com/legal/privacy-policy']].forEach(([t, u], i) => {
@@ -1372,6 +1376,7 @@ function buildPrivacy() {
     if (i) links.append(' \u00b7 '); links.appendChild(a);
   });
   sheet.appendChild(links);
+  sheet.appendChild(feedbackButton('privacy'));                 // anonymous feedback
   S.onShow = () => allowZoom(true); S.onHide = () => allowZoom(false);   // text page: two-finger zoom allowed
   // the maker's signature: seal, "Made with care by rdg" with its shooting star, and the copyright line
   const mk = tx('div', 'maker'), seal = tx('div', 'maker-big'); seal.innerHTML = makerSealSvg(); mk.appendChild(seal);
@@ -1380,6 +1385,46 @@ function buildPrivacy() {
   const trail = tx('div', 'maker-trail'); trail.innerHTML = makerTrailSvg(); sig.appendChild(trail);
   sig.appendChild(tx('div', 'maker-copy', MAKER_CREDIT)); mk.appendChild(sig);
   sheet.appendChild(mk);
+}
+
+// ------------------------------------------------------------
+// SHARE FEEDBACK (anonymous)
+// One short invitation and one box. Opened from the Privacy & Safety page and from Settings; Back returns there.
+// The message is sent to the app's own feedback address (functions/api/feedback.js) with only the app release.
+// No name, email or anything about the person is sent. Text is never shown back as code (plain text only).
+// ------------------------------------------------------------
+const FEEDBACK_MAX = 10000;
+function openFeedback(from) { const S = SCREENS.feedback; if (S) { S.parent = from; go('feedback'); } }
+function feedbackButton(from) { return btn('Share feedback (anonymous)', 'secondary fb-open', () => openFeedback(from)); }
+function buildFeedback() {
+  const S = defScreen('feedback', 'loved', { parent: 'privacy', name: 'Share feedback' });
+  addNav(S, { icons: true });
+  addText(S, 'loved-title', 90, 160, 600, 130, 74, 'Share feedback');
+  const sheet = el('div', 'sheet'); place(sheet, 45, 330, 763, 1470, S); S.art.appendChild(sheet);
+  sheet.appendChild(tx('p', '', 'What do you enjoy? What didn’t you like, or what felt confusing? What would make it better, and how? Is there a feature you’d love to see? Anything at all is welcome.'));
+  sheet.appendChild(tx('p', 'shint', 'This is anonymous: we don’t ask for your name or email, and please don’t include personal details. Please keep it kind and respectful.'));
+  const box = document.createElement('textarea'); box.className = 'fb-box'; box.setAttribute('aria-label', 'Your feedback'); box.rows = 9;
+  sheet.appendChild(box);
+  const msg = tx('p', 'fb-msg'); msg.setAttribute('role', 'status');
+  const send = btn('Send', '', async () => {
+    const text = box.value.trim();
+    if (!text) { msg.textContent = 'Please write something first.'; return; }
+    if (Array.from(text).length > FEEDBACK_MAX) { msg.textContent = 'That’s a lot of thoughts! Please keep it under ' + FEEDBACK_MAX.toLocaleString() + ' characters.'; return; }
+    send.disabled = true; msg.textContent = 'Sending…';
+    let res = null;
+    try { res = await fetch('api/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text, release: APP_RELEASE }) }); } catch (e) {}
+    if (res && res.ok) {
+      box.value = ''; msg.textContent = 'Thank you! Your feedback was sent. 🌟';
+      setTimeout(() => { send.disabled = false; }, 30000);         // a short pause before the next message
+      return;
+    }
+    send.disabled = false;
+    msg.textContent = res && res.status === 429 ? 'Lots of messages today. Please try again tomorrow; your message is still here.'
+      : 'Couldn’t send right now. Please check your internet and try again; your message is still here.';
+  });
+  sheet.appendChild(send); sheet.appendChild(msg);
+  S.onShow = () => { allowZoom(true); msg.textContent = ''; };
+  S.onHide = () => allowZoom(false);
 }
 
 // ============================================================
@@ -1392,7 +1437,7 @@ function buildPrivacy() {
 const BACKUP_APP = 'taarala-thota-backup', BACKUP_V = 1, BACKUP_MAX_BYTES = 15 * 1024 * 1024;
 const BACKUP_REMIND_DAYS = 6;
 // the only items a backup may carry (everything the app saves, except the passcode and housekeeping)
-const BACKUP_KEYS = /^tt:(contacts|music|bubble|bubble:stats|minesweeper:best|(chess|checkers|minesweeper|bubble):(game|stats|totals))$/;
+const BACKUP_KEYS = /^tt:(contacts|music|count|bubble|bubble:stats|minesweeper:best|(chess|checkers|minesweeper|bubble):(game|stats|totals))$/;
 
 function b64(bytes) {
   let s = '';
@@ -1459,6 +1504,7 @@ async function readBackupFile(file, password) {
     if (!BACKUP_KEYS.test(k) || typeof v !== 'string' || v.length > 8 * 1024 * 1024) return;
     try { JSON.parse(v); } catch (e) { if (k !== 'tt:music') return; }
     if (k === 'tt:music' && !/^(on|off)$/.test(v)) return;
+    if (k === 'tt:count' && !/^"(on|off)"$/.test(v)) return;
     items[k] = v;
   });
   // every contact is re-checked and re-cleaned exactly as if it were typed in Settings
@@ -1626,6 +1672,98 @@ function placeUpdateBadge(S) {
   b.style.left = x + 'px'; b.style.top = y + 'px';
 }
 function refreshUpdateBadges() { for (const k in SCREENS) placeUpdateBadge(SCREENS[k]); }
+
+// ============================================================
+// ANONYMOUS VISIT COUNTING (Cloudflare Web Analytics)
+// What it is: a count of visits to the app (and where they came from, country, device type), so the creator can
+// see roughly how many people visit. By Cloudflare's description it uses no cookies or phone storage, does not
+// fingerprint devices, does not track people over time and does not count unique visitors.
+// What it never sees: anything saved in the app, or anything done inside it (no in-app events are sent).
+// Rules:
+// - The app loads Cloudflare's counting code itself, and only when counting is allowed. A phone that switched it
+//   off never contacts Cloudflare's analytics at all. (Do NOT also turn on Cloudflare's automatic Web Analytics
+//   for the Pages project: that would add the code for everyone and ignore the switch.)
+// - Counting only ever happens on the official address (never on test previews or a developer's computer).
+// - Browsers that send the "Global Privacy Control" signal are never counted, and the switch stays off for them.
+// - The choice is saved on the phone as tt:count ("off" = don't count). It is included in backups, survives
+//   "Forgot passcode", and is reset by "Erase all data" or clearing the browser's data (counting is then on again).
+// - The switch appears on the Privacy & Safety page and in Settings (above the passcode); every change is confirmed.
+// - A one-time welcome note tells people about it on their first visit (tt:welcome); nothing is counted before they
+//   have seen it. Counting is on unless they switch it off (a notice, not a question).
+// ============================================================
+const WA_TOKEN = 'dc423f201ff946a096149c338d87a725';                       // the Web Analytics site token from Cloudflare (public, not a secret). Empty = never count.
+const WA_HOST = 'taarala-thota.pages.dev'; // counting only on the official address
+const WA_SCRIPT = 'https://static.cloudflareinsights.com/beacon.min.js';
+
+const Visits = {
+  gpc() { try { return navigator.globalPrivacyControl === true; } catch (e) { return false; } },
+  chosenOff() { return Store.get('count', 'on') === 'off'; },
+  // is this visit counted? (all conditions must hold)
+  counting() { return !this.gpc() && !this.chosenOff(); },
+  set(on) { if (this.gpc()) return; Store.set('count', on ? 'on' : 'off'); refreshVisitSwitches(); if (on) this.start(); },
+  started: false,
+  start() {
+    // only after the person has seen the one-time welcome note (see showWelcome)
+    if (this.started || !this.counting() || !Store.get('welcome', false) || !WA_TOKEN || location.hostname !== WA_HOST) return;
+    this.started = true;
+    const s = document.createElement('script');
+    s.defer = true; s.src = WA_SCRIPT;
+    // spa:false = one count per app opening. The app uses the browser's history for its own back button; without this,
+    // Cloudflare could count every back-step inside the app as an extra page view.
+    s.setAttribute('data-cf-beacon', JSON.stringify({ token: WA_TOKEN, spa: false }));
+    document.head.appendChild(s);
+  }
+};
+
+// The switch (used on the Privacy & Safety page and in Settings). One setting; every copy updates together.
+function visitSwitch(S) {
+  const box = el('div', 'vswitch');
+  const row = el('div', 'vs-row'), lab = el('span', 'vs-lab', 'Count my visits anonymously');
+  const sw = el('button', 'vs-sw'); sw.type = 'button'; sw.setAttribute('role', 'switch'); sw.setAttribute('aria-label', 'Count my visits anonymously');
+  const note = el('div', 'vs-note');
+  row.appendChild(lab); row.appendChild(sw); box.appendChild(row); box.appendChild(note);
+  sw.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    if (Visits.gpc()) return;
+    const turningOn = Visits.chosenOff();
+    showPanel(S, turningOn
+      ? { title: 'Count your visits again?', text: 'Visits are counted anonymously: no cookies, no personal profile, and nothing you save in the app. You can turn this off again anytime.',
+          buttons: [{ label: 'Cancel', secondary: true }, { label: 'Turn on', fn: () => Visits.set(true) }] }
+      : { title: 'Stop counting your visits?', text: 'The app will stop sending anonymous visit counts from this phone. You can turn this back on anytime, here or in Settings.',
+          buttons: [{ label: 'Cancel', secondary: true }, { label: 'Turn off', fn: () => Visits.set(false) }] });
+  });
+  box._paint = () => {
+    const g = Visits.gpc(), on = Visits.counting();
+    sw.setAttribute('aria-checked', on ? 'true' : 'false'); sw.classList.toggle('on', on);
+    sw.disabled = g; box.classList.toggle('locked', g);
+    note.textContent = g ? 'Your browser asks websites not to track you (Global Privacy Control), so your visits are never counted.'
+                         : on ? 'On: visits are counted anonymously (no cookies, nothing you save).' : 'Off: this phone’s visits aren’t counted.';
+  };
+  box._paint();
+  return box;
+}
+function refreshVisitSwitches() { document.querySelectorAll('.vswitch').forEach(b => b._paint && b._paint()); }
+
+// ------------------------------------------------------------
+// ONE-TIME WELCOME NOTE (first visit only; shown again after "Erase all data")
+// Tells people that everything stays on the phone and that visits are counted anonymously, with where to switch it off.
+// "Got it" closes it; "Read Privacy & Safety" opens that page. Either way it counts as seen and is never shown again.
+// On a laptop it waits until the "Best on your phone" card is closed. Shown on Home only.
+// ------------------------------------------------------------
+function showWelcome() {
+  if (Store.get('welcome', false)) return;
+  if (TEST_MODE && !QS.has('welcome')) return;                      // automatic tests skip it unless they ask for it
+  const S = SCREENS['home-view'];
+  if (document.querySelector('.desk-card') || CUR !== 'home-view' || !S || S.panel) { setTimeout(showWelcome, 600); return; }
+  const seen = () => { Store.set('welcome', true); Visits.start(); };
+  const text = 'Everything you save stays on this phone. No ads, no sign-up, no personal tracking.\n\n' + (Visits.gpc()
+    ? 'Your browser asks websites not to track you (Global Privacy Control), so your visits are never counted.'
+    : 'We count visits anonymously (no cookies, no personal profile, nothing you save), so we know roughly how many people visit. You can turn this off anytime in Privacy & Safety or Settings.');
+  const ov = showPanel(S, { title: 'Welcome to Taarala Thota \u{1F31F}', text,
+    buttons: [{ label: 'Read Privacy & Safety', secondary: true, fn: () => { seen(); go('privacy'); } },
+              { label: 'Got it', fn: seen }] });
+  ov.classList.add('welcome');
+}
 
 // ============================================================
 // BUBBLE POP  (3 levels x 120 seconds)
@@ -3980,7 +4118,7 @@ function qrSvg(text) {
 // START-UP
 // ============================================================
 function bootApp() {
-  buildHome(); buildGames(); buildLoved(); buildSettings(); buildPrivacy(); buildBubble(); buildMine(); buildChess(); buildCheckers();
+  buildHome(); buildGames(); buildLoved(); buildSettings(); buildPrivacy(); buildFeedback(); buildBubble(); buildMine(); buildChess(); buildCheckers();
   if (!Store.get('since', 0)) Store.set('since', nowMs());   // first time this phone opened the app (for the backup reminder)
   Music.armFirstTap();
   Music.paint();
@@ -3989,6 +4127,8 @@ function bootApp() {
   setupSteadyScreen();
   setupUprightCard();
   setupDeskCard();
+  Visits.start();                             // anonymous visit count (only if allowed and the welcome note was seen; see visits.js)
+  showWelcome();                              // one-time welcome note on the first visit
   // prevent double-tap zoom
   let lastTap = 0;
   document.addEventListener('touchend', (e) => { const n = Date.now(); if (n - lastTap < 300 && e.target.closest && !e.target.closest('input,textarea,select')) e.preventDefault(); lastTap = n; }, { passive: false });
@@ -4001,12 +4141,12 @@ function bootApp() {
 // STEADY SCREEN
 // Stray touches (fast tapping, a palm on the screen) should never move or leave the app:
 // - no long-press menus, no pinch-zoom (iPhone), no text selection outside typing boxes;
-//   except: the Settings and Privacy & safety pages (just text, no games) can be zoomed with two fingers, for easier reading;
+//   except: the Settings and Privacy & Safety pages (just text, no games) can be zoomed with two fingers, for easier reading;
 // - Android's back swipe / back button (and iPhone Safari's edge swipe) goes back ONE screen inside the app;
 //   on Home it asks before leaving. (The phone's own Home gesture can't be blocked by any app: for that,
-//   the Privacy & safety page explains Guided Access on iPhone and App pinning on Android.)
+//   the Privacy & Safety page explains Guided Access on iPhone and App pinning on Android.)
 // ------------------------------------------------------------
-// Two-finger zoom is allowed only on the text pages (Settings, Privacy & safety). Leaving them zooms back to normal.
+// Two-finger zoom is allowed only on the text pages (Settings, Privacy & Safety). Leaving them zooms back to normal.
 let ZOOM_OK = false;
 const VIEW_STEADY = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
 const VIEW_ZOOM = 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover';

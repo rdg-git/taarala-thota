@@ -9,7 +9,7 @@
 const BACKUP_APP = 'taarala-thota-backup', BACKUP_V = 1, BACKUP_MAX_BYTES = 15 * 1024 * 1024;
 const BACKUP_REMIND_DAYS = 6;
 // the only items a backup may carry (everything the app saves, except the passcode and housekeeping)
-const BACKUP_KEYS = /^tt:(contacts|music|bubble|bubble:stats|minesweeper:best|(chess|checkers|minesweeper|bubble):(game|stats|totals))$/;
+const BACKUP_KEYS = /^tt:(contacts|music|count|bubble|bubble:stats|minesweeper:best|(chess|checkers|minesweeper|bubble):(game|stats|totals))$/;
 
 function b64(bytes) {
   let s = '';
@@ -76,6 +76,7 @@ async function readBackupFile(file, password) {
     if (!BACKUP_KEYS.test(k) || typeof v !== 'string' || v.length > 8 * 1024 * 1024) return;
     try { JSON.parse(v); } catch (e) { if (k !== 'tt:music') return; }
     if (k === 'tt:music' && !/^(on|off)$/.test(v)) return;
+    if (k === 'tt:count' && !/^"(on|off)"$/.test(v)) return;
     items[k] = v;
   });
   // every contact is re-checked and re-cleaned exactly as if it were typed in Settings

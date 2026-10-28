@@ -322,3 +322,23 @@ input, textarea { user-select:text; -webkit-user-select:text; -webkit-touch-call
 .upd-badge svg { width:15px; height:15px; display:block; }
 @keyframes upd-glow { 0%,100% { box-shadow:0 0 6px rgba(255,200,90,.6), 0 2px 4px rgba(0,0,0,.6); } 50% { box-shadow:0 0 16px rgba(255,210,110,1), 0 2px 4px rgba(0,0,0,.6); } }
 @media (prefers-reduced-motion: reduce) { .upd-badge span { animation:none; } }
+
+/* ---- Visit-counting switch (Privacy & Safety page and Settings) ---- */
+.vswitch { margin:10px 0 4px; padding:10px 12px; border-radius:12px; background:rgba(255,240,210,.06); border:1px solid rgba(227,184,102,.35); }
+.vswitch.in-settings { margin:0 0 14px; }
+.vs-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.vs-lab { font-weight:700; font-size:15px; color:#ffe3a3; }
+.vs-sw { flex:none; width:56px; height:32px; border-radius:999px; border:1px solid rgba(227,184,102,.7); background:rgba(10,8,20,.6); position:relative; cursor:pointer; padding:0; }
+.vs-sw::after { content:''; position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:#cdbb92; transition:left .2s, background .2s; }
+.vs-sw.on { background:linear-gradient(180deg,#9a6430,#5e3716); }
+.vs-sw.on::after { left:27px; background:#ffe3a3; }
+.vs-sw:disabled { opacity:.5; cursor:default; }
+.vs-note { font-size:13px; color:#cdbb92; margin-top:6px; line-height:1.35; }
+
+.panel-ov.welcome .panel-text { white-space:pre-line; text-align:left; }
+
+/* ---- Share feedback ---- */
+.fb-box { display:block; width:100%; box-sizing:border-box; min-height:200px; margin:6px 0 4px; padding:12px 14px; border-radius:12px; border:2px solid #c99a4c; background:#fff8e7; color:#2d1d0c; font-family:inherit; font-size:17px; line-height:1.4; resize:vertical; }
+.fb-msg { min-height:1.4em; margin-top:10px; color:#ffe3a3; }
+.sbtn.fb-open { margin-top:14px; }
+.sbtn.fb-open.in-settings { margin:0 0 14px; }

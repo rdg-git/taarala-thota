@@ -18,7 +18,7 @@ const OFFICIAL_ADDRESS = 'taarala-thota.pages.dev';   // the app's one official 
 const PRIVACY_POINTS = [
   // Application data (what the app saves) is kept apart from infrastructure data (what any website's host handles):
   'Your saved data stays on this phone: contacts and their photos, your passcode, game progress, stats and settings are stored only in this browser on this phone. The app never sends them anywhere, and the creator cannot see them.',
-  'The app itself has no sign-in, no ads, no analytics and no tracking.',
+  'The app has no sign-in, no ads and no personal tracking. To know roughly how many people visit, it counts visits anonymously with Cloudflare Web Analytics, which by Cloudflare’s description uses no cookies, stores nothing on your phone and builds no personal profile. It never sees anything you save in the app or what you do in it. You can switch counting off below or in Settings. If your browser sends a “Global Privacy Control” signal, your visits are never counted.',
   'Like every website, the app is delivered by a hosting service (Cloudflare). When your phone downloads the app or checks for an update, the hosting service automatically handles basic technical information, such as your internet (IP) address, browser type and the time, to deliver and protect the site. This never includes your saved data. The creator does not receive these details (apart from overall totals the hosting service may show, such as the number of visits) and has no control or oversight over how the hosting service handles them: that is covered by the hosting service\u2019s own privacy policy.',
   'Contacts you save here exist only in this app. Your phone’s own contacts and WhatsApp are never changed.',
   'Anyone using this phone can call your saved contacts from Loved Ones and see their names and photos. Seeing or changing numbers needs your passcode.',
@@ -28,6 +28,7 @@ const PRIVACY_POINTS = [
   'On iPhone, add the app to your Home Screen, so your data is kept even if you don’t open it for a while.',
   'So the games work without internet, the app quietly saves its pictures on your phone (about 5 MB) the first time it opens. On mobile data this counts toward your data plan; on Wi-Fi it costs nothing extra.',
   'Closing the app or your browser keeps everything. Clearing your browser’s site data (cookies and site data), removing the app, or using a private/incognito window deletes it all, unless you have a backup. To bring it back: set a passcode, then Settings → Restore from a backup.',
+  'Feedback you send from the app is anonymous: we don’t ask for your name or email, and nothing about you is stored with it. It is kept by the app’s hosting service (Cloudflare) so the creator can read it. Please don’t include personal details.',
   'Tapping a contact only opens WhatsApp. Nothing is ever sent automatically. Once WhatsApp opens, WhatsApp\u2019s own privacy policy applies.',
   'Sharing your phone with someone? Keep the screen on this app: on iPhone turn on Guided Access (Settings \u2192 Accessibility \u2192 Guided Access), open the app and triple-click the side button; on Android turn on App pinning (Settings \u2192 Security \u2192 App pinning) and pin the app from the recent-apps view. To stop the screen turning sideways, use your phone\u2019s Rotation Lock (iPhone: Control Center; Android: quick settings, \u201cAuto-rotate\u201d off).',
   'Only use the official address' + (OFFICIAL_ADDRESS ? ': ' + OFFICIAL_ADDRESS + '.' : ' shared by the creator.') + ' Copies elsewhere aren’t ours.'
@@ -110,6 +111,8 @@ function renderSettings(S, view, data) {
   ({ create: viewCreate, unlock: viewUnlock, forgot: viewForgot, list: viewList, form: viewForm, eraseall: viewEraseAll, backup: viewBackup, restore: viewRestore })[view](S, sh, data || {});
   if (/^(create|unlock|forgot)$/.test(view)) { sh.appendChild(tx('div', 'snote', SETTINGS_NOTE)); }
   const ub = tx('div', 'supd'); sh.insertBefore(ub, sh.firstChild); S.updBox = ub; refreshUpdateBox(S);
+  const vs = visitSwitch(S); vs.classList.add('in-settings'); ub.after(vs);       // visit counting: before the passcode too
+  const fb = feedbackButton('settings'); fb.classList.add('in-settings'); vs.after(fb);   // anonymous feedback, also before the passcode
 }
 // App update: the first thing on every Settings page, even before the passcode (updating never touches saved data).
 // Kept compact. Up to date: one quiet line that can't be tapped. Update waiting: Update now, then Update later and What's new.
@@ -221,7 +224,7 @@ function viewList(S, sh) {
   sh.appendChild(btn('Restore from a backup', 'secondary', () => renderSettings(S, 'restore')));
   sh.appendChild(tx('h3', 'sgap', 'Safety'));
   sh.appendChild(btn('Lock Settings now', 'secondary', () => { Pass.lock(); goHome(); }));
-  sh.appendChild(btn('Privacy & safety', 'slink', () => go('privacy')));
+  sh.appendChild(btn('Privacy & Safety', 'slink', () => go('privacy')));
   sh.appendChild(tx('div', 'snote', SETTINGS_NOTE));
   sh.appendChild(btn('Erase all ' + APP_NAME + ' data', 'slink danger-link', () => renderSettings(S, 'eraseall')));
 }
@@ -305,7 +308,7 @@ function viewEraseAll(S, sh) {
   sh.appendChild(tx('h3', '', 'Erase all ' + APP_NAME + ' data?'));
   sh.appendChild(tx('p', '', 'This erases only what this app saved in this browser on this phone:'));
   const yes = tx('ul', 'slist');
-  ['your saved contacts and their photos', 'your passcode', 'game progress and stats', 'your settings (like music on or off)'].forEach(t => yes.appendChild(tx('li', '', t)));
+  ['your saved contacts and their photos', 'your passcode', 'game progress and stats', 'your settings (like music on or off, and visit counting, which turns back on)'].forEach(t => yes.appendChild(tx('li', '', t)));
   sh.appendChild(yes);
   sh.appendChild(tx('p', '', 'It does not touch:'));
   const no = tx('ul', 'slist');
@@ -389,11 +392,12 @@ function viewRestore(S, sh) {
 // The points (PRIVACY_POINTS above), opened from the link at the bottom of Home, ending with the maker's signature.
 // ------------------------------------------------------------
 function buildPrivacy() {
-  const S = defScreen('privacy', 'loved', { parent: 'home-view', name: 'Privacy & safety' });
+  const S = defScreen('privacy', 'loved', { parent: 'home-view', name: 'Privacy & Safety' });
   addNav(S, { icons: true });
-  addText(S, 'loved-title', 90, 160, 560, 130, 74, 'Privacy & safety');
+  addText(S, 'loved-title', 90, 160, 560, 130, 74, 'Privacy & Safety');
   const sheet = el('div', 'sheet'); place(sheet, 45, 330, 763, 1470, S); S.art.appendChild(sheet);
   const ol = tx('ol', 'plist'); PRIVACY_POINTS.forEach(p => ol.appendChild(tx('li', '', p))); sheet.appendChild(ol);
+  ol.children[1].appendChild(visitSwitch(S));                    // the visit-counting switch, right under the point that explains it
   // links to the outside services mentioned above (they open in a new tab; nothing is sent by the app)
   const links = tx('p', 'shint', 'More about the services mentioned: ');
   [['Cloudflare privacy policy', 'https://www.cloudflare.com/privacypolicy/'], ['WhatsApp privacy policy', 'https://www.whatsapp.com/legal/privacy-policy']].forEach(([t, u], i) => {
@@ -401,6 +405,7 @@ function buildPrivacy() {
     if (i) links.append(' \u00b7 '); links.appendChild(a);
   });
   sheet.appendChild(links);
+  sheet.appendChild(feedbackButton('privacy'));                 // anonymous feedback
   S.onShow = () => allowZoom(true); S.onHide = () => allowZoom(false);   // text page: two-finger zoom allowed
   // the maker's signature: seal, "Made with care by rdg" with its shooting star, and the copyright line
   const mk = tx('div', 'maker'), seal = tx('div', 'maker-big'); seal.innerHTML = makerSealSvg(); mk.appendChild(seal);
@@ -409,4 +414,44 @@ function buildPrivacy() {
   const trail = tx('div', 'maker-trail'); trail.innerHTML = makerTrailSvg(); sig.appendChild(trail);
   sig.appendChild(tx('div', 'maker-copy', MAKER_CREDIT)); mk.appendChild(sig);
   sheet.appendChild(mk);
+}
+
+// ------------------------------------------------------------
+// SHARE FEEDBACK (anonymous)
+// One short invitation and one box. Opened from the Privacy & Safety page and from Settings; Back returns there.
+// The message is sent to the app's own feedback address (functions/api/feedback.js) with only the app release.
+// No name, email or anything about the person is sent. Text is never shown back as code (plain text only).
+// ------------------------------------------------------------
+const FEEDBACK_MAX = 10000;
+function openFeedback(from) { const S = SCREENS.feedback; if (S) { S.parent = from; go('feedback'); } }
+function feedbackButton(from) { return btn('Share feedback (anonymous)', 'secondary fb-open', () => openFeedback(from)); }
+function buildFeedback() {
+  const S = defScreen('feedback', 'loved', { parent: 'privacy', name: 'Share feedback' });
+  addNav(S, { icons: true });
+  addText(S, 'loved-title', 90, 160, 600, 130, 74, 'Share feedback');
+  const sheet = el('div', 'sheet'); place(sheet, 45, 330, 763, 1470, S); S.art.appendChild(sheet);
+  sheet.appendChild(tx('p', '', 'What do you enjoy? What didn’t you like, or what felt confusing? What would make it better, and how? Is there a feature you’d love to see? Anything at all is welcome.'));
+  sheet.appendChild(tx('p', 'shint', 'This is anonymous: we don’t ask for your name or email, and please don’t include personal details. Please keep it kind and respectful.'));
+  const box = document.createElement('textarea'); box.className = 'fb-box'; box.setAttribute('aria-label', 'Your feedback'); box.rows = 9;
+  sheet.appendChild(box);
+  const msg = tx('p', 'fb-msg'); msg.setAttribute('role', 'status');
+  const send = btn('Send', '', async () => {
+    const text = box.value.trim();
+    if (!text) { msg.textContent = 'Please write something first.'; return; }
+    if (Array.from(text).length > FEEDBACK_MAX) { msg.textContent = 'That’s a lot of thoughts! Please keep it under ' + FEEDBACK_MAX.toLocaleString() + ' characters.'; return; }
+    send.disabled = true; msg.textContent = 'Sending…';
+    let res = null;
+    try { res = await fetch('api/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text, release: APP_RELEASE }) }); } catch (e) {}
+    if (res && res.ok) {
+      box.value = ''; msg.textContent = 'Thank you! Your feedback was sent. 🌟';
+      setTimeout(() => { send.disabled = false; }, 30000);         // a short pause before the next message
+      return;
+    }
+    send.disabled = false;
+    msg.textContent = res && res.status === 429 ? 'Lots of messages today. Please try again tomorrow; your message is still here.'
+      : 'Couldn’t send right now. Please check your internet and try again; your message is still here.';
+  });
+  sheet.appendChild(send); sheet.appendChild(msg);
+  S.onShow = () => { allowZoom(true); msg.textContent = ''; };
+  S.onHide = () => allowZoom(false);
 }
