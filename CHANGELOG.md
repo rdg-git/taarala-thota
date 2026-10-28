@@ -3,6 +3,12 @@
 What changed in each release of Taarala Thota (Garden of Stars), newest first.
 Before updating, the app’s "What’s new" shows the entries newer than the version on the phone.
 
+## 2026-10-28c
+
+- Clearer advice on the Privacy & safety page about keeping your data safe.
+- The Privacy & safety page now explains the one-time picture download that lets games work offline.
+- You can zoom with two fingers on the Settings and Privacy & safety pages.
+
 ## 2026-10-28b
 
 - Settings now locks itself as soon as you leave it.

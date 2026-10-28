@@ -42,7 +42,7 @@ section-by-section notes right where each part begins.
 | `settings.js` | Settings screen (passcode pages, contacts, backups, erase) and the Privacy & safety page. |
 | `backup.js` | Locked backup files, safe restore, 6-day backup reminder. |
 | `pwa.js` | Installable app: registers the offline helper, keeps pictures for offline play, "new version ready" card. |
-| `bubble.js` | Bubble Pop (3 levels of 2 minutes, accuracy gates 95/98/100 %; bubbles cross in 6.0 / 4.8 / 3.7 s, a new one about every 0.75 s). |
+| `bubble.js` | Bubble Pop (3 levels of 2 minutes, all open; accuracy goals 95/98/100 % earn a gold star; bubbles cross in 6.0 / 4.8 / 3.7 s, a new one about every 0.75 s). |
 | `mine.js` | Hidden Comets (minesweeper-style; Gentle never loses). |
 | `chess_engine.js` | Chess rules (FIDE) and computer player. Verified by `tests/chess_rules.js` (incl. standard perft counts). |
 | `checkers_engine.js` | International Checkers rules (FMJD: 10×10, flying kings, maximum capture, draw rules) and computer player. |
@@ -113,7 +113,7 @@ All in the browser's storage for this site, labels starting with `tt:`. Nothing 
 | `tt:pass` | Passcode **fingerprint** only (PBKDF2-SHA256, salted). The passcode itself is never stored. |
 | `tt:passlock` | Wrong-try counter and waiting time. |
 | `tt:music` | Music on/off. (`tt:music_pos` in session storage: where the melody was.) |
-| `tt:bubble`, `tt:bubble:stats` | Bubble Pop level unlocked; Bubble Pop stats. |
+| `tt:bubble`, `tt:bubble:stats` | Bubble Pop: level Continue plays next and completed levels (stars); Bubble Pop stats. |
 | `tt:<game>:game` | A Chess/Checkers game in progress (resume within 60 min of the last move). |
 | `tt:<game>:stats`, `tt:<game>:totals` | Last 10 results; running totals (`<game>` = chess, checkers, minesweeper). |
 | `tt:minesweeper:best` | Hidden Comets best times (internal name kept so saved progress keeps working). |
@@ -143,6 +143,7 @@ All in the browser's storage for this site, labels starting with `tt:`. Nothing 
 ## 7. Steady screen (stray touches)
 
 - No dragging, pinch-zoom, bouncing, text selection or long-press menus (`app.css` "Steady screen" + `setupSteadyScreen` in `init.js`).
+  Exception: Settings and Privacy & safety allow two-finger zoom (`allowZoom` in `init.js`).
   Panels and Loved Ones still scroll; typing boxes behave normally.
 - The phone's back swipe / back button goes back one screen inside the app; on Home it asks before leaving.
 - The phone's own Home gesture (iPhone swipe up) cannot be blocked by any app. The Privacy & safety page explains
@@ -164,10 +165,35 @@ All in the browser's storage for this site, labels starting with `tt:`. Nothing 
 2. Commit on a test branch, open a pull request, check the preview on a real phone.
 3. Merge after approval; publish on Cloudflare Pages.
 
-## 10. Known gaps and ideas
+## 10. Known limitations, risks and ideas
 
-- The app icon is temporary (cut from the Home picture).
-- The Games picture still shows a small painted mine-ball and flag on the Hidden Comets tile.
-- The phone's own Home gesture can't be blocked by a web app (use Guided Access / App pinning).
-- Before launch: fill in `OFFICIAL_ADDRESS` in `settings.js` and get a short legal review of the Privacy page wording.
-- Possible next features: fingerprint/face unlock for Settings, optional usage counts (would need a privacy review).
+Found in the security and quality review (28 Oct 2026). Each item says what remains and why.
+
+**Accepted by design (disclosed)**
+- **Contact numbers are protected by the app's screens, not encrypted.** The passcode stops anyone seeing or changing
+  numbers inside the app, but they are stored readable in the browser's storage. Someone with technical skills and
+  access to the unlocked device could read them with browser developer tools (easy on a computer, hard on a phone).
+  Encrypting them would mean asking for the passcode on every call from Loved Ones, which defeats the purpose.
+- **No recovery without a backup.** Nothing is stored anywhere else, so cleared browser data cannot be recovered
+  except from the person's own backup file (6-day reminder; Privacy & safety point 11).
+- **The phone's own Home gesture can't be blocked** by a web app; Guided Access / App pinning are explained instead.
+- **One-time picture download (about 5 MB)** on the first visit so every game works offline; it counts toward mobile
+  data. Explained on the Privacy & safety page.
+
+**Open, worth improving**
+- **Automated tests run in Chromium only** (Chrome, Edge, Android). iPhone Safari is checked by hand on a real phone.
+- **Two-finger zoom is off on game screens** (steady screen). It is allowed on Settings and Privacy & safety only, so
+  people who need larger text can zoom there. A "larger text" setting would help further.
+- **Security rules allow inline styles** (`style-src 'unsafe-inline'`; scripts are still strictly limited to the app's
+  own files). Low risk; tightening needs every style attribute moved into the stylesheet.
+
+**Before launch**
+- Fill in `OFFICIAL_ADDRESS` in `settings.js`; short legal review of the Privacy & safety wording.
+- Replace the temporary app icon (cut from the Home picture); the Games picture still shows a small painted mine-ball
+  and flag on the Hidden Comets tile.
+- README, case study and LICENSE; GitHub branch protection and secret scanning; delete the test site.
+- `tests/update_ui.js` and `tests/update_badge.js` overlap and could be merged.
+
+**Ideas**
+- Fingerprint / face unlock for Settings; a "larger text" setting; friendly challenges between people in Loved Ones
+  (needs a server and a fresh privacy review); optional usage counts (would need a privacy review).

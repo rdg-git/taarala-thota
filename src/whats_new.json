@@ -1,5 +1,13 @@
 [
   {
+    "date": "2026-10-28c",
+    "notes": [
+      "Clearer advice on the Privacy & safety page about keeping your data safe.",
+      "The Privacy & safety page now explains the one-time picture download that lets games work offline.",
+      "You can zoom with two fingers on the Settings and Privacy & safety pages."
+    ]
+  },
+  {
     "date": "2026-10-28b",
     "notes": [
       "Settings now locks itself as soon as you leave it."

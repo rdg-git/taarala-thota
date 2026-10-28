@@ -96,7 +96,7 @@ function png(w, h) {   // a small solid-colour PNG made on the fly (stands in fo
   ok(await ev(() => !document.querySelector('#settings .fade-note')), 'notice does not repeat the same day');
   // privacy page
   await ev(() => MM.go('home-view')); await p.click('#home-view .privacy-link'); await wait(300);
-  ok(await ev(() => MM.cur === 'privacy' && document.querySelectorAll('#privacy .plist li').length === 13), 'Privacy & safety page shows the 13 points');
+  ok(await ev(() => MM.cur === 'privacy' && document.querySelectorAll('#privacy .plist li').length === 14), 'Privacy & safety page shows the 14 points');
   await ev(() => MM.goBack()); ok(await ev(() => MM.cur === 'home-view'), 'Back from Privacy returns Home');
   // 20 max
   await ev(() => { const a = []; for (let i = 0; i < 20; i++) a.push({ id: 'k' + i, name: 'P' + i, phone: '+1000000' + String(1000 + i) }); localStorage.setItem('tt:contacts', JSON.stringify(a)); });

@@ -24,15 +24,25 @@ function bootApp() {
 // STEADY SCREEN
 // Stray touches (fast tapping, a palm on the screen) should never move or leave the app:
 // - no long-press menus, no pinch-zoom (iPhone), no text selection outside typing boxes;
+//   except: the Settings and Privacy & safety pages (just text, no games) can be zoomed with two fingers, for easier reading;
 // - Android's back swipe / back button (and iPhone Safari's edge swipe) goes back ONE screen inside the app;
 //   on Home it asks before leaving. (The phone's own Home gesture can't be blocked by any app: for that,
 //   the Privacy & safety page explains Guided Access on iPhone and App pinning on Android.)
 // ------------------------------------------------------------
+// Two-finger zoom is allowed only on the text pages (Settings, Privacy & safety). Leaving them zooms back to normal.
+let ZOOM_OK = false;
+const VIEW_STEADY = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+const VIEW_ZOOM = 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover';
+function allowZoom(on) {
+  ZOOM_OK = !!on;
+  const m = document.querySelector('meta[name="viewport"]'); if (m) m.setAttribute('content', on ? VIEW_ZOOM : VIEW_STEADY);
+  document.body.classList.toggle('zoomable', ZOOM_OK);
+}
 function setupSteadyScreen() {
   const typing = (t) => t && t.closest && t.closest('input,textarea,select');
   document.addEventListener('contextmenu', (e) => { if (!typing(e.target)) e.preventDefault(); });
-  ['gesturestart', 'gesturechange'].forEach(t => document.addEventListener(t, (e) => e.preventDefault(), { passive: false }));
-  document.addEventListener('touchmove', (e) => { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  ['gesturestart', 'gesturechange'].forEach(t => document.addEventListener(t, (e) => { if (!ZOOM_OK) e.preventDefault(); }, { passive: false }));
+  document.addEventListener('touchmove', (e) => { if (!ZOOM_OK && e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
   // back gesture: keep one extra history step so "back" lands inside the app
   try {
     history.replaceState({ tt: 'base' }, '');

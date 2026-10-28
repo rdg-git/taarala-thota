@@ -242,6 +242,7 @@ body.debug .hot { outline:2px dashed #3f3; background:rgba(60,255,60,.18); }
 * { -webkit-touch-callout:none; }
 .scr { touch-action:none; }                                   /* no dragging or pinching on any screen */
 .sheet, .loved-scroll { touch-action:pan-y; }                  /* except scrolling the Settings / Privacy panels and Loved Ones */
+body.zoomable .scr.active, body.zoomable .scr.active .sheet { touch-action:pan-x pan-y pinch-zoom; }   /* Settings / Privacy: two-finger zoom */
 input, textarea { user-select:text; -webkit-user-select:text; -webkit-touch-callout:default; touch-action:manipulation; }
 .plink { color:#ffd27a; text-decoration:underline; }
 

@@ -26,7 +26,8 @@ const PRIVACY_POINTS = [
   'Choose a passcode you’ll remember. If you forget it, your saved contacts must be erased and added again.',
   'Back up regularly, and keep the backup file private. Its password can\u2019t be recovered. If you keep it in a cloud drive or email, that service\u2019s own privacy policy applies (the file stays locked with your password).',
   'On iPhone, add the app to your Home Screen, so your data is kept even if you don’t open it for a while.',
-  'Clearing your browser’s data or removing the app deletes everything, unless you have a backup.',
+  'So the games work without internet, the app quietly saves its pictures on your phone (about 5 MB) the first time it opens. On mobile data this counts toward your data plan; on Wi-Fi it costs nothing extra.',
+  'Closing the app or your browser keeps everything. Clearing your browser’s site data (cookies and site data), removing the app, or using a private/incognito window deletes it all, unless you have a backup. To bring it back: set a passcode, then Settings → Restore from a backup.',
   'Tapping a contact only opens WhatsApp. Nothing is ever sent automatically. Once WhatsApp opens, WhatsApp\u2019s own privacy policy applies.',
   'Sharing your phone with someone? Keep the screen on this app: on iPhone turn on Guided Access (Settings \u2192 Accessibility \u2192 Guided Access), open the app and triple-click the side button; on Android turn on App pinning (Settings \u2192 Security \u2192 App pinning) and pin the app from the recent-apps view. To stop the screen turning sideways, use your phone\u2019s Rotation Lock (iPhone: Control Center; Android: quick settings, \u201cAuto-rotate\u201d off).',
   'Only use the official address' + (OFFICIAL_ADDRESS ? ': ' + OFFICIAL_ADDRESS + '.' : ' shared by the creator.') + ' Copies elsewhere aren’t ours.'
@@ -72,13 +73,14 @@ function buildSettings() {
   const sheet = el('div', 'sheet'); place(sheet, 45, 330, 763, 1470, S); S.art.appendChild(sheet);
   S.sheet = sheet; S.view = null;
   S.onShow = () => {
+    allowZoom(true);                                                           // text page: two-finger zoom allowed
     S.view = null; renderSettings(S); dailyNotice(S);                       // S.pendingView (e.g. 'backup') opens after unlocking
     // after 10 minutes without a tap here, show the passcode page again
     clearInterval(S.idleTimer);
     S.idleTimer = setInterval(() => { if (CUR === 'settings' && Pass.isSet() && !Pass.isUnlocked() && !/^(unlock|create|forgot)$/.test(S.view)) renderSettings(S); }, 15000);
   };
   // leaving Settings (Home, Back, the back gesture, any other screen) locks it straight away
-  S.onHide = () => { clearInterval(S.waitTimer); clearInterval(S.idleTimer); Pass.lock(); };
+  S.onHide = () => { clearInterval(S.waitTimer); clearInterval(S.idleTimer); Pass.lock(); allowZoom(false); };
   // only taps inside Settings keep it unlocked (taps in games don't)
   ['pointerup', 'keydown'].forEach(t => S.el.addEventListener(t, () => Pass.touch(), true));
 }
@@ -399,6 +401,7 @@ function buildPrivacy() {
     if (i) links.append(' \u00b7 '); links.appendChild(a);
   });
   sheet.appendChild(links);
+  S.onShow = () => allowZoom(true); S.onHide = () => allowZoom(false);   // text page: two-finger zoom allowed
   // the maker's signature: seal, "Made with care by rdg" with its shooting star, and the copyright line
   const mk = tx('div', 'maker'), seal = tx('div', 'maker-big'); seal.innerHTML = makerSealSvg(); mk.appendChild(seal);
   const sig = tx('div', 'maker-sig'); sig.appendChild(tx('div', 'maker-by', 'Made with care by'));

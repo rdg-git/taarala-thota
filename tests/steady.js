@@ -21,7 +21,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   const prevented = await ev(() => { const e = new MouseEvent('contextmenu', { bubbles: true, cancelable: true }); document.querySelector('#home-view .art').dispatchEvent(e); return e.defaultPrevented; });
   const inputOk = await ev(() => { const i = document.querySelector('#settings input'); const e = new MouseEvent('contextmenu', { bubbles: true, cancelable: true }); i.dispatchEvent(e); return !e.defaultPrevented; });
   ok(prevented && inputOk, 'long-press menus are blocked, except inside typing boxes');
-  ok(await ev(() => getComputedStyle(document.querySelector('.scr')).touchAction === 'none' && getComputedStyle(document.querySelector('#settings .sheet')).touchAction === 'pan-y'), 'screens cannot be dragged or pinched; panels can still scroll');
+  ok(await ev(() => getComputedStyle(document.querySelector('#home-view')).touchAction === 'none' && /pan-y|manipulation/.test(getComputedStyle(document.querySelector('#settings .sheet')).touchAction)), 'screens cannot be dragged or pinched; panels can still scroll');
   ok(await ev(() => MM.BUB.L[1].dur === 6 && MM.BUB.L[2].dur === 4.8 && MM.BUB.L[3].dur === 3.7 && MM.BUB.SPAWN === 0.75), 'bubbles are about 50% faster on every level');
   ok(errs.length === 0, 'no page errors ' + errs.join(' | '));
   await b.close(); console.log('RESULT', n - f, 'passed', f, 'failed');
