@@ -3,6 +3,10 @@
 What changed in each release of Taarala Thota (Garden of Stars), newest first.
 Before updating, the app’s "What’s new" shows the entries newer than the version on the phone.
 
+## 2026-10-28d
+
+- The Privacy & safety page now shows the app’s official address: taarala-thota.pages.dev.
+
 ## 2026-10-28c
 
 - Clearer advice on the Privacy & safety page about keeping your data safe.

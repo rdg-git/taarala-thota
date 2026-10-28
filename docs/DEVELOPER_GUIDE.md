@@ -188,7 +188,7 @@ Found in the security and quality review (28 Oct 2026). Each item says what rema
   own files). Low risk; tightening needs every style attribute moved into the stylesheet.
 
 **Before launch**
-- Fill in `OFFICIAL_ADDRESS` in `settings.js`; short legal review of the Privacy & safety wording.
+- Short legal review of the Privacy & safety wording. (`OFFICIAL_ADDRESS` is set to taarala-thota.pages.dev.)
 - Replace the temporary app icon (cut from the Home picture); the Games picture still shows a small painted mine-ball
   and flag on the Hidden Comets tile.
 - README, case study and LICENSE; GitHub branch protection and secret scanning; delete the test site.
