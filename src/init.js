@@ -55,6 +55,7 @@ function setupSteadyScreen() {
     if (leaving) return;
     const S = CUR && SCREENS[CUR];
     const stay = () => { try { history.pushState({ tt: 'app' }, ''); } catch (e) {} };
+    if (Tour.on) { Tour.end(); stay(); return; }                     // during the tour: back ends the tour
     if (S && S.panel) { closePanel(S); stay(); return; }            // first: close an open card
     if (CUR && CUR !== 'home-view') { goBack(); stay(); return; }  // then: one screen back
     stay();                                                          // on Home: ask before leaving

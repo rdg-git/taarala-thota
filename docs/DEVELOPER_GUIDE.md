@@ -45,6 +45,7 @@ section-by-section notes right where each part begins.
 | `settings.js` | Settings screen (passcode pages, contacts, backups, erase) and the Privacy & Safety page. |
 | `backup.js` | Locked backup files, safe restore, 6-day backup reminder. |
 | `visits.js` | Anonymous visit counting (Cloudflare Web Analytics): loaded only when allowed, only on the official address; the on/off switch used on Privacy & Safety and in Settings; Global Privacy Control respected. |
+| `tour.js` | "Take a tour": a one-minute guided walk through the real screens (caption card plus a gold glow). Started from the card at the top of Privacy & Safety and under App update in Settings. Looks only: a cover blocks taps, nothing is saved, and it returns to where it started. Steps are listed in `TOUR_STEPS`. |
 | `pwa.js` | Installable app: registers the offline helper, keeps pictures for offline play, "new version ready" card. |
 | `bubble.js` | Bubble Pop (3 levels of 2 minutes, all open; accuracy goals 95/98/100 % earn a gold star; bubbles cross in 6.0 / 4.8 / 3.7 s, a new one about every 0.75 s). |
 | `mine.js` | Hidden Comets (minesweeper-style; Gentle never loses). |

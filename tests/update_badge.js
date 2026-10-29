@@ -1,7 +1,7 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // The "Update" pill: invisible when there is no update; when one waits it shows next to the top-right button on every
 // screen except during play, never covers a button, title or panel, and opens the update card.
-// "What's new" lists every release newer than the one running (skipped releases included), each under its date.
+// "What's New" lists every release newer than the one running (skipped releases included), each under its date.
 const { chromium } = require('playwright');
 let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m); if (!c) f++; };
 (async () => {
@@ -38,8 +38,8 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
       ok(await p.evaluate(() => /new version is ready/.test((document.querySelector('#games .panel-card') || {}).textContent || '')), 'tapping the pill opens the update card');
       await p.locator('#games .panel-btn', { hasText: 'What' }).click(); await p.waitForTimeout(500);
       const t = await p.evaluate(() => ({ dates: [...document.querySelectorAll('#games .wn-date')].map(e => e.textContent), items: [...document.querySelectorAll('#games .wn-list li')].map(e => e.textContent) }));
-      ok(t.items.join('|') === 'Newest note.|Skipped note.', "What's new: newer and skipped releases, not the installed one (" + t.items.join(' / ') + ')');
-      ok(t.dates.join('|') === '1 Feb 2099|1 Jan 2099 (update 2)', "What's new: each release under its date (" + t.dates.join(' / ') + ')');
+      ok(t.items.join('|') === 'Newest note.|Skipped note.', "What's New: newer and skipped releases, not the installed one (" + t.items.join(' / ') + ')');
+      ok(t.dates.join('|') === '1 Feb 2099|1 Jan 2099 (update 2)', "What's New: each release under its date (" + t.dates.join(' / ') + ')');
     }
     ok(errs.length === 0, w + 'x' + h + ': no page errors ' + errs.join(' | '));
   }

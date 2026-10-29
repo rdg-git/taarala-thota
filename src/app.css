@@ -290,7 +290,7 @@ input, textarea { user-select:text; -webkit-user-select:text; -webkit-touch-call
 .bub-star.on { opacity:1; transform:scale(1); }
 .bub-star svg { width:100%; height:100%; display:block; }
 
-/* ---- "What's new" list inside the update card ---- */
+/* ---- "What's New" list inside the update card ---- */
 .wn-box { text-align:left; margin:2px 0 10px; padding:10px 12px; border-radius:12px; background:rgba(255,255,255,.55); border:1px solid rgba(201,154,76,.55);
   max-height:40vh; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; touch-action:pan-y; }   /* a long list scrolls by finger inside the card */
 .wn-title { font-weight:700; font-size:14px; color:#3a2410; margin-bottom:4px; }
@@ -342,3 +342,71 @@ input, textarea { user-select:text; -webkit-user-select:text; -webkit-touch-call
 .fb-msg { min-height:1.4em; margin-top:10px; color:#ffe3a3; }
 .sbtn.fb-open { margin-top:14px; }
 .sbtn.fb-open.in-settings { margin:0 0 14px; }
+
+/* ---- Take a tour: the invitation card (Privacy & Safety top; Settings under App update) ---- */
+.tour-card { margin:0 0 14px; padding:12px 14px; border-radius:14px; text-align:center; background:linear-gradient(180deg,rgba(255,226,150,.16),rgba(255,226,150,.06)); border:1px solid rgba(255,210,120,.7); box-shadow:0 0 14px rgba(255,200,110,.18); }
+.tour-card-title { font-weight:700; font-size:18px; color:#ffe3a3; }
+.tour-card-text { font-size:15px; color:#f0dfb8; margin:2px 0 8px; }
+.tour-card .sbtn.small { margin:0 auto; width:auto; min-width:170px; padding:8px 22px; }
+
+/* ---- Take a tour: the playing walkthrough (cover, finger, caption, drawn browser menus, player bar) ---- */
+.tour { position:fixed; inset:0; z-index:200; font-family:'Fraunces',Georgia,serif; -webkit-user-select:none; user-select:none; }
+.tour-finger { position:fixed; width:46px; height:46px; margin:-23px 0 0 -23px; border-radius:50%; background:rgba(255,255,255,.5); border:3px solid #fff;
+  box-shadow:0 0 0 6px rgba(255,255,255,.18), 0 0 20px rgba(255,220,140,.95); pointer-events:none; transition:opacity .25s; z-index:3; }
+.tour-rip { position:fixed; width:46px; height:46px; margin:-23px 0 0 -23px; border-radius:50%; border:3px solid #ffe3a3; pointer-events:none; z-index:3; animation:tour-rip .6s ease-out forwards; }
+@keyframes tour-rip { from { transform:scale(1); opacity:1; } to { transform:scale(2.5); opacity:0; } }
+.tour-pill { position:fixed; pointer-events:none; }
+.tour-cap { position:fixed; left:50%; transform:translateX(-50%); width:min(400px, calc(100% - 28px)); box-sizing:border-box; z-index:4;
+  padding:11px 42px 11px 15px; border-radius:16px; background:rgba(255,247,226,.97); border:2px solid #c99a4c; box-shadow:0 8px 24px rgba(0,0,0,.5); color:#3a2410; transition:bottom .3s; }
+.tour-title { font-size:18px; font-weight:700; margin:0 0 2px; }
+.tour-text { font-size:15.5px; line-height:1.38; }
+.tour-note { font-size:13px; font-style:italic; color:#7a4d22; margin-top:4px; }
+.tour-note:empty { display:none; }
+.tour-x { position:absolute; top:2px; right:2px; width:42px; height:42px; border:0; background:none; font-size:19px; color:#8a5a2b; cursor:pointer; }
+.tour-done { display:block; margin:10px 0 2px auto; min-height:44px; padding:8px 26px; border-radius:14px; font:700 16px 'Fraunces',Georgia,serif; color:#fff4d6;
+  background:linear-gradient(180deg,#8a5a2b,#5e3716); border:2px solid #d9a95a; box-shadow:0 3px 0 #3e220c; cursor:pointer; }
+.tour-done[hidden] { display:none; }
+.tour-bar { position:fixed; left:0; right:0; bottom:0; z-index:5; padding:4px 14px max(14px, env(safe-area-inset-bottom)); color:#ffe3a3;
+  background:linear-gradient(180deg,rgba(20,12,30,0),rgba(20,12,30,.94) 28%); opacity:0; transform:translateY(12px); pointer-events:none; transition:opacity .3s, transform .3s; }
+.tour.ctl .tour-bar { opacity:1; transform:none; pointer-events:auto; }
+.tour-thin { position:fixed; left:0; right:0; bottom:0; height:4px; background:rgba(255,227,163,.2); z-index:5; transition:opacity .3s; }
+.tour-thin i { display:block; height:100%; width:0; background:#f2c14e; }
+.tour.ctl .tour-thin, .tour.rec .tour-thin { opacity:0; }
+.tour.rec .tour-x { display:none; }
+.tour-tl { position:relative; height:34px; margin:12px 4px 6px; }
+.tour-ticks em { position:absolute; top:13px; width:2px; height:8px; background:rgba(255,227,163,.65); pointer-events:none; }
+.tour-tl input { position:absolute; inset:0; width:100%; margin:0; background:none; -webkit-appearance:none; appearance:none; touch-action:none; cursor:pointer; }
+.tour-tl input::-webkit-slider-runnable-track { height:6px; border-radius:4px; background:rgba(255,227,163,.28); }
+.tour-tl input::-moz-range-track { height:6px; border-radius:4px; background:rgba(255,227,163,.28); }
+.tour-tl input::-webkit-slider-thumb { -webkit-appearance:none; width:24px; height:24px; margin-top:-9px; border-radius:50%; background:#fff3c4; border:2px solid #d29a2a; box-shadow:0 0 8px rgba(255,200,90,.9); }
+.tour-tl input::-moz-range-thumb { width:22px; height:22px; border-radius:50%; background:#fff3c4; border:2px solid #d29a2a; }
+.tour-row { display:flex; align-items:center; gap:10px; }
+.tour-b { position:relative; width:54px; height:54px; border-radius:50%; display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer; color:#ffe3a3; font:20px 'Fraunces',Georgia,serif;
+  background:radial-gradient(circle at 35% 30%,#a06a35,#5e3716 70%); border:2.5px solid #d9a95a; box-shadow:0 3px 0 #3e220c, 0 0 10px rgba(255,200,110,.3); }
+.tour-b.s { width:44px; height:44px; font-size:18px; }
+.tour-b small { position:absolute; font-size:9px; font-weight:700; }
+.tour-b:active { transform:translateY(2px); box-shadow:none; }
+.tour-b.off::after { content:''; position:absolute; left:8px; right:8px; top:50%; height:2.5px; background:#ffd9a0; transform:rotate(-45deg); border-radius:2px; }
+.tour-time { font-size:14px; color:#e8d6ae; white-space:nowrap; }
+.tour-speed { margin-left:auto; min-width:56px; height:44px; border-radius:999px; border:2px solid #d9a95a; background:rgba(94,55,22,.6); color:#ffe3a3; font:700 15px 'Fraunces',Georgia,serif; cursor:pointer; }
+@media (max-width:360px) { .tour-row { gap:6px; } .tour-time { font-size:12px; } }
+/* the drawn browser menus in the install scene (look like the phone's own menus, so they use a plain system font) */
+.tour-ill { position:fixed; inset:0; pointer-events:none; z-index:2; font:15px Roboto,'Segoe UI',Arial,sans-serif; color:#202124; }
+.ti-url { position:absolute; left:0; right:0; height:54px; display:flex; align-items:center; gap:8px; padding:0 12px; background:#f1f3f4; box-shadow:0 1px 5px rgba(0,0,0,.35); }
+.ti-url.top { top:0; } .ti-url.bottom { bottom:var(--tour-bottom,0px); transition:bottom .3s; }
+.ti-url span { flex:1; background:#fff; border-radius:20px; padding:8px 12px; overflow:hidden; white-space:nowrap; }
+.ti-url b { width:32px; text-align:center; font-size:22px; font-weight:700; }
+.ti-menu { position:absolute; right:8px; top:50px; width:220px; border-radius:12px; background:#fff; box-shadow:0 6px 24px rgba(0,0,0,.5); overflow:hidden; }
+.ti-menu.ios { top:auto; bottom:calc(var(--tour-bottom,0px) + 62px); }
+.ti-menu div, .ti-sheet > div { padding:12px 16px; }
+.ti-menu .hl, .ti-sheet .hl { background:#e8f0fe; }
+.ti-sheet { position:absolute; left:10px; right:10px; top:32%; border-radius:16px; background:#fff; box-shadow:0 -4px 24px rgba(0,0,0,.45); padding:8px 6px; }
+.ti-sheet.ios { top:auto; bottom:calc(var(--tour-bottom,0px) + 64px); } .ti-sheet.ios.top { bottom:auto; top:18%; }
+.ti-sheet h4 { margin:6px 10px 6px; font-size:17px; font-weight:600; }
+.ti-opt { border-radius:10px; }
+.ti-hd { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.ti-hd h4 { margin:0; font-size:16px; } .ti-hd span { color:#007aff; } .ti-hd b { color:#007aff; padding:6px 10px; border-radius:8px; }
+.ti-tog { display:flex; justify-content:space-between; align-items:center; }
+.ti-tog i { width:44px; height:26px; border-radius:13px; background:#34c759; position:relative; }
+.ti-tog i::after { content:''; position:absolute; right:2px; top:2px; width:22px; height:22px; border-radius:50%; background:#fff; }
+@media (prefers-reduced-motion: reduce) { .tour-rip { animation-duration:.01s; } }

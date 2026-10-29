@@ -1,5 +1,5 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
-// "What's new" with a long list, on a small phone: the list scrolls by finger on the Home card,
+// "What's New" with a long list, on a small phone: the list scrolls by finger on the Home card,
 // the Settings panel scrolls to show everything, and the buttons stay reachable.
 const { chromium } = require('playwright');
 let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m); if (!c) f++; };

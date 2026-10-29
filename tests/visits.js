@@ -24,7 +24,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   await p.locator('#privacy .vs-sw').click(); await wait(200); await p.locator('#privacy .panel-btn', { hasText: 'Turn off' }).click(); await wait(200);
   ok(await ev(() => !Visits.counting() && localStorage.getItem('tt:count') === '"off"'), 'Turn off: saved on the phone as tt:count');
   await ev(() => MM.go('settings')); await wait(300);
-  ok(await ev(() => { const sh = document.querySelector('#settings .sheet'); return sh.children[0].classList.contains('supd') && sh.children[1].classList.contains('vswitch'); }), 'Settings: switch right under App update, before the passcode');
+  ok(await ev(() => { const sh = document.querySelector('#settings .sheet'); return sh.children[0].classList.contains('supd') && sh.children[1].classList.contains('tour-card') && sh.children[2].classList.contains('vswitch'); }), 'Settings: switch under App update and the tour card, before the passcode');
   ok(await ev(() => document.querySelector('#settings .vs-sw').getAttribute('aria-checked') === 'false'), 'Settings shows the same choice (off)');
   ok(await ev(() => BACKUP_KEYS.test('tt:count')), 'the choice is included in backups');
   await ev(() => MM.Pass.forget()); ok(await ev(() => !Visits.counting()), '"Forgot passcode" keeps the choice');

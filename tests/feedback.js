@@ -13,7 +13,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   await p.evaluate(() => MM.go('privacy')); await p.waitForTimeout(200);
   ok(await p.evaluate(() => [...document.querySelectorAll('#privacy .sbtn')].some(x => /Share feedback/.test(x.textContent))), 'Privacy & Safety has "Share feedback (anonymous)"');
   await p.evaluate(() => MM.go('settings')); await p.waitForTimeout(200);
-  ok(await p.evaluate(() => { const sh = document.querySelector('#settings .sheet'); return /Share feedback/.test(sh.children[2].textContent); }), 'Settings has it too, before the passcode');
+  ok(await p.evaluate(() => { const sh = document.querySelector('#settings .sheet'); return /Share feedback/.test(sh.children[3].textContent); }), 'Settings has it too, before the passcode');
   await p.locator('#settings .fb-open').click(); await p.waitForTimeout(300);
   ok(await p.evaluate(() => MM.cur === 'feedback' && document.querySelectorAll('#feedback textarea').length === 1 && document.querySelectorAll('#feedback input').length === 0), 'one box, no other fields');
   ok(await p.evaluate(() => /kind and respectful/.test(document.querySelector('#feedback .sheet').textContent)), 'asks people to keep it kind and respectful');

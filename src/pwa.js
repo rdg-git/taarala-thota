@@ -2,7 +2,7 @@
 // ============================================================
 // INSTALLABLE APP: register the offline helper, keep pictures for offline play,
 // and show "A new version is ready" on Home only (never during a game, never forced),
-// with a "What's new" button that lists the new version's notes before the person decides.
+// with a "What's New" button that lists the new version's notes before the person decides.
 // After "Later", the person is reminded the next time the app opens, and Settings always has an "App update"
 // section (outside the passcode, since updating never touches saved data) that is pressable only when a version waits.
 // ============================================================
@@ -32,7 +32,7 @@ function setupPWA() {
     });
   }).catch(() => {});
 }
-// Ask the waiting (new) version for its "What's new" notes: a list of releases, newest first.
+// Ask the waiting (new) version for its "What's New" notes: a list of releases, newest first.
 // Only short plain-text lines are accepted. (An older helper may send a plain list of lines instead.)
 function askWhatsNew(worker) {
   const clean = (n) => (Array.isArray(n) ? n : []).filter(x => typeof x === 'string' && x.trim()).slice(0, 8).map(x => x.slice(0, 200));
@@ -56,12 +56,12 @@ function releaseLabel(r) {
   const mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][+m[2] - 1] || '';
   return (+m[3]) + ' ' + mon + ' ' + m[1] + (m[4] ? ' (update ' + (m[4].charCodeAt(0) - 96) + ')' : '');
 }
-// The "What's new" list (plain text only), used on the update card and in Settings: every release newer than this one.
+// The "What's New" list (plain text only), used on the update card and in Settings: every release newer than this one.
 async function whatsNewBox() {
   const all = PWA.reg && PWA.reg.waiting ? await askWhatsNew(PWA.reg.waiting) : null;
   let rel = (all || []).filter(r => !r.release || r.release > APP_RELEASE);
   if (!rel.length) rel = [{ release: '', notes: ['Improvements and fixes.'] }];
-  const box = el('div', 'wn-box'); box.appendChild(el('div', 'wn-title', 'What\u2019s new'));
+  const box = el('div', 'wn-box'); box.appendChild(el('div', 'wn-title', 'What\u2019s New'));
   rel.forEach(r => {
     if (rel.length > 1 && r.release) box.appendChild(el('div', 'wn-date', releaseLabel(r.release)));
     const ul = el('ul', 'wn-list');
@@ -82,7 +82,7 @@ function showUpdateCard(S, fromBadge) {
   if (!S || S.panel || !PWA.reg || !PWA.reg.waiting || (!fromBadge && PWA.dismissed)) return;
   const ov = showPanel(S, { title: 'A new version is ready',
     text: 'A new version of Taarala Thota (Garden of Stars) is ready. Your contacts, progress and settings stay exactly as they are.',
-    buttons: [{ label: 'What\u2019s new', secondary: true, keepOpen: true, fn: async () => {
+    buttons: [{ label: 'What\u2019s New', secondary: true, keepOpen: true, fn: async () => {
                 const card = ov.querySelector('.panel-card'), btn = [...ov.querySelectorAll('.panel-btn')].find(b => /new/.test(b.textContent));
                 if (!card || card.querySelector('.wn-box')) return;
                 card.insertBefore(await whatsNewBox(), card.querySelector('.panel-btns'));

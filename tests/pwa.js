@@ -57,8 +57,8 @@ const SW = path.join(__dirname, '..', 'public', 'sw.js');
     await p.locator('#home-view .panel-btn', { hasText: 'What' }).click(); await wait(600);
     const wn = await ev(() => [...document.querySelectorAll('#home-view .wn-list li')].map(li => li.textContent));
     const expected = ['Test note for a newer release.'];   // only releases newer than the one running
-    ok(wn.length === expected.length && wn.every((t, i) => t === expected[i]), "What's new lists the new version's notes (" + wn.length + ')');
-    ok(await ev(() => !!document.querySelector('#home-view .panel-card') && ![...document.querySelectorAll('#home-view .panel-btn')].some(b => /new/.test(b.textContent))), "after reading What's new, the card stays open with Later and Update now");
+    ok(wn.length === expected.length && wn.every((t, i) => t === expected[i]), "What's New lists the new version's notes (" + wn.length + ')');
+    ok(await ev(() => !!document.querySelector('#home-view .panel-card') && ![...document.querySelectorAll('#home-view .panel-btn')].some(b => /new/.test(b.textContent))), "after reading What's New, the card stays open with Later and Update now");
     await p.locator('#home-view .panel-btn', { hasText: 'Update now' }).click();
     await p.waitForLoadState('load'); await wait(2000);
     ok(await ev(async () => (await caches.keys()).includes('tt-core-test-new-version')), 'Update now: the new version is running');

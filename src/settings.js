@@ -111,11 +111,12 @@ function renderSettings(S, view, data) {
   ({ create: viewCreate, unlock: viewUnlock, forgot: viewForgot, list: viewList, form: viewForm, eraseall: viewEraseAll, backup: viewBackup, restore: viewRestore })[view](S, sh, data || {});
   if (/^(create|unlock|forgot)$/.test(view)) { sh.appendChild(tx('div', 'snote', SETTINGS_NOTE)); }
   const ub = tx('div', 'supd'); sh.insertBefore(ub, sh.firstChild); S.updBox = ub; refreshUpdateBox(S);
-  const vs = visitSwitch(S); vs.classList.add('in-settings'); ub.after(vs);       // visit counting: before the passcode too
+  const tc = tourCard('settings'); tc.classList.add('in-settings'); ub.after(tc);  // "Take a tour" invitation, right under App update
+  const vs = visitSwitch(S); vs.classList.add('in-settings'); tc.after(vs);       // visit counting: before the passcode too
   const fb = feedbackButton('settings'); fb.classList.add('in-settings'); vs.after(fb);   // anonymous feedback, also before the passcode
 }
 // App update: the first thing on every Settings page, even before the passcode (updating never touches saved data).
-// Kept compact. Up to date: one quiet line that can't be tapped. Update waiting: Update now, then Update later and What's new.
+// Kept compact. Up to date: one quiet line that can't be tapped. Update waiting: Update now, then Update later and What's New.
 function refreshUpdateBox(S) {
   const ub = S.updBox; if (!ub || !ub.isConnected) return;
   ub.innerHTML = '';
@@ -131,8 +132,8 @@ function refreshUpdateBox(S) {
   const row = tx('div', 'supd-row');
   row.appendChild(btn('Update later', 'secondary small', () => { PWA.dismissed = true; S.updLater = true; refreshUpdateBox(S); }));
   let box = null;
-  const wn = btn('What\u2019s new', 'secondary small', async () => {          // tap again to hide the list
-    if (box) { box.remove(); box = null; wn.textContent = 'What\u2019s new'; return; }
+  const wn = btn('What\u2019s New', 'secondary small', async () => {          // tap again to hide the list
+    if (box) { box.remove(); box = null; wn.textContent = 'What\u2019s New'; return; }
     box = await whatsNewBox(); ub.appendChild(box); wn.textContent = 'Hide what\u2019s new';
   });
   row.appendChild(wn);
@@ -396,6 +397,7 @@ function buildPrivacy() {
   addNav(S, { icons: true });
   addText(S, 'loved-title', 90, 160, 560, 130, 74, 'Privacy & Safety');
   const sheet = el('div', 'sheet'); place(sheet, 45, 330, 763, 1470, S); S.art.appendChild(sheet);
+  sheet.appendChild(tourCard('privacy'));                         // "Take a tour" invitation, at the very top
   const ol = tx('ol', 'plist'); PRIVACY_POINTS.forEach(p => ol.appendChild(tx('li', '', p))); sheet.appendChild(ol);
   ol.children[1].appendChild(visitSwitch(S));                    // the visit-counting switch, right under the point that explains it
   // links to the outside services mentioned above (they open in a new tab; nothing is sent by the app)

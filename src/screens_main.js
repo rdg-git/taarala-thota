@@ -37,7 +37,7 @@ function buildHome() {
   place(seal, 748, 1752, 70, 70, S); S.art.appendChild(seal);
   S.onShow = () => {
     Music.paint();
-    setTimeout(() => { if (CUR !== 'home-view') return; if (PWA.updateReady && !PWA.dismissed) showUpdateCard(); else maybeRemindBackup(S); }, 700);
+    setTimeout(() => { if (CUR !== 'home-view' || Tour.on) return; if (PWA.updateReady && !PWA.dismissed) showUpdateCard(); else maybeRemindBackup(S); }, 700);
   };
 }
 
