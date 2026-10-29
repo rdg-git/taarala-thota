@@ -13,24 +13,25 @@ const APP_NAME = 'Taarala Thota (Garden of Stars)';   // the name always travels
 // ------------------------------------------------------------
 const SETTINGS_NOTE = 'Contacts saved here stay only on this phone, inside ' + APP_NAME + '. Anyone using this phone can call them from Loved Ones and see their names and photos, but only someone with the passcode can see or change the numbers. Your phone’s own contacts are never touched.';
 const FORGOT_TEXT = 'If you forget this passcode, the contacts you saved in ' + APP_NAME + ' will be erased, and you’ll need to add them again. Your phone’s own contacts and WhatsApp are not affected.';
+const ABOUT_TEXT = 'Taarala Thota is a personal, non-commercial learning project. It\u2019s free, has no ads and isn\u2019t for sale. I\u2019ve worked hard to protect privacy and get things right, but I\u2019m not a legal or security professional, and there may be mistakes. If you notice anything that could cause harm, please tell me through Share Feedback and I\u2019ll fix it as quickly as I can.';
 const DAILY_NOTICE = 'Contacts saved here stay only on this phone. Your phone’s own contacts are never touched.';
 const OFFICIAL_ADDRESS = 'taarala-thota.pages.dev';   // the app's one official address (people's saved data belongs to it)
 const PRIVACY_POINTS = [
   // Application data (what the app saves) is kept apart from infrastructure data (what any website's host handles):
   'Your saved data stays on this phone: contacts and their photos, your passcode, game progress, stats and settings are stored only in this browser on this phone. The app never sends them anywhere, and the creator cannot see them.',
   'The app has no sign-in, no ads and no personal tracking. To know roughly how many people visit, it counts visits anonymously with Cloudflare Web Analytics, which by Cloudflare’s description uses no cookies, stores nothing on your phone and builds no personal profile. It never sees anything you save in the app or what you do in it. You can switch counting off below or in Settings. If your browser sends a “Global Privacy Control” signal, your visits are never counted.',
-  'Like every website, the app is delivered by a hosting service (Cloudflare). When your phone downloads the app or checks for an update, the hosting service automatically handles basic technical information, such as your internet (IP) address, browser type and the time, to deliver and protect the site. This never includes your saved data. The creator does not receive these details (apart from overall totals the hosting service may show, such as the number of visits) and has no control or oversight over how the hosting service handles them: that is covered by the hosting service\u2019s own privacy policy.',
+  'Like every website, the app is delivered by a hosting service (Cloudflare). When your phone downloads the app, checks for an update, sends an anonymous visit count or sends feedback, the hosting service automatically handles basic technical information, such as your internet (IP) address, browser type and the time, to deliver and protect the site. This never includes your saved data. The creator does not receive these details (apart from overall totals the hosting service may show, such as the number of visits) and has no control or oversight over how the hosting service handles them: that is covered by the hosting service\u2019s own privacy policy.',
   'Contacts you save here exist only in this app. Your phone’s own contacts and WhatsApp are never changed.',
   'Anyone using this phone can call your saved contacts from Loved Ones and see their names and photos. Seeing or changing numbers needs your passcode.',
   'Keep your phone locked with a PIN, fingerprint or face unlock. That also protects this app’s data.',
   'Choose a passcode you’ll remember. If you forget it, your saved contacts must be erased and added again.',
   'Back up regularly, and keep the backup file private. Its password can\u2019t be recovered. If you keep it in a cloud drive or email, that service\u2019s own privacy policy applies (the file stays locked with your password).',
   'On iPhone, add the app to your Home Screen, so your data is kept even if you don’t open it for a while.',
-  'So the games work without internet, the app quietly saves its pictures on your phone (about 5 MB) the first time it opens. On mobile data this counts toward your data plan; on Wi-Fi it costs nothing extra.',
-  'Closing the app or your browser keeps everything. Clearing your browser’s site data (cookies and site data), removing the app, or using a private/incognito window deletes it all, unless you have a backup. To bring it back: set a passcode, then Settings → Restore From A Backup.',
-  'Feedback you send from the app is anonymous: we don’t ask for your name or email, and nothing about you is stored with it. It is kept by the app’s hosting service (Cloudflare) so the creator can read it. Please don’t include personal details.',
-  'Tapping a contact only opens WhatsApp. Nothing is ever sent automatically. Once WhatsApp opens, WhatsApp\u2019s own privacy policy applies.',
-  'Sharing your phone with someone? Keep the screen on this app: on iPhone turn on Guided Access (Settings \u2192 Accessibility \u2192 Guided Access), open the app and triple-click the side button; on Android turn on App pinning (Settings \u2192 Security \u2192 App pinning) and pin the app from the recent-apps view. To stop the screen turning sideways, use your phone\u2019s Rotation Lock (iPhone: Control Center; Android: quick settings, \u201cAuto-rotate\u201d off).',
+  'So the games work without internet, the app quietly saves its pictures on your phone (about 5 MB, up to 7 MB on older phones) the first time it opens. On mobile data this counts toward your data plan; on Wi-Fi it probably costs nothing extra.',
+  'Closing the app or your browser keeps everything. Clearing your browser’s site data (cookies and site data) deletes it all, and removing the app may too. Anything saved in a private/incognito window is deleted when that window closes. Without a backup it can’t be recovered. To bring it back: set a passcode, then Settings → Restore From A Backup.',
+  'Feedback you send from the app is anonymous: we don’t ask for your name or email, and nothing about you is stored with it. It is kept by the app’s hosting service (Cloudflare) so the creator can read it from time to time, and may share short quotes without anything that identifies you. Please don’t include personal details.',
+  'Tapping a contact opens WhatsApp with that person\u2019s number (through WhatsApp\u2019s own wa.me link). Nothing is ever sent automatically. From then on, WhatsApp\u2019s own privacy policy applies.',
+  'Sharing your phone with someone? Keep the screen on this app: on iPhone turn on Guided Access (Settings \u2192 Accessibility \u2192 Guided Access), open the app and triple-click the side button; on Android turn on App pinning (Settings \u2192 Security \u2192 App pinning; the exact menu varies by phone) and pin the app from the recent-apps view. To stop the screen turning sideways, use your phone\u2019s Rotation Lock (iPhone: Control Center; Android: quick settings, \u201cAuto-rotate\u201d off).',
   'Only use the official address' + (OFFICIAL_ADDRESS ? ': ' + OFFICIAL_ADDRESS + '.' : ' shared by the creator.') + ' Copies elsewhere aren’t ours.'
 ];
 
@@ -408,6 +409,9 @@ function buildPrivacy() {
   });
   sheet.appendChild(links);
   sheet.appendChild(feedbackButton('privacy'));                 // anonymous feedback
+  // About This Project: a personal, non-commercial learning project (plain text), just above the signature
+  const ab = tx('div', 'about-box'); ab.appendChild(tx('div', 'about-title', 'About This Project'));
+  ab.appendChild(tx('p', '', ABOUT_TEXT)); sheet.appendChild(ab);
   S.onShow = () => allowZoom(true); S.onHide = () => allowZoom(false);   // text page: two-finger zoom allowed
   // the maker's signature: seal, "Made with care by rdg" with its shooting star, and the copyright line
   const mk = tx('div', 'maker'), seal = tx('div', 'maker-big'); seal.innerHTML = makerSealSvg(); mk.appendChild(seal);
