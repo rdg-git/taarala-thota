@@ -35,7 +35,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
     if (w === 390) {
       await p.evaluate(() => MM.go('games')); await p.waitForTimeout(300);
       await p.locator('#games .upd-badge').click(); await p.waitForTimeout(300);
-      ok(await p.evaluate(() => /new version is ready/.test((document.querySelector('#games .panel-card') || {}).textContent || '')), 'tapping the pill opens the update card');
+      ok(await p.evaluate(() => /New Version Is Ready/.test((document.querySelector('#games .panel-card') || {}).textContent || '')), 'tapping the pill opens the update card');
       await p.locator('#games .panel-btn', { hasText: 'What' }).click(); await p.waitForTimeout(500);
       const t = await p.evaluate(() => ({ dates: [...document.querySelectorAll('#games .wn-date')].map(e => e.textContent), items: [...document.querySelectorAll('#games .wn-list li')].map(e => e.textContent) }));
       ok(t.items.join('|') === 'Newest note.|Skipped note.', "What's New: newer and skipped releases, not the installed one (" + t.items.join(' / ') + ')');

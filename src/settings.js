@@ -127,7 +127,7 @@ function refreshUpdateBox(S) {
     const line = tx('div', 'supd-line'); line.appendChild(tx('span', '', 'Update waiting'));
     line.appendChild(btn('Update Now', 'small', applyUpdate)); ub.appendChild(line); return;
   }
-  ub.appendChild(tx('div', 'supd-title', 'New update available'));
+  ub.appendChild(tx('div', 'supd-title', 'New Update Available'));
   ub.appendChild(btn('Update Now', 'small', applyUpdate));
   const row = tx('div', 'supd-row');
   row.appendChild(btn('Update Later', 'secondary small', () => { PWA.dismissed = true; S.updLater = true; refreshUpdateBox(S); }));
@@ -145,10 +145,10 @@ function refreshUpdateBox(S) {
 // Create (8+ characters, typed twice), Unlock (with waiting after 5 wrong tries), Forgot (type ERASE).
 // ------------------------------------------------------------
 function viewCreate(S, sh) {
-  sh.appendChild(tx('h3', '', 'Create a passcode'));
+  sh.appendChild(tx('h3', '', 'Create A Passcode'));
   sh.appendChild(tx('p', '', 'The passcode protects your contacts’ numbers. Use at least ' + PASS_MIN + ' characters (letters, numbers or a short phrase).'));
   sh.appendChild(tx('p', 'swarn', FORGOT_TEXT));
-  const a = field('Passcode', 'password', { autocomplete: 'new-password' }), b = field('Type it again', 'password', { autocomplete: 'new-password' });
+  const a = field('Passcode', 'password', { autocomplete: 'new-password' }), b = field('Type It Again', 'password', { autocomplete: 'new-password' });
   sh.append(a.wrap, b.wrap, showToggle([a.input, b.input]));
   const err = tx('p', 'serr'); sh.appendChild(err);
   sh.appendChild(btn('Save Passcode', '', async () => {
@@ -161,10 +161,10 @@ function viewCreate(S, sh) {
 function showToggle(inputs) {
   const w = tx('label', 'scheck'); const c = document.createElement('input'); c.type = 'checkbox';
   c.addEventListener('change', () => inputs.forEach(i => { i.type = c.checked ? 'text' : 'password'; }));
-  w.append(c, tx('span', '', 'Show passcode')); return w;
+  w.append(c, tx('span', '', 'Show Passcode')); return w;
 }
 function viewUnlock(S, sh) {
-  sh.appendChild(tx('h3', '', 'Enter your passcode'));
+  sh.appendChild(tx('h3', '', 'Enter Your Passcode'));
   sh.appendChild(tx('p', '', 'Settings is locked to protect your contacts’ numbers.'));
   const a = field('Passcode', 'password', { autocomplete: 'current-password' });
   sh.append(a.wrap, showToggle([a.input]));
@@ -187,10 +187,10 @@ function viewUnlock(S, sh) {
   showWait(); S.waitTimer = setInterval(showWait, 1000);
 }
 function viewForgot(S, sh) {
-  sh.appendChild(tx('h3', '', 'Forgot your passcode?'));
+  sh.appendChild(tx('h3', '', 'Forgot Your Passcode?'));
   sh.appendChild(tx('p', '', FORGOT_TEXT));
   sh.appendChild(tx('p', '', 'Your games, progress and stats stay as they are.'));
-  const a = field('To confirm, type ERASE', 'text', { caps: 'characters' }); sh.appendChild(a.wrap);
+  const a = field('To Confirm, Type ERASE', 'text', { caps: 'characters' }); sh.appendChild(a.wrap);
   const err = tx('p', 'serr'); sh.appendChild(err);
   sh.appendChild(btn('Erase Saved Contacts', 'danger', () => {
     if (a.input.value.trim().toUpperCase() !== 'ERASE') { err.textContent = 'Please type the word ERASE to confirm.'; return; }
@@ -205,7 +205,7 @@ function viewForgot(S, sh) {
 // ------------------------------------------------------------
 function viewList(S, sh) {
   const list = Contacts.list().sort((x, y) => x.name.localeCompare(y.name));
-  sh.appendChild(tx('h3', '', 'Your contacts (' + list.length + ' of ' + CONTACT_MAX + ')'));
+  sh.appendChild(tx('h3', '', 'Your Contacts (' + list.length + ' of ' + CONTACT_MAX + ')'));
   if (!list.length) sh.appendChild(tx('p', '', 'No contacts yet. Add the people you call most, and they’ll appear in Loved Ones.'));
   list.forEach(c => {
     const r = tx('button', 'crow'); r.type = 'button';
@@ -244,13 +244,13 @@ function circleFor(c, cls) {
 function viewForm(S, sh, data) {
   const c = data.c || null, edit = !!c;
   let photo = edit && isSafePhoto(c.photo) ? c.photo : '', accent = edit ? (c.accent || '') : '';
-  sh.appendChild(tx('h3', '', edit ? 'Edit contact' : 'Add a contact'));
+  sh.appendChild(tx('h3', '', edit ? 'Edit Contact' : 'Add A Contact'));
   const nm = field('Name', 'text', { value: edit ? c.name : '', max: NAME_MAX, caps: 'words', placeholder: 'e.g. Grandma' });
-  const ph = field('WhatsApp number', 'tel', { value: edit ? c.phone : '+', inputmode: 'tel', placeholder: '+1 555 123 4567' });
+  const ph = field('WhatsApp Number', 'tel', { value: edit ? c.phone : '+', inputmode: 'tel', placeholder: '+1 555 123 4567' });
   sh.append(nm.wrap, ph.wrap, tx('p', 'shint', 'Start with + and the country code, for example +1 for Canada or +91 for India.'));
   // photo
   const prow = tx('div', 'prow'); const prev = tx('span', 'pprev'); prow.appendChild(prev);
-  const pbtns = tx('div', 'pbtns'); prow.appendChild(pbtns); sh.appendChild(tx('span', 'slabel', 'Photo (optional)')); sh.appendChild(prow);
+  const pbtns = tx('div', 'pbtns'); prow.appendChild(pbtns); sh.appendChild(tx('span', 'slabel', 'Photo (Optional)')); sh.appendChild(prow);
   const file = document.createElement('input'); file.type = 'file'; file.accept = 'image/*'; file.style.display = 'none'; sh.appendChild(file);
   const choose = btn('Choose Photo', 'secondary small', () => file.click());
   const remove = btn('Remove Photo', 'secondary small', () => { photo = ''; paintPhoto(); });
@@ -263,7 +263,7 @@ function viewForm(S, sh, data) {
     catch (e) { err.textContent = 'Sorry, that picture couldn’t be used. Please try a different photo.'; }
   });
   // colour (used when there is no photo)
-  const sw = tx('div', 'swatches'); sh.appendChild(tx('span', 'slabel', 'Circle colour')); sh.appendChild(sw);
+  const sw = tx('div', 'swatches'); sh.appendChild(tx('span', 'slabel', 'Circle Colour')); sh.appendChild(sw);
   CONTACT_ACCENTS.forEach(col => {
     const b = tx('button', 'swatch');
     b.type = 'button';
@@ -306,7 +306,7 @@ function viewForm(S, sh, data) {
 // Lists exactly what is and is not erased. Requires typing ERASE.
 // ------------------------------------------------------------
 function viewEraseAll(S, sh) {
-  sh.appendChild(tx('h3', '', 'Erase all ' + APP_NAME + ' data?'));
+  sh.appendChild(tx('h3', '', 'Erase All ' + APP_NAME + ' Data?'));
   sh.appendChild(tx('p', '', 'This erases only what this app saved in this browser on this phone:'));
   const yes = tx('ul', 'slist');
   ['your saved contacts and their photos', 'your passcode', 'game progress and stats', 'your settings (like music on or off, and visit counting, which turns back on)'].forEach(t => yes.appendChild(tx('li', '', t)));
@@ -316,7 +316,7 @@ function viewEraseAll(S, sh) {
   ['your phone\u2019s own contacts or photo gallery', 'WhatsApp', 'other apps or websites', 'any backup files you saved'].forEach(t => no.appendChild(tx('li', '', t)));
   sh.appendChild(no);
   sh.appendChild(tx('p', '', 'This app uses no cookies. This can\u2019t be undone.'));
-  const a = field('To confirm, type ERASE', 'text', { caps: 'characters' }); sh.appendChild(a.wrap);
+  const a = field('To Confirm, Type ERASE', 'text', { caps: 'characters' }); sh.appendChild(a.wrap);
   const err = tx('p', 'serr'); sh.appendChild(err);
   sh.appendChild(btn('Erase All App Data', 'danger', () => {
     if (a.input.value.trim().toUpperCase() !== 'ERASE') { err.textContent = 'Please type the word ERASE to confirm.'; return; }
@@ -331,10 +331,10 @@ function viewEraseAll(S, sh) {
 // The file work itself (locking, checking) is in backup.js.
 // ------------------------------------------------------------
 function viewBackup(S, sh) {
-  sh.appendChild(tx('h3', '', 'Back up your data'));
+  sh.appendChild(tx('h3', '', 'Back Up Your Data'));
   sh.appendChild(tx('p', '', 'This makes one locked file with your contacts (and their photos), game progress, stats and settings. Your passcode is not included.'));
   sh.appendChild(tx('p', 'swarn', 'Choose a backup password of at least ' + PASS_MIN + ' characters. There is no way to recover it: if you forget it, this backup can\u2019t be opened. It can be the same as your passcode or different.'));
-  const a = field('Backup password', 'password', { autocomplete: 'new-password' }), b = field('Type it again', 'password', { autocomplete: 'new-password' });
+  const a = field('Backup Password', 'password', { autocomplete: 'new-password' }), b = field('Type It Again', 'password', { autocomplete: 'new-password' });
   sh.append(a.wrap, b.wrap, showToggle([a.input, b.input]));
   const err = tx('p', 'serr'); sh.appendChild(err);
   const go1 = btn('Create Backup File', '', async () => {
@@ -347,14 +347,14 @@ function viewBackup(S, sh) {
       if (r === 'cancelled') { err.textContent = 'Backup not saved. You can try again any time.'; go1.disabled = false; return; }
       Store.set('lastBackup', nowMs()); Store.del('backupSnooze');
       toast(S, 'Backup saved'); renderSettings(S, 'list');
-      showPanel(S, { title: 'Backup saved', text: 'Keep the file somewhere private, such as your own cloud drive or email. To restore, open Settings \u2192 Restore From A Backup.', buttons: [{ label: 'OK' }] });
+      showPanel(S, { title: 'Backup Saved', text: 'Keep the file somewhere private, such as your own cloud drive or email. To restore, open Settings \u2192 Restore From A Backup.', buttons: [{ label: 'OK' }] });
     } catch (e) { console.error(e); err.textContent = 'Sorry, the backup couldn\u2019t be made on this phone.'; go1.disabled = false; }
   });
   sh.appendChild(go1);
   sh.appendChild(btn('Cancel', 'secondary', () => renderSettings(S, 'list')));
 }
 function viewRestore(S, sh) {
-  sh.appendChild(tx('h3', '', 'Restore from a backup'));
+  sh.appendChild(tx('h3', '', 'Restore From A Backup'));
   sh.appendChild(tx('p', '', 'Choose a Taarala Thota backup file (its name ends in .ttbackup) and type its backup password.'));
   sh.appendChild(tx('p', 'swarn', 'Restoring replaces all ' + APP_NAME + ' data on this phone with what is in the backup. Your current passcode stays the same.'));
   const file = document.createElement('input'); file.type = 'file'; file.style.display = 'none'; sh.appendChild(file);
@@ -364,7 +364,7 @@ function viewRestore(S, sh) {
     fname.textContent = file.files && file.files[0] ? 'Chosen: ' + file.files[0].name : 'No file chosen.';
     err.textContent = '';
   });
-  const a = field('Backup password', 'password', { autocomplete: 'off' }); sh.append(a.wrap, showToggle([a.input]));
+  const a = field('Backup Password', 'password', { autocomplete: 'off' }); sh.append(a.wrap, showToggle([a.input]));
   const err = tx('p', 'serr'); sh.appendChild(err);
   const open = btn('Open Backup', '', async () => {
     const f = file.files && file.files[0];
@@ -374,7 +374,7 @@ function viewRestore(S, sh) {
       const b = await readBackupFile(f, a.input.value);
       err.textContent = ''; open.disabled = false;
       const when = new Date(b.created), d = when.getDate() + ' ' + fmtDay(when.getTime()).split(' ')[1] + ' ' + when.getFullYear();
-      showPanel(S, { title: 'Replace all app data?',
+      showPanel(S, { title: 'Replace All App Data?',
         text: 'This backup is from ' + d + ' and has ' + b.contacts + (b.contacts === 1 ? ' contact' : ' contacts') + '. Replace all ' + APP_NAME + ' data on this phone with it? Your current passcode stays the same.',
         buttons: [{ label: 'Cancel', secondary: true }, { label: 'Replace', fn: () => {
           if (!applyBackup(b)) { err.textContent = 'This phone has no room left to restore that backup.'; return; }

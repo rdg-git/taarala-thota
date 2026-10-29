@@ -210,7 +210,7 @@ function finishBubbleLevel() {
     showPanel(S, { icon: '⭐', title: 'Level ' + G.n + ' Complete!', text: info,
       buttons: [{ label: 'Bubble Pop Home', secondary: true, fn: () => go('bubble-home') }, { label: 'Next Level', fn: () => startBubbleLevel(G.n + 1) }] });
   } else {
-    showPanel(S, { icon: '🫧', title: 'So close!', text: info,
+    showPanel(S, { icon: '🫧', title: 'So Close!', text: info,
       buttons: [{ label: 'Bubble Pop Home', secondary: true, fn: () => go('bubble-home') }, { label: 'Try Again', fn: () => beginBubbleLevel(G.n) }] });
   }
 }

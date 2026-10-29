@@ -3,6 +3,10 @@
 What changed in each release of Taarala Thota (Garden of Stars), newest first.
 Before updating, the app’s "What’s New" shows the entries newer than the version on the phone.
 
+## 2026-10-29
+
+- Minor Formatting.
+
 ## 2026-10-28f
 
 - New “Take A Tour” on the Privacy & Safety page and in Settings: a short walkthrough that plays on its own and shows where to tap, with pause, speed and a bar to go back or forward.

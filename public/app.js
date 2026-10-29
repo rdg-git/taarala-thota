@@ -1,5 +1,5 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
-const APP_RELEASE = '2026-10-28f';   // this version's release label (newest entry in src/whats_new.json)
+const APP_RELEASE = '2026-10-29';   // this version's release label (newest entry in src/whats_new.json)
 // ============================================================
 // CORE: helpers, storage, picture-screen system, navigation
 // ============================================================
@@ -1099,7 +1099,7 @@ function refreshUpdateBox(S) {
     const line = tx('div', 'supd-line'); line.appendChild(tx('span', '', 'Update waiting'));
     line.appendChild(btn('Update Now', 'small', applyUpdate)); ub.appendChild(line); return;
   }
-  ub.appendChild(tx('div', 'supd-title', 'New update available'));
+  ub.appendChild(tx('div', 'supd-title', 'New Update Available'));
   ub.appendChild(btn('Update Now', 'small', applyUpdate));
   const row = tx('div', 'supd-row');
   row.appendChild(btn('Update Later', 'secondary small', () => { PWA.dismissed = true; S.updLater = true; refreshUpdateBox(S); }));
@@ -1117,10 +1117,10 @@ function refreshUpdateBox(S) {
 // Create (8+ characters, typed twice), Unlock (with waiting after 5 wrong tries), Forgot (type ERASE).
 // ------------------------------------------------------------
 function viewCreate(S, sh) {
-  sh.appendChild(tx('h3', '', 'Create a passcode'));
+  sh.appendChild(tx('h3', '', 'Create A Passcode'));
   sh.appendChild(tx('p', '', 'The passcode protects your contacts’ numbers. Use at least ' + PASS_MIN + ' characters (letters, numbers or a short phrase).'));
   sh.appendChild(tx('p', 'swarn', FORGOT_TEXT));
-  const a = field('Passcode', 'password', { autocomplete: 'new-password' }), b = field('Type it again', 'password', { autocomplete: 'new-password' });
+  const a = field('Passcode', 'password', { autocomplete: 'new-password' }), b = field('Type It Again', 'password', { autocomplete: 'new-password' });
   sh.append(a.wrap, b.wrap, showToggle([a.input, b.input]));
   const err = tx('p', 'serr'); sh.appendChild(err);
   sh.appendChild(btn('Save Passcode', '', async () => {
@@ -1133,10 +1133,10 @@ function viewCreate(S, sh) {
 function showToggle(inputs) {
   const w = tx('label', 'scheck'); const c = document.createElement('input'); c.type = 'checkbox';
   c.addEventListener('change', () => inputs.forEach(i => { i.type = c.checked ? 'text' : 'password'; }));
-  w.append(c, tx('span', '', 'Show passcode')); return w;
+  w.append(c, tx('span', '', 'Show Passcode')); return w;
 }
 function viewUnlock(S, sh) {
-  sh.appendChild(tx('h3', '', 'Enter your passcode'));
+  sh.appendChild(tx('h3', '', 'Enter Your Passcode'));
   sh.appendChild(tx('p', '', 'Settings is locked to protect your contacts’ numbers.'));
   const a = field('Passcode', 'password', { autocomplete: 'current-password' });
   sh.append(a.wrap, showToggle([a.input]));
@@ -1159,10 +1159,10 @@ function viewUnlock(S, sh) {
   showWait(); S.waitTimer = setInterval(showWait, 1000);
 }
 function viewForgot(S, sh) {
-  sh.appendChild(tx('h3', '', 'Forgot your passcode?'));
+  sh.appendChild(tx('h3', '', 'Forgot Your Passcode?'));
   sh.appendChild(tx('p', '', FORGOT_TEXT));
   sh.appendChild(tx('p', '', 'Your games, progress and stats stay as they are.'));
-  const a = field('To confirm, type ERASE', 'text', { caps: 'characters' }); sh.appendChild(a.wrap);
+  const a = field('To Confirm, Type ERASE', 'text', { caps: 'characters' }); sh.appendChild(a.wrap);
   const err = tx('p', 'serr'); sh.appendChild(err);
   sh.appendChild(btn('Erase Saved Contacts', 'danger', () => {
     if (a.input.value.trim().toUpperCase() !== 'ERASE') { err.textContent = 'Please type the word ERASE to confirm.'; return; }
@@ -1177,7 +1177,7 @@ function viewForgot(S, sh) {
 // ------------------------------------------------------------
 function viewList(S, sh) {
   const list = Contacts.list().sort((x, y) => x.name.localeCompare(y.name));
-  sh.appendChild(tx('h3', '', 'Your contacts (' + list.length + ' of ' + CONTACT_MAX + ')'));
+  sh.appendChild(tx('h3', '', 'Your Contacts (' + list.length + ' of ' + CONTACT_MAX + ')'));
   if (!list.length) sh.appendChild(tx('p', '', 'No contacts yet. Add the people you call most, and they’ll appear in Loved Ones.'));
   list.forEach(c => {
     const r = tx('button', 'crow'); r.type = 'button';
@@ -1216,13 +1216,13 @@ function circleFor(c, cls) {
 function viewForm(S, sh, data) {
   const c = data.c || null, edit = !!c;
   let photo = edit && isSafePhoto(c.photo) ? c.photo : '', accent = edit ? (c.accent || '') : '';
-  sh.appendChild(tx('h3', '', edit ? 'Edit contact' : 'Add a contact'));
+  sh.appendChild(tx('h3', '', edit ? 'Edit Contact' : 'Add A Contact'));
   const nm = field('Name', 'text', { value: edit ? c.name : '', max: NAME_MAX, caps: 'words', placeholder: 'e.g. Grandma' });
-  const ph = field('WhatsApp number', 'tel', { value: edit ? c.phone : '+', inputmode: 'tel', placeholder: '+1 555 123 4567' });
+  const ph = field('WhatsApp Number', 'tel', { value: edit ? c.phone : '+', inputmode: 'tel', placeholder: '+1 555 123 4567' });
   sh.append(nm.wrap, ph.wrap, tx('p', 'shint', 'Start with + and the country code, for example +1 for Canada or +91 for India.'));
   // photo
   const prow = tx('div', 'prow'); const prev = tx('span', 'pprev'); prow.appendChild(prev);
-  const pbtns = tx('div', 'pbtns'); prow.appendChild(pbtns); sh.appendChild(tx('span', 'slabel', 'Photo (optional)')); sh.appendChild(prow);
+  const pbtns = tx('div', 'pbtns'); prow.appendChild(pbtns); sh.appendChild(tx('span', 'slabel', 'Photo (Optional)')); sh.appendChild(prow);
   const file = document.createElement('input'); file.type = 'file'; file.accept = 'image/*'; file.style.display = 'none'; sh.appendChild(file);
   const choose = btn('Choose Photo', 'secondary small', () => file.click());
   const remove = btn('Remove Photo', 'secondary small', () => { photo = ''; paintPhoto(); });
@@ -1235,7 +1235,7 @@ function viewForm(S, sh, data) {
     catch (e) { err.textContent = 'Sorry, that picture couldn’t be used. Please try a different photo.'; }
   });
   // colour (used when there is no photo)
-  const sw = tx('div', 'swatches'); sh.appendChild(tx('span', 'slabel', 'Circle colour')); sh.appendChild(sw);
+  const sw = tx('div', 'swatches'); sh.appendChild(tx('span', 'slabel', 'Circle Colour')); sh.appendChild(sw);
   CONTACT_ACCENTS.forEach(col => {
     const b = tx('button', 'swatch');
     b.type = 'button';
@@ -1278,7 +1278,7 @@ function viewForm(S, sh, data) {
 // Lists exactly what is and is not erased. Requires typing ERASE.
 // ------------------------------------------------------------
 function viewEraseAll(S, sh) {
-  sh.appendChild(tx('h3', '', 'Erase all ' + APP_NAME + ' data?'));
+  sh.appendChild(tx('h3', '', 'Erase All ' + APP_NAME + ' Data?'));
   sh.appendChild(tx('p', '', 'This erases only what this app saved in this browser on this phone:'));
   const yes = tx('ul', 'slist');
   ['your saved contacts and their photos', 'your passcode', 'game progress and stats', 'your settings (like music on or off, and visit counting, which turns back on)'].forEach(t => yes.appendChild(tx('li', '', t)));
@@ -1288,7 +1288,7 @@ function viewEraseAll(S, sh) {
   ['your phone\u2019s own contacts or photo gallery', 'WhatsApp', 'other apps or websites', 'any backup files you saved'].forEach(t => no.appendChild(tx('li', '', t)));
   sh.appendChild(no);
   sh.appendChild(tx('p', '', 'This app uses no cookies. This can\u2019t be undone.'));
-  const a = field('To confirm, type ERASE', 'text', { caps: 'characters' }); sh.appendChild(a.wrap);
+  const a = field('To Confirm, Type ERASE', 'text', { caps: 'characters' }); sh.appendChild(a.wrap);
   const err = tx('p', 'serr'); sh.appendChild(err);
   sh.appendChild(btn('Erase All App Data', 'danger', () => {
     if (a.input.value.trim().toUpperCase() !== 'ERASE') { err.textContent = 'Please type the word ERASE to confirm.'; return; }
@@ -1303,10 +1303,10 @@ function viewEraseAll(S, sh) {
 // The file work itself (locking, checking) is in backup.js.
 // ------------------------------------------------------------
 function viewBackup(S, sh) {
-  sh.appendChild(tx('h3', '', 'Back up your data'));
+  sh.appendChild(tx('h3', '', 'Back Up Your Data'));
   sh.appendChild(tx('p', '', 'This makes one locked file with your contacts (and their photos), game progress, stats and settings. Your passcode is not included.'));
   sh.appendChild(tx('p', 'swarn', 'Choose a backup password of at least ' + PASS_MIN + ' characters. There is no way to recover it: if you forget it, this backup can\u2019t be opened. It can be the same as your passcode or different.'));
-  const a = field('Backup password', 'password', { autocomplete: 'new-password' }), b = field('Type it again', 'password', { autocomplete: 'new-password' });
+  const a = field('Backup Password', 'password', { autocomplete: 'new-password' }), b = field('Type It Again', 'password', { autocomplete: 'new-password' });
   sh.append(a.wrap, b.wrap, showToggle([a.input, b.input]));
   const err = tx('p', 'serr'); sh.appendChild(err);
   const go1 = btn('Create Backup File', '', async () => {
@@ -1319,14 +1319,14 @@ function viewBackup(S, sh) {
       if (r === 'cancelled') { err.textContent = 'Backup not saved. You can try again any time.'; go1.disabled = false; return; }
       Store.set('lastBackup', nowMs()); Store.del('backupSnooze');
       toast(S, 'Backup saved'); renderSettings(S, 'list');
-      showPanel(S, { title: 'Backup saved', text: 'Keep the file somewhere private, such as your own cloud drive or email. To restore, open Settings \u2192 Restore From A Backup.', buttons: [{ label: 'OK' }] });
+      showPanel(S, { title: 'Backup Saved', text: 'Keep the file somewhere private, such as your own cloud drive or email. To restore, open Settings \u2192 Restore From A Backup.', buttons: [{ label: 'OK' }] });
     } catch (e) { console.error(e); err.textContent = 'Sorry, the backup couldn\u2019t be made on this phone.'; go1.disabled = false; }
   });
   sh.appendChild(go1);
   sh.appendChild(btn('Cancel', 'secondary', () => renderSettings(S, 'list')));
 }
 function viewRestore(S, sh) {
-  sh.appendChild(tx('h3', '', 'Restore from a backup'));
+  sh.appendChild(tx('h3', '', 'Restore From A Backup'));
   sh.appendChild(tx('p', '', 'Choose a Taarala Thota backup file (its name ends in .ttbackup) and type its backup password.'));
   sh.appendChild(tx('p', 'swarn', 'Restoring replaces all ' + APP_NAME + ' data on this phone with what is in the backup. Your current passcode stays the same.'));
   const file = document.createElement('input'); file.type = 'file'; file.style.display = 'none'; sh.appendChild(file);
@@ -1336,7 +1336,7 @@ function viewRestore(S, sh) {
     fname.textContent = file.files && file.files[0] ? 'Chosen: ' + file.files[0].name : 'No file chosen.';
     err.textContent = '';
   });
-  const a = field('Backup password', 'password', { autocomplete: 'off' }); sh.append(a.wrap, showToggle([a.input]));
+  const a = field('Backup Password', 'password', { autocomplete: 'off' }); sh.append(a.wrap, showToggle([a.input]));
   const err = tx('p', 'serr'); sh.appendChild(err);
   const open = btn('Open Backup', '', async () => {
     const f = file.files && file.files[0];
@@ -1346,7 +1346,7 @@ function viewRestore(S, sh) {
       const b = await readBackupFile(f, a.input.value);
       err.textContent = ''; open.disabled = false;
       const when = new Date(b.created), d = when.getDate() + ' ' + fmtDay(when.getTime()).split(' ')[1] + ' ' + when.getFullYear();
-      showPanel(S, { title: 'Replace all app data?',
+      showPanel(S, { title: 'Replace All App Data?',
         text: 'This backup is from ' + d + ' and has ' + b.contacts + (b.contacts === 1 ? ' contact' : ' contacts') + '. Replace all ' + APP_NAME + ' data on this phone with it? Your current passcode stays the same.',
         buttons: [{ label: 'Cancel', secondary: true }, { label: 'Replace', fn: () => {
           if (!applyBackup(b)) { err.textContent = 'This phone has no room left to restore that backup.'; return; }
@@ -1542,7 +1542,7 @@ function backupReminderDue() {
 function maybeRemindBackup(S) {
   if (!S || S.panel || !backupReminderDue()) return;
   const last = Store.get('lastBackup', 0);
-  showPanel(S, { title: 'Time for a backup?',
+  showPanel(S, { title: 'Time For A Backup?',
     text: (last ? 'It’s been ' + Math.floor((nowMs() - last) / 86400000) + ' days since your last backup.' : 'You haven’t made a backup yet.') + ' A backup keeps your contacts and progress safe if this phone’s data is ever cleared.',
     buttons: [{ label: 'Later', secondary: true, fn: () => Store.set('backupSnooze', nowMs() + 86400000) },
               { label: 'Back Up Now', fn: () => { SCREENS.settings.pendingView = 'backup'; go('settings'); } }] });
@@ -1629,7 +1629,7 @@ function applyUpdate() {
 function showUpdateCard(S, fromBadge) {
   S = S || SCREENS['home-view'];
   if (!S || S.panel || !PWA.reg || !PWA.reg.waiting || (!fromBadge && PWA.dismissed)) return;
-  const ov = showPanel(S, { title: 'A new version is ready',
+  const ov = showPanel(S, { title: 'A New Version Is Ready',
     text: 'A new version of Taarala Thota (Garden of Stars) is ready. Your contacts, progress and settings stay exactly as they are.',
     buttons: [{ label: 'What\u2019s New', secondary: true, keepOpen: true, fn: async () => {
                 const card = ov.querySelector('.panel-card'), btn = [...ov.querySelectorAll('.panel-btn')].find(b => /new/.test(b.textContent));
@@ -1732,9 +1732,9 @@ function visitSwitch(S) {
     if (Visits.gpc()) return;
     const turningOn = Visits.chosenOff();
     showPanel(S, turningOn
-      ? { title: 'Count your visits again?', text: 'Visits are counted anonymously: no cookies, no personal profile, and nothing you save in the app. You can turn this off again anytime.',
+      ? { title: 'Count Your Visits Again?', text: 'Visits are counted anonymously: no cookies, no personal profile, and nothing you save in the app. You can turn this off again anytime.',
           buttons: [{ label: 'Cancel', secondary: true }, { label: 'Turn On', fn: () => Visits.set(true) }] }
-      : { title: 'Stop counting your visits?', text: 'The app will stop sending anonymous visit counts from this phone. You can turn this back on anytime, here or in Settings.',
+      : { title: 'Stop Counting Your Visits?', text: 'The app will stop sending anonymous visit counts from this phone. You can turn this back on anytime, here or in Settings.',
           buttons: [{ label: 'Cancel', secondary: true }, { label: 'Turn Off', fn: () => Visits.set(false) }] });
   });
   box._paint = () => {
@@ -1764,7 +1764,7 @@ function showWelcome() {
   const text = 'Everything you save stays on this phone. No ads, no sign-up, no personal tracking.\n\n' + (Visits.gpc()
     ? 'Your browser asks websites not to track you (Global Privacy Control), so your visits are never counted.'
     : 'We count visits anonymously (no cookies, no personal profile, nothing you save), so we know roughly how many people visit. You can turn this off anytime in Privacy & Safety or Settings.');
-  const ov = showPanel(S, { title: 'Welcome to Taarala Thota \u{1F31F}', text,
+  const ov = showPanel(S, { title: 'Welcome To Taarala Thota \u{1F31F}', text,
     buttons: [{ label: 'Read Privacy & Safety', secondary: true, fn: () => { seen(); go('privacy'); } },
               { label: 'Got It', fn: seen }] });
   ov.classList.add('welcome');
@@ -1796,37 +1796,37 @@ const TOUR_UA = navigator.userAgent || '';
 const TOUR_KIND = /Android/.test(TOUR_UA) ? 'android' : (/iPhone|iPad|iPod/.test(TOUR_UA) || (/Macintosh/.test(TOUR_UA) && navigator.maxTouchPoints > 1)) ? 'ios' : 'both';
 const TOUR_NOTE = 'Menus can look slightly different depending on your phone and browser version.';
 const TOUR_SCENES = [
-  { screen: 'home-view', dur: 5000, title: 'Welcome to the garden \u{1F31F}',
+  { screen: 'home-view', dur: 5000, title: 'Welcome To The Garden \u{1F31F}',
     text: 'A calm place to play and to stay close to the people who matter. Here’s a quick look around.' },
-  { screen: 'home-view', dur: TOUR_KIND === 'both' ? 20000 : 11000, install: TOUR_KIND, title: 'Install it (optional, recommended)',
+  { screen: 'home-view', dur: TOUR_KIND === 'both' ? 20000 : 11000, install: TOUR_KIND, title: 'Install It (Optional, Recommended)',
     text: TOUR_KIND === 'ios' ? 'In Safari: ⋯ → Share → Add to Home Screen → keep “Open as Web App” on → Add. It then opens full screen and works offline.'
         : TOUR_KIND === 'android' ? 'In Chrome: ⋮ → Add to home screen → Install (not “Create shortcut”, which only opens a browser tab). It then opens full screen and works offline.'
         : 'Android (Chrome): ⋮ → Add to home screen → Install. iPhone (Safari): ⋯ → Share → Add to Home Screen → Add. It then works offline.' },
-  { screen: 'home-view', dur: 6000, tap: '.gear-btn', title: 'Add your loved ones',
+  { screen: 'home-view', dur: 6000, tap: '.gear-btn', title: 'Add Your Loved Ones',
     text: 'Tap the gear (Settings), create a passcode, then Add A Contact: a name, a WhatsApp number and, if you like, a photo.' },
-  { screen: 'home-view', dur: 4500, tap: '.hot[aria-label="Family"]', then: 'contact-view', title: 'See your loved ones',
+  { screen: 'home-view', dur: 4500, tap: '.hot[aria-label="Family"]', then: 'contact-view', title: 'See Your Loved Ones',
     text: 'Tap the Family door.' },
-  { screen: 'contact-view', dur: 6000, tap: '.medallion, .loved-empty', title: 'Reach them in one tap',
+  { screen: 'contact-view', dur: 6000, tap: '.medallion, .loved-empty', title: 'Reach Them In One Tap',
     text: 'Tap a person’s circle and WhatsApp opens to message or call. Nothing is ever sent automatically.' },
-  { screen: 'contact-view', dur: 3500, tap: '.wbtn.home', then: 'home-view', title: 'Home is one tap away',
+  { screen: 'contact-view', dur: 3500, tap: '.wbtn.home', then: 'home-view', title: 'Home Is One Tap Away',
     text: 'Tap Home anytime to come back.' },
   { screen: 'home-view', dur: 4500, tap: '.hot[aria-label="Play"]', then: 'games', title: 'Play',
     text: 'Tap the Play door to choose a game.' },
-  { screen: 'games', dur: 6000, tap: '[data-game="chess"]', then: 'chs-entry-n', title: 'Pick a game',
+  { screen: 'games', dur: 6000, tap: '[data-game="chess"]', then: 'chs-entry-n', title: 'Pick A Game',
     text: 'Bubble Pop, Hidden Comets, Checkers and Chess, each with gentle beginner levels. Let’s open Chess.' },
-  { screen: 'chs-entry-n', dur: 6500, tap: '.hot[aria-label="Easy"]', title: 'Learn as you go',
+  { screen: 'chs-entry-n', dur: 6500, tap: '.hot[aria-label="Easy"]', title: 'Learn As You Go',
     text: 'On Easy, Chess and Checkers show move hints and let you undo. In Bubble Pop, reach the goal on a level to earn a gold star.' },
-  { screen: 'chs-entry-n', dur: 3500, tap: '.hot[aria-label="Home"]', then: 'home-view', title: 'Back to Home',
+  { screen: 'chs-entry-n', dur: 3500, tap: '.hot[aria-label="Home"]', then: 'home-view', title: 'Back To Home',
     text: 'Every screen has a way Home.' },
-  { screen: 'home-view', dur: 6000, tap: '.gear-btn', title: 'Keep your data safe',
+  { screen: 'home-view', dur: 6000, tap: '.gear-btn', title: 'Keep Your Data Safe',
     text: 'Everything stays on this phone. Now and then, tap the gear → Back Up Now, and keep the file somewhere safe.' },
-  { screen: 'home-view', dur: 6000, pill: true, title: 'Stay up to date',
+  { screen: 'home-view', dur: 6000, pill: true, title: 'Stay Up To Date',
     text: 'When a new version is ready, a gold ↑ Update button appears up here. See What’s New, then update whenever it suits you.' },
   { screen: 'home-view', dur: 4500, tap: '.privacy-link', then: 'privacy', title: 'Privacy & Safety',
     text: 'Tap Privacy & Safety at the bottom of Home.' },
   { screen: 'privacy', dur: 8000, scrollTo: '.fb-open', tap: '.fb-open', then: 'feedback', tapAt: 0.82, switchAt: 0.9, title: 'Privacy & Safety',
     text: 'Everything about how the app handles your data is explained here, and you can adjust a few settings to suit you.' },
-  { screen: 'feedback', dur: 7000, rest: '.fb-box', title: 'Share your thoughts',
+  { screen: 'feedback', dur: 7000, rest: '.fb-box', title: 'Share Your Thoughts',
     text: 'What do you enjoy? What felt confusing? What would you love to see? Tell us here, anytime. It’s anonymous. Enjoy the garden! \u{1F31F}' }
 ];
 const TOUR_SPEEDS = [1, 1.5, 2, 0.5];
@@ -1994,7 +1994,7 @@ const Tour = {
 // The invitation card (top of Privacy & Safety; in Settings just under App update)
 function tourCard(from) {
   const c = tx('div', 'tour-card');
-  c.appendChild(tx('div', 'tour-card-title', 'New here? \u{1F31F}'));
+  c.appendChild(tx('div', 'tour-card-title', 'New Here? \u{1F31F}'));
   c.appendChild(tx('div', 'tour-card-text', 'Watch a short walkthrough of everything the app does.'));
   c.appendChild(btn('▶ Take A Tour', 'small tour-go', () => Tour.start(from, { record: TEST_MODE && QS.has('tourrec') })));
   return c;
@@ -2211,7 +2211,7 @@ function finishBubbleLevel() {
     showPanel(S, { icon: '⭐', title: 'Level ' + G.n + ' Complete!', text: info,
       buttons: [{ label: 'Bubble Pop Home', secondary: true, fn: () => go('bubble-home') }, { label: 'Next Level', fn: () => startBubbleLevel(G.n + 1) }] });
   } else {
-    showPanel(S, { icon: '🫧', title: 'So close!', text: info,
+    showPanel(S, { icon: '🫧', title: 'So Close!', text: info,
       buttons: [{ label: 'Bubble Pop Home', secondary: true, fn: () => go('bubble-home') }, { label: 'Try Again', fn: () => beginBubbleLevel(G.n) }] });
   }
 }
@@ -2404,7 +2404,7 @@ function mineOpen(S, i) {
     }
     G.over = true; c.hit = true; mineTick(S); mineRecord(S, 'lost');
     G.cells.forEach((x, k) => { if (x.mine) { x.open = true; paintCell(S, k); } });
-    setTimeout(() => showPanel(S, { icon: '☄️', title: 'Oh! A comet', text: 'That is okay. Try again?',
+    setTimeout(() => showPanel(S, { icon: '☄️', title: 'Oh! A Comet', text: 'That is okay. Try again?',
       buttons: [{ label: 'Hidden Comets', secondary: true, fn: () => go('ms-home') }, { label: 'Try Again', fn: () => newMineGame(S) }] }), 700);
     return;
   }
@@ -3737,7 +3737,7 @@ function buildChess() {
 function chsPickLevel(level) {
   CH.pendingLevel = level;
   if (chsActive()) {
-    showPanel(SCREENS[CUR], { title: 'Start a new game?', text: 'Starting a new game will forfeit your current game. Your current progress will be lost.',
+    showPanel(SCREENS[CUR], { title: 'Start A New Game?', text: 'Starting a new game will forfeit your current game. Your current progress will be lost.',
       buttons: [{ label: 'Keep Current Game', secondary: true }, { label: 'Start New Game', fn: () => { chsForfeitCurrent(); go('chs-side'); } }] });
   } else go('chs-side');
 }
@@ -3848,7 +3848,7 @@ function chsPromote(moves) {
     b.addEventListener('click', () => { closePanel(S); chsHumanMove(m); });
     box.appendChild(b);
   });
-  showPanel(S, { title: 'Promote your pawn', html: box, buttons: [] });
+  showPanel(S, { title: 'Promote Your Pawn', html: box, buttons: [] });
 }
 function chsHumanMove(m) {
   const G = CH.G, E = CH.E;
@@ -3873,7 +3873,7 @@ function chsAfterMove(fromShow) {
     const key = G.state.keys[G.state.keys.length - 1] + sts.claimable;
     if (CH.declined !== key) {
       const txt = sts.claimable === 'threefold' ? 'This position has now happened three times.' : '50 moves have passed without a capture or a pawn move.';
-      showPanel(S, { title: 'Claim a draw?', text: txt, buttons: [
+      showPanel(S, { title: 'Claim A Draw?', text: txt, buttons: [
         { label: 'Keep Playing', secondary: true, fn: () => { CH.declined = key; } },
         { label: 'Claim Draw', fn: () => chsEnd({ over: true, result: 'claim-' + sts.claimable, winner: null }) }] });
     }
@@ -3923,7 +3923,7 @@ function chsEnd(sts) {
 function chsReset() {
   const S = CH.S, G = CH.G;
   if (!G || G.over) { go('chs-entry'); return; }
-  showPanel(S, { title: 'Start a new game?', text: 'Starting a new game will forfeit your current game. Your current progress will be lost.', buttons: [
+  showPanel(S, { title: 'Start A New Game?', text: 'Starting a new game will forfeit your current game. Your current progress will be lost.', buttons: [
     { label: 'Keep Current Game', secondary: true }, { label: 'Start New Game', fn: () => { chsForfeitCurrent(); CH.G = null; go('chs-entry'); } }] });
 }
 
@@ -4431,7 +4431,7 @@ function setupUprightCard() {
     '<circle cx="32" cy="32" r="29" fill="url(#upw)" stroke="#d9a95a" stroke-width="3"/>' +
     '<g class="upright-turn"><rect x="23" y="13" width="18" height="34" rx="4" fill="#2a1608" stroke="#ffe3a3" stroke-width="2.6"/><circle cx="32" cy="42" r="1.8" fill="#ffe3a3"/></g></svg>';
   const words = el('div', 'upright-words');
-  words.appendChild(Object.assign(document.createElement('div'), { className: 'upright-title', textContent: 'Turn your phone upright' }));
+  words.appendChild(Object.assign(document.createElement('div'), { className: 'upright-title', textContent: 'Turn Your Phone Upright' }));
   words.appendChild(Object.assign(document.createElement('div'), { className: 'upright-sub', textContent: 'The garden is painted for upright screens. Your game is paused and nothing is lost.' }));
   panel.appendChild(words);
   card.appendChild(panel);
@@ -4460,13 +4460,13 @@ function setupDeskCard() {
   if (!isComputerScreen()) return;
   try { if (sessionStorage.getItem('tt:deskok') === '1') return; } catch (e) {}
   const addr = location.origin + location.pathname.replace(/index\.html$/, '');
-  const card = el('div', 'desk-card'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-label', 'Best on your phone');
+  const card = el('div', 'desk-card'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-label', 'Best On Your Phone');
   const bg = el('div', 'upright-bg'); bg.style.backgroundImage = 'url("' + picUrl('home') + '")'; card.appendChild(bg);
   const panel = el('div', 'desk-panel');
   const qr = el('div', 'desk-qr'); qr.innerHTML = qrSvg(addr);
   const words = el('div', 'desk-words');
   const t = (cls, text) => Object.assign(document.createElement('div'), { className: cls, textContent: text });
-  words.appendChild(t('upright-title', 'Best on your phone'));
+  words.appendChild(t('upright-title', 'Best On Your Phone'));
   words.appendChild(t('upright-sub', 'Taarala Thota is painted for phone screens. Point your phone\u2019s camera at this code to open it there.'));
   words.appendChild(t('desk-addr', 'Or type this address on your phone: ' + location.host));
   const go = el('button', 'desk-btn'); go.type = 'button'; go.textContent = 'Continue On This Screen';

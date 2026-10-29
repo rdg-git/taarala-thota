@@ -34,7 +34,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
     if (w === 390) {
       await p.evaluate(() => MM.go('games')); await p.waitForTimeout(400);
       await p.locator('#games .upd-badge').click(); await p.waitForTimeout(400);
-      ok(await p.evaluate(() => /new version is ready/.test((document.querySelector('#games .panel-card') || {}).textContent || '')), 'tapping the pill opens the update card (even after Later)');
+      ok(await p.evaluate(() => /New Version Is Ready/.test((document.querySelector('#games .panel-card') || {}).textContent || '')), 'tapping the pill opens the update card (even after Later)');
       await p.evaluate(() => { closePanel(SCREENS.games); MM.go('settings'); }); await p.waitForTimeout(400);
       ok(await p.evaluate(() => document.querySelector('#settings .sheet').firstChild.classList.contains('supd')), 'Settings: update box is the first thing on the page');
       await p.locator('#settings .supd .sbtn', { hasText: 'What' }).click(); await p.waitForTimeout(300);

@@ -36,7 +36,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
     ok(await ev(() => /data:image\/jpeg/.test(document.querySelector('#settings .pprev').style.backgroundImage)), 'contact photos still work under the rules');
     await ev(() => { MM.go('home-view'); MM.Pass.unlockedUntil = MM.nowMs() + 600000; MM.go('settings'); }); await wait(300);
     await p.locator('#settings .sbtn', { hasText: 'Back Up Now' }).click(); await wait(200);
-    for (const lab of ['Backup password', 'Type it again']) await p.locator('#settings label.sfield', { has: p.locator('.slabel', { hasText: new RegExp('^' + lab + '$') }) }).locator('input').fill('backup 12345');
+    for (const lab of ['Backup Password', 'Type It Again']) await p.locator('#settings label.sfield', { has: p.locator('.slabel', { hasText: new RegExp('^' + lab + '$') }) }).locator('input').fill('backup 12345');
     const [dl] = await Promise.all([p.waitForEvent('download'), p.locator('#settings .sbtn', { hasText: 'Create Backup File' }).click()]);
     ok(!!dl, 'backups still work under the rules');
     ok(csp.length === 0, 'nothing in the app is blocked by the rules (' + (csp[0] || 'none') + ')');

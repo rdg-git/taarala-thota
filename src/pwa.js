@@ -80,7 +80,7 @@ function applyUpdate() {
 function showUpdateCard(S, fromBadge) {
   S = S || SCREENS['home-view'];
   if (!S || S.panel || !PWA.reg || !PWA.reg.waiting || (!fromBadge && PWA.dismissed)) return;
-  const ov = showPanel(S, { title: 'A new version is ready',
+  const ov = showPanel(S, { title: 'A New Version Is Ready',
     text: 'A new version of Taarala Thota (Garden of Stars) is ready. Your contacts, progress and settings stay exactly as they are.',
     buttons: [{ label: 'What\u2019s New', secondary: true, keepOpen: true, fn: async () => {
                 const card = ov.querySelector('.panel-card'), btn = [...ov.querySelectorAll('.panel-btn')].find(b => /new/.test(b.textContent));

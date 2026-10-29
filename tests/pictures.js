@@ -26,7 +26,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   ok(await ev(() => MM.cur === 'ms-medium'), 'Medium lantern opens the game');
   await ev(() => { const S = SCREENS['ms-medium']; const i = S.G.cells.findIndex(c => c.mine); S.boardEl.children[i].dispatchEvent(new PointerEvent('pointerdown')); S.boardEl.children[i].dispatchEvent(new PointerEvent('pointerup')); });
   await p.waitForTimeout(900);
-  ok(await ev(() => /A comet/.test(document.querySelector('#ms-medium .panel-card').textContent) && !!document.querySelector('#ms-medium .mscell.open svg circle')), 'finding a comet shows comets and a gentle card');
+  ok(await ev(() => /A Comet/.test(document.querySelector('#ms-medium .panel-card').textContent) && !!document.querySelector('#ms-medium .mscell.open svg circle')), 'finding a comet shows comets and a gentle card');
   await ev(() => MM.go('games')); ok(await ev(() => /Hidden Comets/.test(document.querySelector('#games').textContent)), 'Games screen label reads Hidden Comets');
   ok(errs.length === 0, 'no page errors ' + errs.join(' | '));
   console.log('RESULT', n - f, 'passed', f, 'failed'); await b.close();

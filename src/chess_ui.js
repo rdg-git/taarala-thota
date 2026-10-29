@@ -100,7 +100,7 @@ function buildChess() {
 function chsPickLevel(level) {
   CH.pendingLevel = level;
   if (chsActive()) {
-    showPanel(SCREENS[CUR], { title: 'Start a new game?', text: 'Starting a new game will forfeit your current game. Your current progress will be lost.',
+    showPanel(SCREENS[CUR], { title: 'Start A New Game?', text: 'Starting a new game will forfeit your current game. Your current progress will be lost.',
       buttons: [{ label: 'Keep Current Game', secondary: true }, { label: 'Start New Game', fn: () => { chsForfeitCurrent(); go('chs-side'); } }] });
   } else go('chs-side');
 }
@@ -211,7 +211,7 @@ function chsPromote(moves) {
     b.addEventListener('click', () => { closePanel(S); chsHumanMove(m); });
     box.appendChild(b);
   });
-  showPanel(S, { title: 'Promote your pawn', html: box, buttons: [] });
+  showPanel(S, { title: 'Promote Your Pawn', html: box, buttons: [] });
 }
 function chsHumanMove(m) {
   const G = CH.G, E = CH.E;
@@ -236,7 +236,7 @@ function chsAfterMove(fromShow) {
     const key = G.state.keys[G.state.keys.length - 1] + sts.claimable;
     if (CH.declined !== key) {
       const txt = sts.claimable === 'threefold' ? 'This position has now happened three times.' : '50 moves have passed without a capture or a pawn move.';
-      showPanel(S, { title: 'Claim a draw?', text: txt, buttons: [
+      showPanel(S, { title: 'Claim A Draw?', text: txt, buttons: [
         { label: 'Keep Playing', secondary: true, fn: () => { CH.declined = key; } },
         { label: 'Claim Draw', fn: () => chsEnd({ over: true, result: 'claim-' + sts.claimable, winner: null }) }] });
     }
@@ -286,7 +286,7 @@ function chsEnd(sts) {
 function chsReset() {
   const S = CH.S, G = CH.G;
   if (!G || G.over) { go('chs-entry'); return; }
-  showPanel(S, { title: 'Start a new game?', text: 'Starting a new game will forfeit your current game. Your current progress will be lost.', buttons: [
+  showPanel(S, { title: 'Start A New Game?', text: 'Starting a new game will forfeit your current game. Your current progress will be lost.', buttons: [
     { label: 'Keep Current Game', secondary: true }, { label: 'Start New Game', fn: () => { chsForfeitCurrent(); CH.G = null; go('chs-entry'); } }] });
 }
 

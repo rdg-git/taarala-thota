@@ -25,37 +25,37 @@ const TOUR_UA = navigator.userAgent || '';
 const TOUR_KIND = /Android/.test(TOUR_UA) ? 'android' : (/iPhone|iPad|iPod/.test(TOUR_UA) || (/Macintosh/.test(TOUR_UA) && navigator.maxTouchPoints > 1)) ? 'ios' : 'both';
 const TOUR_NOTE = 'Menus can look slightly different depending on your phone and browser version.';
 const TOUR_SCENES = [
-  { screen: 'home-view', dur: 5000, title: 'Welcome to the garden \u{1F31F}',
+  { screen: 'home-view', dur: 5000, title: 'Welcome To The Garden \u{1F31F}',
     text: 'A calm place to play and to stay close to the people who matter. Here’s a quick look around.' },
-  { screen: 'home-view', dur: TOUR_KIND === 'both' ? 20000 : 11000, install: TOUR_KIND, title: 'Install it (optional, recommended)',
+  { screen: 'home-view', dur: TOUR_KIND === 'both' ? 20000 : 11000, install: TOUR_KIND, title: 'Install It (Optional, Recommended)',
     text: TOUR_KIND === 'ios' ? 'In Safari: ⋯ → Share → Add to Home Screen → keep “Open as Web App” on → Add. It then opens full screen and works offline.'
         : TOUR_KIND === 'android' ? 'In Chrome: ⋮ → Add to home screen → Install (not “Create shortcut”, which only opens a browser tab). It then opens full screen and works offline.'
         : 'Android (Chrome): ⋮ → Add to home screen → Install. iPhone (Safari): ⋯ → Share → Add to Home Screen → Add. It then works offline.' },
-  { screen: 'home-view', dur: 6000, tap: '.gear-btn', title: 'Add your loved ones',
+  { screen: 'home-view', dur: 6000, tap: '.gear-btn', title: 'Add Your Loved Ones',
     text: 'Tap the gear (Settings), create a passcode, then Add A Contact: a name, a WhatsApp number and, if you like, a photo.' },
-  { screen: 'home-view', dur: 4500, tap: '.hot[aria-label="Family"]', then: 'contact-view', title: 'See your loved ones',
+  { screen: 'home-view', dur: 4500, tap: '.hot[aria-label="Family"]', then: 'contact-view', title: 'See Your Loved Ones',
     text: 'Tap the Family door.' },
-  { screen: 'contact-view', dur: 6000, tap: '.medallion, .loved-empty', title: 'Reach them in one tap',
+  { screen: 'contact-view', dur: 6000, tap: '.medallion, .loved-empty', title: 'Reach Them In One Tap',
     text: 'Tap a person’s circle and WhatsApp opens to message or call. Nothing is ever sent automatically.' },
-  { screen: 'contact-view', dur: 3500, tap: '.wbtn.home', then: 'home-view', title: 'Home is one tap away',
+  { screen: 'contact-view', dur: 3500, tap: '.wbtn.home', then: 'home-view', title: 'Home Is One Tap Away',
     text: 'Tap Home anytime to come back.' },
   { screen: 'home-view', dur: 4500, tap: '.hot[aria-label="Play"]', then: 'games', title: 'Play',
     text: 'Tap the Play door to choose a game.' },
-  { screen: 'games', dur: 6000, tap: '[data-game="chess"]', then: 'chs-entry-n', title: 'Pick a game',
+  { screen: 'games', dur: 6000, tap: '[data-game="chess"]', then: 'chs-entry-n', title: 'Pick A Game',
     text: 'Bubble Pop, Hidden Comets, Checkers and Chess, each with gentle beginner levels. Let’s open Chess.' },
-  { screen: 'chs-entry-n', dur: 6500, tap: '.hot[aria-label="Easy"]', title: 'Learn as you go',
+  { screen: 'chs-entry-n', dur: 6500, tap: '.hot[aria-label="Easy"]', title: 'Learn As You Go',
     text: 'On Easy, Chess and Checkers show move hints and let you undo. In Bubble Pop, reach the goal on a level to earn a gold star.' },
-  { screen: 'chs-entry-n', dur: 3500, tap: '.hot[aria-label="Home"]', then: 'home-view', title: 'Back to Home',
+  { screen: 'chs-entry-n', dur: 3500, tap: '.hot[aria-label="Home"]', then: 'home-view', title: 'Back To Home',
     text: 'Every screen has a way Home.' },
-  { screen: 'home-view', dur: 6000, tap: '.gear-btn', title: 'Keep your data safe',
+  { screen: 'home-view', dur: 6000, tap: '.gear-btn', title: 'Keep Your Data Safe',
     text: 'Everything stays on this phone. Now and then, tap the gear → Back Up Now, and keep the file somewhere safe.' },
-  { screen: 'home-view', dur: 6000, pill: true, title: 'Stay up to date',
+  { screen: 'home-view', dur: 6000, pill: true, title: 'Stay Up To Date',
     text: 'When a new version is ready, a gold ↑ Update button appears up here. See What’s New, then update whenever it suits you.' },
   { screen: 'home-view', dur: 4500, tap: '.privacy-link', then: 'privacy', title: 'Privacy & Safety',
     text: 'Tap Privacy & Safety at the bottom of Home.' },
   { screen: 'privacy', dur: 8000, scrollTo: '.fb-open', tap: '.fb-open', then: 'feedback', tapAt: 0.82, switchAt: 0.9, title: 'Privacy & Safety',
     text: 'Everything about how the app handles your data is explained here, and you can adjust a few settings to suit you.' },
-  { screen: 'feedback', dur: 7000, rest: '.fb-box', title: 'Share your thoughts',
+  { screen: 'feedback', dur: 7000, rest: '.fb-box', title: 'Share Your Thoughts',
     text: 'What do you enjoy? What felt confusing? What would you love to see? Tell us here, anytime. It’s anonymous. Enjoy the garden! \u{1F31F}' }
 ];
 const TOUR_SPEEDS = [1, 1.5, 2, 0.5];
@@ -223,7 +223,7 @@ const Tour = {
 // The invitation card (top of Privacy & Safety; in Settings just under App update)
 function tourCard(from) {
   const c = tx('div', 'tour-card');
-  c.appendChild(tx('div', 'tour-card-title', 'New here? \u{1F31F}'));
+  c.appendChild(tx('div', 'tour-card-title', 'New Here? \u{1F31F}'));
   c.appendChild(tx('div', 'tour-card-text', 'Watch a short walkthrough of everything the app does.'));
   c.appendChild(btn('▶ Take A Tour', 'small tour-go', () => Tour.start(from, { record: TEST_MODE && QS.has('tourrec') })));
   return c;

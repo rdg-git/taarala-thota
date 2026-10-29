@@ -18,7 +18,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   ok(await ev(() => !!document.querySelector('#privacy .plist li:nth-child(2) .vswitch')), 'Privacy page: switch sits right under the point that explains counting');
   ok((await state()).every(x => x === 'true'), 'on by default (no Global Privacy Control)');
   await p.locator('#privacy .vs-sw').click(); await wait(200);
-  ok(await ev(() => /Stop counting/.test((document.querySelector('#privacy .panel-card') || {}).textContent || '')), 'tapping the switch asks for confirmation first');
+  ok(await ev(() => /Stop Counting/.test((document.querySelector('#privacy .panel-card') || {}).textContent || '')), 'tapping the switch asks for confirmation first');
   await p.locator('#privacy .panel-btn', { hasText: 'Cancel' }).click(); await wait(200);
   ok(await ev(() => Visits.counting()), 'Cancel changes nothing');
   await p.locator('#privacy .vs-sw').click(); await wait(200); await p.locator('#privacy .panel-btn', { hasText: 'Turn Off' }).click(); await wait(200);
@@ -43,7 +43,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   await w.evaluate(() => { Object.keys(localStorage).filter(k => k.startsWith('tt:')).forEach(k => localStorage.removeItem(k)); localStorage.setItem('tt:noticeDay', JSON.stringify('x')); });
   await w.reload(); await w.waitForTimeout(1200);
   const card = () => w.evaluate(() => (document.querySelector('#home-view .panel-ov.welcome .panel-card') || {}).textContent || '');
-  ok(/Welcome to Taarala Thota/.test(await card()) && /count visits anonymously/.test(await card()), 'first visit: welcome note on Home explains anonymous counting');
+  ok(/Welcome To Taarala Thota/.test(await card()) && /count visits anonymously/.test(await card()), 'first visit: welcome note on Home explains anonymous counting');
   ok(await w.evaluate(() => !Store.get('welcome', false)), 'nothing is counted before the note is seen');
   await w.locator('#home-view .panel-btn', { hasText: 'Got It' }).click(); await w.waitForTimeout(200);
   ok(await w.evaluate(() => Store.get('welcome', false) === true && !document.querySelector('.panel-ov.welcome')), 'Got it closes it and remembers');
@@ -53,7 +53,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   ok(!!(await card()), 'shown again after "Erase all data"');
   await w.locator('#home-view .panel-btn', { hasText: 'Read Privacy' }).click(); await w.waitForTimeout(300);
   ok(await w.evaluate(() => MM.cur === 'privacy' && Store.get('welcome', false) === true), '"Read Privacy & Safety" opens the page and counts as seen');
-  // laptop: waits for the "Best on your phone" card
+  // laptop: waits for the "Best On Your Phone" card
   const l = await (await b.newContext({ viewport: { width: 1440, height: 900 }, serviceWorkers: 'block' })).newPage();
   await l.goto('http://localhost:8765/index.html?test=1&welcome=1&desk=1'); await l.waitForTimeout(1500);
   ok(await l.evaluate(() => !!document.querySelector('.desk-card') && !document.querySelector('.panel-ov.welcome')), 'laptop: phone card first, welcome waits');

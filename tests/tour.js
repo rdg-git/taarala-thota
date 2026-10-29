@@ -59,7 +59,7 @@ const UA = { android: 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.
   const target = scenes[7].start + 1000;
   await p.evaluate((v) => { const r = document.querySelector('.tour input[type=range]'); r.value = v; r.dispatchEvent(new Event('input', { bubbles: true })); }, target);
   await p.waitForTimeout(150);
-  ok(await p.evaluate(() => MM.cur === 'games' && document.querySelector('.tour-title').textContent === 'Pick a game'), 'dragging the bar jumps to that part of the tour');
+  ok(await p.evaluate(() => MM.cur === 'games' && document.querySelector('.tour-title').textContent === 'Pick A Game'), 'dragging the bar jumps to that part of the tour');
   // controls fade while playing, a tap brings them back; paused they stay
   await p.evaluate(() => { Tour.playing = true; Tour.ctlUntil = 0; }); await p.waitForTimeout(200);
   ok(await p.evaluate(() => !document.querySelector('.tour').classList.contains('ctl')), 'while playing, the controls fade away (a thin progress line stays)');
