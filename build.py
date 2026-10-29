@@ -52,6 +52,14 @@ head = '''<!DOCTYPE html>
 <title>Taarala Thota · Garden of Stars</title>'''
 
 APP_RELEASE = json.load(open(os.path.join('src', 'whats_new.json'), encoding='utf-8'))[0]['date']
+# What's New safety check: the app shows at most 8 lines per release and cuts any line after 200 characters
+# (see askWhatsNew in pwa.js), so the newest release must fit, or the build stops here. (Older releases are left as
+# they were published.)
+_newest = json.load(open(os.path.join('src', 'whats_new.json'), encoding='utf-8'))[0]
+_long = [n for n in _newest['notes'] if len(n) > 200]
+if len(_newest['notes']) > 8 or _long:
+    raise SystemExit("What's New check failed for %s: keep to 8 lines of at most 200 characters each. Too long: %s"
+                     % (_newest['date'], [str(len(n)) + ' characters: ' + n[:60] + '...' for n in _long] or 'more than 8 lines'))
 js = '\n'.join([
     '// ' + STAMP,
     "const APP_RELEASE = '%s';   // this version's release label (newest entry in src/whats_new.json)" % APP_RELEASE,
