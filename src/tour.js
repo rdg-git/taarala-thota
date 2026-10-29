@@ -3,7 +3,7 @@
 // TAKE A TOUR (a playing walkthrough, like a screen recording)
 // The app plays the tour on its REAL screens: a glowing finger moves to each button and "taps" it, a short caption
 // explains, and a player bar gives pause/play, 5 seconds back/forward, a bar to drag, speed (1×, 1.5×, 2×, 0.5×)
-// and music on/off. Started from the "Take a tour" card at the top of Privacy & Safety and in Settings (under App update).
+// and music on/off. Started from the "Take A Tour" card at the top of Privacy & Safety and in Settings (under App update).
 // Rules:
 // - It only LOOKS: the finger is a picture. A see-through cover sits over the app, so nothing underneath can be
 //   tapped; the tour never opens a contact, starts a game or changes a setting, and never visits Settings itself.
@@ -32,7 +32,7 @@ const TOUR_SCENES = [
         : TOUR_KIND === 'android' ? 'In Chrome: ⋮ → Add to home screen → Install (not “Create shortcut”, which only opens a browser tab). It then opens full screen and works offline.'
         : 'Android (Chrome): ⋮ → Add to home screen → Install. iPhone (Safari): ⋯ → Share → Add to Home Screen → Add. It then works offline.' },
   { screen: 'home-view', dur: 6000, tap: '.gear-btn', title: 'Add your loved ones',
-    text: 'Tap the gear (Settings), create a passcode, then Add a contact: a name, a WhatsApp number and, if you like, a photo.' },
+    text: 'Tap the gear (Settings), create a passcode, then Add A Contact: a name, a WhatsApp number and, if you like, a photo.' },
   { screen: 'home-view', dur: 4500, tap: '.hot[aria-label="Family"]', then: 'contact-view', title: 'See your loved ones',
     text: 'Tap the Family door.' },
   { screen: 'contact-view', dur: 6000, tap: '.medallion, .loved-empty', title: 'Reach them in one tap',
@@ -48,7 +48,7 @@ const TOUR_SCENES = [
   { screen: 'chs-entry-n', dur: 3500, tap: '.hot[aria-label="Home"]', then: 'home-view', title: 'Back to Home',
     text: 'Every screen has a way Home.' },
   { screen: 'home-view', dur: 6000, tap: '.gear-btn', title: 'Keep your data safe',
-    text: 'Everything stays on this phone. Now and then, tap the gear → Back up now, and keep the file somewhere safe.' },
+    text: 'Everything stays on this phone. Now and then, tap the gear → Back Up Now, and keep the file somewhere safe.' },
   { screen: 'home-view', dur: 6000, pill: true, title: 'Stay up to date',
     text: 'When a new version is ready, a gold ↑ Update button appears up here. See What’s New, then update whenever it suits you.' },
   { screen: 'home-view', dur: 4500, tap: '.privacy-link', then: 'privacy', title: 'Privacy & Safety',
@@ -225,6 +225,6 @@ function tourCard(from) {
   const c = tx('div', 'tour-card');
   c.appendChild(tx('div', 'tour-card-title', 'New here? \u{1F31F}'));
   c.appendChild(tx('div', 'tour-card-text', 'Watch a short walkthrough of everything the app does.'));
-  c.appendChild(btn('▶ Take a tour', 'small tour-go', () => Tour.start(from, { record: TEST_MODE && QS.has('tourrec') })));
+  c.appendChild(btn('▶ Take A Tour', 'small tour-go', () => Tour.start(from, { record: TEST_MODE && QS.has('tourrec') })));
   return c;
 }

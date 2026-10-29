@@ -36,20 +36,20 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   ok(await ev(() => !!document.querySelector('#home-view .panel-card')), 'Later: shown again the next day');
   await ev(() => MM.go('bubble-home')); await wait(900);
   ok(await ev(() => !document.querySelector('#bubble-home .panel-card')), 'never shown on game screens');
-  // Back up now from the reminder goes to Settings -> backup (after unlock)
+  // Back Up Now from the reminder goes to Settings -> backup (after unlock)
   await ev(() => MM.go('home-view')); await wait(1000);
   await ev(() => MM.Pass.lock());
-  await p.locator('#home-view .panel-btn', { hasText: 'Back up now' }).click(); await wait(300);
-  ok(await ev(() => MM.cur === 'settings' && /Enter your passcode/.test(document.querySelector('#settings .sheet').textContent)), 'Back up now asks for the passcode first');
+  await p.locator('#home-view .panel-btn', { hasText: 'Back Up Now' }).click(); await wait(300);
+  ok(await ev(() => MM.cur === 'settings' && /Enter your passcode/.test(document.querySelector('#settings .sheet').textContent)), 'Back Up Now asks for the passcode first');
   await fill('Passcode', 'my pass code 1'); await clickText('Unlock'); await wait(1000);
   ok(await ev(() => /Back up your data/.test(document.querySelector('#settings .sheet').textContent)), '...then opens the backup page');
   // password rules
-  await fill('Backup password', 'short'); await fill('Type it again', 'short'); await clickText('Create backup file');
+  await fill('Backup password', 'short'); await fill('Type it again', 'short'); await clickText('Create Backup File');
   ok(/at least 8/.test(await errText()), 'too-short backup password refused');
-  await fill('Backup password', 'backup pass 9'); await fill('Type it again', 'backup pass 8'); await clickText('Create backup file');
+  await fill('Backup password', 'backup pass 9'); await fill('Type it again', 'backup pass 8'); await clickText('Create Backup File');
   ok(/match/.test(await errText()), 'mismatched backup passwords refused');
   await fill('Backup password', 'backup pass 9'); await fill('Type it again', 'backup pass 9');
-  const [dl] = await Promise.all([p.waitForEvent('download'), clickText('Create backup file')]);
+  const [dl] = await Promise.all([p.waitForEvent('download'), clickText('Create Backup File')]);
   const file = path.join(tmp, dl.suggestedFilename()); await dl.saveAs(file); await wait(600);
   ok(/^taarala-thota-backup-\d{4}-\d\d-\d\d\.ttbackup$/.test(dl.suggestedFilename()), 'backup file downloaded: ' + dl.suggestedFilename());
   const txt = fs.readFileSync(file, 'utf8');
@@ -60,12 +60,12 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   ok(await ev(() => !document.querySelector('#home-view .panel-card')), 'no reminder right after a backup');
   // wipe, set a NEW passcode, restore
   await ev(async () => { Object.keys(localStorage).filter(k => k.startsWith('tt:')).forEach(k => localStorage.removeItem(k)); localStorage.setItem('tt:noticeDay', JSON.stringify('x')); await MM.Pass.create('new pass code 2'); MM.go('home-view'); MM.Pass.unlockedUntil = MM.nowMs() + 600000; MM.go('settings'); });
-  await wait(400); await clickText('Restore from a backup');
-  await clickText('Open backup'); ok(/choose the backup file/.test(await errText()), 'asks for a file first');
+  await wait(400); await clickText('Restore From A Backup');
+  await clickText('Open Backup'); ok(/choose the backup file/.test(await errText()), 'asks for a file first');
   await p.setInputFiles('#settings input[type=file]', file);
-  await fill('Backup password', 'wrong password'); await clickText('Open backup'); await wait(1500);
+  await fill('Backup password', 'wrong password'); await clickText('Open Backup'); await wait(1500);
   ok(/doesn.t open this backup/.test(await errText()), 'wrong backup password refused');
-  await fill('Backup password', 'backup pass 9'); await clickText('Open backup'); await wait(1500);
+  await fill('Backup password', 'backup pass 9'); await clickText('Open Backup'); await wait(1500);
   ok(/has 2 contacts/.test(await panelText()) && /stays the same/.test(await panelText()), 'confirmation shows date and contact count before replacing');
   await p.locator('#settings .panel-btn', { hasText: 'Replace' }).click(); await wait(400);
   ok(await ev(() => MM.Contacts.list().length === 2 && JSON.parse(localStorage.getItem('tt:chess:totals')).won === 4 && localStorage.getItem('tt:music') === 'off'), 'restore brings back contacts, stats and settings');
@@ -74,9 +74,9 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   const tampered = JSON.parse(txt); tampered.data = (tampered.data[0] === 'A' ? 'B' : 'A') + tampered.data.slice(1); fs.writeFileSync(path.join(tmp, 't.ttbackup'), JSON.stringify(tampered));
   fs.writeFileSync(path.join(tmp, 'x.ttbackup'), 'hello, I am not a backup');
   fs.writeFileSync(path.join(tmp, 'big.ttbackup'), Buffer.alloc(16 * 1024 * 1024, 65));
-  await ev(() => { MM.go('home-view'); MM.Pass.unlockedUntil = MM.nowMs() + 600000; MM.go('settings'); }); await wait(300); await clickText('Restore from a backup');
+  await ev(() => { MM.go('home-view'); MM.Pass.unlockedUntil = MM.nowMs() + 600000; MM.go('settings'); }); await wait(300); await clickText('Restore From A Backup');
   for (const [fn, re, label] of [['t.ttbackup', /doesn.t open/, 'a changed (tampered) backup is refused'], ['x.ttbackup', /isn.t a Taarala Thota backup/, 'a file that is not a backup is refused'], ['big.ttbackup', /too big/, 'an oversized file is refused']]) {
-    await p.setInputFiles('#settings input[type=file]', path.join(tmp, fn)); await fill('Backup password', 'backup pass 9'); await clickText('Open backup'); await wait(1200);
+    await p.setInputFiles('#settings input[type=file]', path.join(tmp, fn)); await fill('Backup password', 'backup pass 9'); await clickText('Open Backup'); await wait(1200);
     ok(re.test(await errText()), label);
   }
   // a correctly locked but booby-trapped backup: extra items, bad contacts, fake photo
@@ -90,7 +90,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
     return JSON.stringify({ app: 'taarala-thota-backup', v: 1, kdf: 'PBKDF2-SHA256', rounds: 210000, salt: b64(salt), iv: b64(iv), data: b64(data) });
   });
   fs.writeFileSync(path.join(tmp, 'evil.ttbackup'), evil);
-  await p.setInputFiles('#settings input[type=file]', path.join(tmp, 'evil.ttbackup')); await fill('Backup password', 'backup pass 9'); await clickText('Open backup'); await wait(1500);
+  await p.setInputFiles('#settings input[type=file]', path.join(tmp, 'evil.ttbackup')); await fill('Backup password', 'backup pass 9'); await clickText('Open Backup'); await wait(1500);
   ok(/has 2 contacts/.test(await panelText()), 'booby-trapped backup: the contact with a bad number is dropped');
   await p.locator('#settings .panel-btn', { hasText: 'Replace' }).click(); await wait(400);
   ok(await ev(() => !localStorage.getItem('tt:other') && !localStorage.getItem('evil:key') && localStorage.getItem('tt:music') !== '<script>'), 'booby-trapped backup: unknown and invalid items ignored');

@@ -90,7 +90,7 @@ function showUpdateCard(S, fromBadge) {
               } },
               // Later: reminded again next time the app opens; meanwhile the badge and Settings stay available
               { label: 'Later', secondary: true, fn: () => { PWA.dismissed = true; toast(S, 'You can update anytime from Settings.', 3500); } },
-              { label: 'Update now', fn: applyUpdate }] });
+              { label: 'Update Now', fn: applyUpdate }] });
 }
 
 // ------------------------------------------------------------

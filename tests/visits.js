@@ -21,7 +21,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   ok(await ev(() => /Stop counting/.test((document.querySelector('#privacy .panel-card') || {}).textContent || '')), 'tapping the switch asks for confirmation first');
   await p.locator('#privacy .panel-btn', { hasText: 'Cancel' }).click(); await wait(200);
   ok(await ev(() => Visits.counting()), 'Cancel changes nothing');
-  await p.locator('#privacy .vs-sw').click(); await wait(200); await p.locator('#privacy .panel-btn', { hasText: 'Turn off' }).click(); await wait(200);
+  await p.locator('#privacy .vs-sw').click(); await wait(200); await p.locator('#privacy .panel-btn', { hasText: 'Turn Off' }).click(); await wait(200);
   ok(await ev(() => !Visits.counting() && localStorage.getItem('tt:count') === '"off"'), 'Turn off: saved on the phone as tt:count');
   await ev(() => MM.go('settings')); await wait(300);
   ok(await ev(() => { const sh = document.querySelector('#settings .sheet'); return sh.children[0].classList.contains('supd') && sh.children[1].classList.contains('tour-card') && sh.children[2].classList.contains('vswitch'); }), 'Settings: switch under App update and the tour card, before the passcode');
@@ -45,7 +45,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   const card = () => w.evaluate(() => (document.querySelector('#home-view .panel-ov.welcome .panel-card') || {}).textContent || '');
   ok(/Welcome to Taarala Thota/.test(await card()) && /count visits anonymously/.test(await card()), 'first visit: welcome note on Home explains anonymous counting');
   ok(await w.evaluate(() => !Store.get('welcome', false)), 'nothing is counted before the note is seen');
-  await w.locator('#home-view .panel-btn', { hasText: 'Got it' }).click(); await w.waitForTimeout(200);
+  await w.locator('#home-view .panel-btn', { hasText: 'Got It' }).click(); await w.waitForTimeout(200);
   ok(await w.evaluate(() => Store.get('welcome', false) === true && !document.querySelector('.panel-ov.welcome')), 'Got it closes it and remembers');
   await w.reload(); await w.waitForTimeout(1200);
   ok(!(await card()), 'never shown again');

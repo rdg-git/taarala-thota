@@ -112,5 +112,5 @@ function maybeRemindBackup(S) {
   showPanel(S, { title: 'Time for a backup?',
     text: (last ? 'It’s been ' + Math.floor((nowMs() - last) / 86400000) + ' days since your last backup.' : 'You haven’t made a backup yet.') + ' A backup keeps your contacts and progress safe if this phone’s data is ever cleared.',
     buttons: [{ label: 'Later', secondary: true, fn: () => Store.set('backupSnooze', nowMs() + 86400000) },
-              { label: 'Back up now', fn: () => { SCREENS.settings.pendingView = 'backup'; go('settings'); } }] });
+              { label: 'Back Up Now', fn: () => { SCREENS.settings.pendingView = 'backup'; go('settings'); } }] });
 }

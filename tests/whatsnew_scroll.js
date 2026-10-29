@@ -28,7 +28,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   ok(await p.evaluate((s) => { const e = document.querySelector(s); return e.scrollHeight > e.clientHeight; }, box), 'Home card: long list is taller than its box');
   await swipe(box);
   ok(await p.evaluate((s) => document.querySelector(s).scrollTop > 20, box), 'Home card: finger swipe scrolls the list');
-  ok(await p.evaluate(() => [...document.querySelectorAll('#home-view .panel-btn')].every(bt => { const r = bt.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })), 'Home card: Later and Update now stay on screen');
+  ok(await p.evaluate(() => [...document.querySelectorAll('#home-view .panel-btn')].every(bt => { const r = bt.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })), 'Home card: Later and Update Now stay on screen');
   await p.evaluate(() => { document.querySelectorAll('.panel-ov').forEach(x => x.remove()); SCREENS['home-view'].panel = null; MM.go('settings'); }); await p.waitForTimeout(400);
   await p.evaluate(() => { const s = document.querySelector('#settings .sheet'); s.scrollTop = 1e6; }); await p.waitForTimeout(200);
   await p.locator('#settings .supd .sbtn', { hasText: 'What' }).click(); await p.waitForTimeout(500);

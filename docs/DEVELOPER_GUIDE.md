@@ -45,7 +45,7 @@ section-by-section notes right where each part begins.
 | `settings.js` | Settings screen (passcode pages, contacts, backups, erase) and the Privacy & Safety page. |
 | `backup.js` | Locked backup files, safe restore, 6-day backup reminder. |
 | `visits.js` | Anonymous visit counting (Cloudflare Web Analytics): loaded only when allowed, only on the official address; the on/off switch used on Privacy & Safety and in Settings; Global Privacy Control respected. |
-| `tour.js` | "Take a tour": a one-minute guided walk through the real screens (caption card plus a gold glow). Started from the card at the top of Privacy & Safety and under App update in Settings. Looks only: a cover blocks taps, nothing is saved, and it returns to where it started. Steps are listed in `TOUR_STEPS`. |
+| `tour.js` | "Take A Tour": a one-minute guided walk through the real screens (caption card plus a gold glow). Started from the card at the top of Privacy & Safety and under App update in Settings. Looks only: a cover blocks taps, nothing is saved, and it returns to where it started. Steps are listed in `TOUR_STEPS`. |
 | `pwa.js` | Installable app: registers the offline helper, keeps pictures for offline play, "new version ready" card. |
 | `bubble.js` | Bubble Pop (3 levels of 2 minutes, all open; accuracy goals 95/98/100 % earn a gold star; bubbles cross in 6.0 / 4.8 / 3.7 s, a new one about every 0.75 s). |
 | `mine.js` | Hidden Comets (minesweeper-style; Gentle never loses). |
@@ -117,8 +117,8 @@ All in the browser's storage for this site, labels starting with `tt:`. Nothing 
 | `tt:contacts` | Contacts: id, name, WhatsApp number, circle colour, optional small JPEG photo. |
 | `tt:pass` | Passcode **fingerprint** only (PBKDF2-SHA256, salted). The passcode itself is never stored. |
 | `tt:passlock` | Wrong-try counter and waiting time. |
-| `tt:welcome` | The one-time welcome note was seen (visit counting starts only after this). Reset by "Erase all". |
-| `tt:count` | Visit counting choice (`"off"` = don't count). In backups; kept by "Forgot passcode"; reset by "Erase all". |
+| `tt:welcome` | The one-time welcome note was seen (visit counting starts only after this). Reset by "Erase All". |
+| `tt:count` | Visit counting choice (`"off"` = don't count). In backups; kept by "Forgot Passcode"; reset by "Erase All". |
 | `tt:music` | Music on/off. (`tt:music_pos` in session storage: where the melody was.) |
 | `tt:bubble`, `tt:bubble:stats` | Bubble Pop: level Continue plays next and completed levels (stars); Bubble Pop stats. |
 | `tt:<game>:game` | A Chess/Checkers game in progress (resume within 60 min of the last move). |
@@ -171,7 +171,7 @@ All in the browser's storage for this site, labels starting with `tt:`. Nothing 
 ## 8. Updates and offline
 
 - `build.py` gives every release a new version. Phones download it quietly; the person sees
-  "A new version is ready" **on Home only** and chooses Update now or Later (never forced, never mid-game).
+  "A new version is ready" **on Home only** and chooses Update Now or Later (never forced, never mid-game).
 - Pictures, code and fonts carry a fingerprint in their address (`?v=`), so phones can keep them a year and
   still always get changed files.
 - **The website address must never change after launch**: people's saved data belongs to that address.

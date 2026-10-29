@@ -1,5 +1,5 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
-// Take a tour (the playing walkthrough): the cards, every scene on the right screen, the player controls, dragging,
+// Take A Tour (the playing walkthrough): the cards, every scene on the right screen, the player controls, dragging,
 // nothing tappable underneath, nothing saved, the right install steps for each phone, Done/✕/back return to the start.
 const { chromium } = require('playwright');
 const SHOTS = process.env.TOUR_SHOTS;   // folder for screenshots (optional)

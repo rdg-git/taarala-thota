@@ -119,7 +119,7 @@ function setupDeskCard() {
   words.appendChild(t('upright-title', 'Best on your phone'));
   words.appendChild(t('upright-sub', 'Taarala Thota is painted for phone screens. Point your phone\u2019s camera at this code to open it there.'));
   words.appendChild(t('desk-addr', 'Or type this address on your phone: ' + location.host));
-  const go = el('button', 'desk-btn'); go.type = 'button'; go.textContent = 'Continue on this screen';
+  const go = el('button', 'desk-btn'); go.type = 'button'; go.textContent = 'Continue On This Screen';
   const close = () => { try { sessionStorage.setItem('tt:deskok', '1'); } catch (e) {} card.remove(); document.removeEventListener('keydown', onKey); };
   const onKey = (e) => { if (e.key === 'Escape') close(); };
   go.addEventListener('click', (e) => { e.stopPropagation(); close(); });

@@ -343,13 +343,13 @@ input, textarea { user-select:text; -webkit-user-select:text; -webkit-touch-call
 .sbtn.fb-open { margin-top:14px; }
 .sbtn.fb-open.in-settings { margin:0 0 14px; }
 
-/* ---- Take a tour: the invitation card (Privacy & Safety top; Settings under App update) ---- */
+/* ---- Take A Tour: the invitation card (Privacy & Safety top; Settings under App update) ---- */
 .tour-card { margin:0 0 14px; padding:12px 14px; border-radius:14px; text-align:center; background:linear-gradient(180deg,rgba(255,226,150,.16),rgba(255,226,150,.06)); border:1px solid rgba(255,210,120,.7); box-shadow:0 0 14px rgba(255,200,110,.18); }
 .tour-card-title { font-weight:700; font-size:18px; color:#ffe3a3; }
 .tour-card-text { font-size:15px; color:#f0dfb8; margin:2px 0 8px; }
 .tour-card .sbtn.small { margin:0 auto; width:auto; min-width:170px; padding:8px 22px; }
 
-/* ---- Take a tour: the playing walkthrough (cover, finger, caption, drawn browser menus, player bar) ---- */
+/* ---- Take A Tour: the playing walkthrough (cover, finger, caption, drawn browser menus, player bar) ---- */
 .tour { position:fixed; inset:0; z-index:200; font-family:'Fraunces',Georgia,serif; -webkit-user-select:none; user-select:none; }
 .tour-finger { position:fixed; width:46px; height:46px; margin:-23px 0 0 -23px; border-radius:50%; background:rgba(255,255,255,.5); border:3px solid #fff;
   box-shadow:0 0 0 6px rgba(255,255,255,.18), 0 0 20px rgba(255,220,140,.95); pointer-events:none; transition:opacity .25s; z-index:3; }

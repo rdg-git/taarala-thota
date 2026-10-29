@@ -31,13 +31,13 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
     await ev(() => { document.querySelectorAll('#chs-board .ccell')[52].click(); document.querySelectorAll('#chs-board .ccell')[36].click(); }); await wait(3500);
     ok(await ev(() => CH.G.state.fullmove >= 2), 'the computer player (background helper) still works under the rules');
     await ev(async () => { await MM.Pass.create('sec pass 123'); localStorage.setItem('tt:noticeDay', JSON.stringify('x')); MM.go('home-view'); MM.Pass.unlockedUntil = MM.nowMs() + 600000; MM.go('settings'); }); await wait(400);
-    await p.locator('#settings .sbtn', { hasText: '+ Add a contact' }).click(); await wait(200);
+    await p.locator('#settings .sbtn', { hasText: '+ Add A Contact' }).click(); await wait(200);
     await p.setInputFiles('#settings input[type=file]', { name: 'a.png', mimeType: 'image/png', buffer: png(300, 300) }); await wait(700);
     ok(await ev(() => /data:image\/jpeg/.test(document.querySelector('#settings .pprev').style.backgroundImage)), 'contact photos still work under the rules');
     await ev(() => { MM.go('home-view'); MM.Pass.unlockedUntil = MM.nowMs() + 600000; MM.go('settings'); }); await wait(300);
-    await p.locator('#settings .sbtn', { hasText: 'Back up now' }).click(); await wait(200);
+    await p.locator('#settings .sbtn', { hasText: 'Back Up Now' }).click(); await wait(200);
     for (const lab of ['Backup password', 'Type it again']) await p.locator('#settings label.sfield', { has: p.locator('.slabel', { hasText: new RegExp('^' + lab + '$') }) }).locator('input').fill('backup 12345');
-    const [dl] = await Promise.all([p.waitForEvent('download'), p.locator('#settings .sbtn', { hasText: 'Create backup file' }).click()]);
+    const [dl] = await Promise.all([p.waitForEvent('download'), p.locator('#settings .sbtn', { hasText: 'Create Backup File' }).click()]);
     ok(!!dl, 'backups still work under the rules');
     ok(csp.length === 0, 'nothing in the app is blocked by the rules (' + (csp[0] || 'none') + ')');
     // things that must stay blocked

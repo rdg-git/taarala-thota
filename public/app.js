@@ -999,7 +999,7 @@ const PRIVACY_POINTS = [
   'Back up regularly, and keep the backup file private. Its password can\u2019t be recovered. If you keep it in a cloud drive or email, that service\u2019s own privacy policy applies (the file stays locked with your password).',
   'On iPhone, add the app to your Home Screen, so your data is kept even if you don’t open it for a while.',
   'So the games work without internet, the app quietly saves its pictures on your phone (about 5 MB) the first time it opens. On mobile data this counts toward your data plan; on Wi-Fi it costs nothing extra.',
-  'Closing the app or your browser keeps everything. Clearing your browser’s site data (cookies and site data), removing the app, or using a private/incognito window deletes it all, unless you have a backup. To bring it back: set a passcode, then Settings → Restore from a backup.',
+  'Closing the app or your browser keeps everything. Clearing your browser’s site data (cookies and site data), removing the app, or using a private/incognito window deletes it all, unless you have a backup. To bring it back: set a passcode, then Settings → Restore From A Backup.',
   'Feedback you send from the app is anonymous: we don’t ask for your name or email, and nothing about you is stored with it. It is kept by the app’s hosting service (Cloudflare) so the creator can read it. Please don’t include personal details.',
   'Tapping a contact only opens WhatsApp. Nothing is ever sent automatically. Once WhatsApp opens, WhatsApp\u2019s own privacy policy applies.',
   'Sharing your phone with someone? Keep the screen on this app: on iPhone turn on Guided Access (Settings \u2192 Accessibility \u2192 Guided Access), open the app and triple-click the side button; on Android turn on App pinning (Settings \u2192 Security \u2192 App pinning) and pin the app from the recent-apps view. To stop the screen turning sideways, use your phone\u2019s Rotation Lock (iPhone: Control Center; Android: quick settings, \u201cAuto-rotate\u201d off).',
@@ -1083,7 +1083,7 @@ function renderSettings(S, view, data) {
   ({ create: viewCreate, unlock: viewUnlock, forgot: viewForgot, list: viewList, form: viewForm, eraseall: viewEraseAll, backup: viewBackup, restore: viewRestore })[view](S, sh, data || {});
   if (/^(create|unlock|forgot)$/.test(view)) { sh.appendChild(tx('div', 'snote', SETTINGS_NOTE)); }
   const ub = tx('div', 'supd'); sh.insertBefore(ub, sh.firstChild); S.updBox = ub; refreshUpdateBox(S);
-  const tc = tourCard('settings'); tc.classList.add('in-settings'); ub.after(tc);  // "Take a tour" invitation, right under App update
+  const tc = tourCard('settings'); tc.classList.add('in-settings'); ub.after(tc);  // "Take A Tour" invitation, right under App update
   const vs = visitSwitch(S); vs.classList.add('in-settings'); tc.after(vs);       // visit counting: before the passcode too
   const fb = feedbackButton('settings'); fb.classList.add('in-settings'); vs.after(fb);   // anonymous feedback, also before the passcode
 }
@@ -1097,16 +1097,16 @@ function refreshUpdateBox(S) {
   if (!ready) { ub.appendChild(tx('div', 'supd-ok', '\u2713 Your app is up to date')); return; }
   if (S.updLater) {                         // after "Update later": one small line, so the page gets its space back
     const line = tx('div', 'supd-line'); line.appendChild(tx('span', '', 'Update waiting'));
-    line.appendChild(btn('Update now', 'small', applyUpdate)); ub.appendChild(line); return;
+    line.appendChild(btn('Update Now', 'small', applyUpdate)); ub.appendChild(line); return;
   }
   ub.appendChild(tx('div', 'supd-title', 'New update available'));
-  ub.appendChild(btn('Update now', 'small', applyUpdate));
+  ub.appendChild(btn('Update Now', 'small', applyUpdate));
   const row = tx('div', 'supd-row');
-  row.appendChild(btn('Update later', 'secondary small', () => { PWA.dismissed = true; S.updLater = true; refreshUpdateBox(S); }));
+  row.appendChild(btn('Update Later', 'secondary small', () => { PWA.dismissed = true; S.updLater = true; refreshUpdateBox(S); }));
   let box = null;
   const wn = btn('What\u2019s New', 'secondary small', async () => {          // tap again to hide the list
     if (box) { box.remove(); box = null; wn.textContent = 'What\u2019s New'; return; }
-    box = await whatsNewBox(); ub.appendChild(box); wn.textContent = 'Hide what\u2019s new';
+    box = await whatsNewBox(); ub.appendChild(box); wn.textContent = 'Hide What\u2019s New';
   });
   row.appendChild(wn);
   ub.appendChild(row);
@@ -1123,7 +1123,7 @@ function viewCreate(S, sh) {
   const a = field('Passcode', 'password', { autocomplete: 'new-password' }), b = field('Type it again', 'password', { autocomplete: 'new-password' });
   sh.append(a.wrap, b.wrap, showToggle([a.input, b.input]));
   const err = tx('p', 'serr'); sh.appendChild(err);
-  sh.appendChild(btn('Save passcode', '', async () => {
+  sh.appendChild(btn('Save Passcode', '', async () => {
     const p = a.input.value;
     if (Array.from(p).length < PASS_MIN) { err.textContent = 'Please use at least ' + PASS_MIN + ' characters.'; return; }
     if (p !== b.input.value) { err.textContent = 'The two passcodes don’t match. Please type them again.'; return; }
@@ -1149,7 +1149,7 @@ function viewUnlock(S, sh) {
   });
   sh.appendChild(go);
   a.input.addEventListener('keydown', (e) => { if (e.key === 'Enter') go.click(); });
-  const forgot = btn('Forgot passcode?', 'slink', () => renderSettings(S, 'forgot')); sh.appendChild(forgot);
+  const forgot = btn('Forgot Passcode?', 'slink', () => renderSettings(S, 'forgot')); sh.appendChild(forgot);
   function showWait() {
     const left = Pass.waitLeft();
     a.input.disabled = go.disabled = left > 0;
@@ -1164,7 +1164,7 @@ function viewForgot(S, sh) {
   sh.appendChild(tx('p', '', 'Your games, progress and stats stay as they are.'));
   const a = field('To confirm, type ERASE', 'text', { caps: 'characters' }); sh.appendChild(a.wrap);
   const err = tx('p', 'serr'); sh.appendChild(err);
-  sh.appendChild(btn('Erase saved contacts', 'danger', () => {
+  sh.appendChild(btn('Erase Saved Contacts', 'danger', () => {
     if (a.input.value.trim().toUpperCase() !== 'ERASE') { err.textContent = 'Please type the word ERASE to confirm.'; return; }
     Pass.forget(); toast(S, 'Saved contacts erased'); renderSettings(S, 'create');
   }));
@@ -1187,19 +1187,19 @@ function viewList(S, sh) {
     r.addEventListener('click', (ev) => { ev.stopPropagation(); renderSettings(S, 'form', { c }); });
     sh.appendChild(r);
   });
-  const add = btn('+ Add a contact', '', () => renderSettings(S, 'form', {}));
+  const add = btn('+ Add A Contact', '', () => renderSettings(S, 'form', {}));
   if (list.length >= CONTACT_MAX) { add.disabled = true; add.textContent = 'You have the maximum of ' + CONTACT_MAX + ' contacts'; }
   sh.appendChild(add);
   sh.appendChild(tx('h3', 'sgap', 'Backups'));
   const last = Store.get('lastBackup', 0);
   sh.appendChild(tx('p', 'shint', last ? 'Last backup: ' + fmtDay(last) + '.' : 'No backup yet.'));
-  sh.appendChild(btn('Back up now', '', () => renderSettings(S, 'backup')));
-  sh.appendChild(btn('Restore from a backup', 'secondary', () => renderSettings(S, 'restore')));
+  sh.appendChild(btn('Back Up Now', '', () => renderSettings(S, 'backup')));
+  sh.appendChild(btn('Restore From A Backup', 'secondary', () => renderSettings(S, 'restore')));
   sh.appendChild(tx('h3', 'sgap', 'Safety'));
-  sh.appendChild(btn('Lock Settings now', 'secondary', () => { Pass.lock(); goHome(); }));
+  sh.appendChild(btn('Lock Settings Now', 'secondary', () => { Pass.lock(); goHome(); }));
   sh.appendChild(btn('Privacy & Safety', 'slink', () => go('privacy')));
   sh.appendChild(tx('div', 'snote', SETTINGS_NOTE));
-  sh.appendChild(btn('Erase all ' + APP_NAME + ' data', 'slink danger-link', () => renderSettings(S, 'eraseall')));
+  sh.appendChild(btn('Erase All ' + APP_NAME + ' Data', 'slink danger-link', () => renderSettings(S, 'eraseall')));
 }
 function circleFor(c, cls) {
   const d = tx('span', cls);
@@ -1224,8 +1224,8 @@ function viewForm(S, sh, data) {
   const prow = tx('div', 'prow'); const prev = tx('span', 'pprev'); prow.appendChild(prev);
   const pbtns = tx('div', 'pbtns'); prow.appendChild(pbtns); sh.appendChild(tx('span', 'slabel', 'Photo (optional)')); sh.appendChild(prow);
   const file = document.createElement('input'); file.type = 'file'; file.accept = 'image/*'; file.style.display = 'none'; sh.appendChild(file);
-  const choose = btn('Choose photo', 'secondary small', () => file.click());
-  const remove = btn('Remove photo', 'secondary small', () => { photo = ''; paintPhoto(); });
+  const choose = btn('Choose Photo', 'secondary small', () => file.click());
+  const remove = btn('Remove Photo', 'secondary small', () => { photo = ''; paintPhoto(); });
   pbtns.append(choose, remove);
   file.addEventListener('change', async () => {
     const f = file.files && file.files[0]; file.value = '';
@@ -1255,7 +1255,7 @@ function viewForm(S, sh, data) {
   nm.input.addEventListener('input', paintPhoto);
   const err = tx('p', 'serr'); sh.appendChild(err);
   paintPhoto();
-  sh.appendChild(btn('Test on WhatsApp', 'secondary', () => {
+  sh.appendChild(btn('Test On WhatsApp', 'secondary', () => {
     const m = Contacts.check(nm.input.value || 'x', ph.input.value); if (m) { err.textContent = m; return; }
     err.textContent = ''; window.open(waLink(ph.input.value), '_blank', 'noopener');
   }));
@@ -1266,7 +1266,7 @@ function viewForm(S, sh, data) {
     if (r === 'nospace') { err.textContent = 'This phone has no room left to save that. Try removing a photo.'; return; }
     toast(S, edit ? 'Saved' : 'Contact added'); renderSettings(S, 'list');
   }));
-  if (edit) sh.appendChild(btn('Delete contact', 'danger', () => {
+  if (edit) sh.appendChild(btn('Delete Contact', 'danger', () => {
     showPanel(S, { title: 'Delete ' + c.name + '?', text: 'This removes them from ' + APP_NAME + ' only. Your phone’s own contacts are not affected.',
       buttons: [{ label: 'Keep', secondary: true }, { label: 'Delete', fn: () => { Contacts.remove(c.id); toast(S, 'Deleted'); renderSettings(S, 'list'); } }] });
   }));
@@ -1290,7 +1290,7 @@ function viewEraseAll(S, sh) {
   sh.appendChild(tx('p', '', 'This app uses no cookies. This can\u2019t be undone.'));
   const a = field('To confirm, type ERASE', 'text', { caps: 'characters' }); sh.appendChild(a.wrap);
   const err = tx('p', 'serr'); sh.appendChild(err);
-  sh.appendChild(btn('Erase all app data', 'danger', () => {
+  sh.appendChild(btn('Erase All App Data', 'danger', () => {
     if (a.input.value.trim().toUpperCase() !== 'ERASE') { err.textContent = 'Please type the word ERASE to confirm.'; return; }
     eraseEverything(); try { Music.paint(); } catch (e) {}
     goHome(); toast(SCREENS['home-view'], 'All Taarala Thota data was erased');
@@ -1309,7 +1309,7 @@ function viewBackup(S, sh) {
   const a = field('Backup password', 'password', { autocomplete: 'new-password' }), b = field('Type it again', 'password', { autocomplete: 'new-password' });
   sh.append(a.wrap, b.wrap, showToggle([a.input, b.input]));
   const err = tx('p', 'serr'); sh.appendChild(err);
-  const go1 = btn('Create backup file', '', async () => {
+  const go1 = btn('Create Backup File', '', async () => {
     const p = a.input.value;
     if (Array.from(p).length < PASS_MIN) { err.textContent = 'Please use at least ' + PASS_MIN + ' characters.'; return; }
     if (p !== b.input.value) { err.textContent = 'The two passwords don\u2019t match. Please type them again.'; return; }
@@ -1319,7 +1319,7 @@ function viewBackup(S, sh) {
       if (r === 'cancelled') { err.textContent = 'Backup not saved. You can try again any time.'; go1.disabled = false; return; }
       Store.set('lastBackup', nowMs()); Store.del('backupSnooze');
       toast(S, 'Backup saved'); renderSettings(S, 'list');
-      showPanel(S, { title: 'Backup saved', text: 'Keep the file somewhere private, such as your own cloud drive or email. To restore, open Settings \u2192 Restore from a backup.', buttons: [{ label: 'OK' }] });
+      showPanel(S, { title: 'Backup saved', text: 'Keep the file somewhere private, such as your own cloud drive or email. To restore, open Settings \u2192 Restore From A Backup.', buttons: [{ label: 'OK' }] });
     } catch (e) { console.error(e); err.textContent = 'Sorry, the backup couldn\u2019t be made on this phone.'; go1.disabled = false; }
   });
   sh.appendChild(go1);
@@ -1331,14 +1331,14 @@ function viewRestore(S, sh) {
   sh.appendChild(tx('p', 'swarn', 'Restoring replaces all ' + APP_NAME + ' data on this phone with what is in the backup. Your current passcode stays the same.'));
   const file = document.createElement('input'); file.type = 'file'; file.style.display = 'none'; sh.appendChild(file);
   const fname = tx('p', 'shint', 'No file chosen.');
-  sh.appendChild(btn('Choose backup file', 'secondary', () => file.click())); sh.appendChild(fname);
+  sh.appendChild(btn('Choose Backup File', 'secondary', () => file.click())); sh.appendChild(fname);
   file.addEventListener('change', () => {
     fname.textContent = file.files && file.files[0] ? 'Chosen: ' + file.files[0].name : 'No file chosen.';
     err.textContent = '';
   });
   const a = field('Backup password', 'password', { autocomplete: 'off' }); sh.append(a.wrap, showToggle([a.input]));
   const err = tx('p', 'serr'); sh.appendChild(err);
-  const open = btn('Open backup', '', async () => {
+  const open = btn('Open Backup', '', async () => {
     const f = file.files && file.files[0];
     if (!f) { err.textContent = 'Please choose the backup file first.'; return; }
     open.disabled = true; err.textContent = 'Opening\u2026';
@@ -1369,7 +1369,7 @@ function buildPrivacy() {
   addNav(S, { icons: true });
   addText(S, 'loved-title', 90, 160, 560, 130, 74, 'Privacy & Safety');
   const sheet = el('div', 'sheet'); place(sheet, 45, 330, 763, 1470, S); S.art.appendChild(sheet);
-  sheet.appendChild(tourCard('privacy'));                         // "Take a tour" invitation, at the very top
+  sheet.appendChild(tourCard('privacy'));                         // "Take A Tour" invitation, at the very top
   const ol = tx('ol', 'plist'); PRIVACY_POINTS.forEach(p => ol.appendChild(tx('li', '', p))); sheet.appendChild(ol);
   ol.children[1].appendChild(visitSwitch(S));                    // the visit-counting switch, right under the point that explains it
   // links to the outside services mentioned above (they open in a new tab; nothing is sent by the app)
@@ -1398,11 +1398,11 @@ function buildPrivacy() {
 // ------------------------------------------------------------
 const FEEDBACK_MAX = 10000;
 function openFeedback(from) { const S = SCREENS.feedback; if (S) { S.parent = from; go('feedback'); } }
-function feedbackButton(from) { return btn('Share feedback (anonymous)', 'secondary fb-open', () => openFeedback(from)); }
+function feedbackButton(from) { return btn('Share Feedback (Anonymous)', 'secondary fb-open', () => openFeedback(from)); }
 function buildFeedback() {
-  const S = defScreen('feedback', 'loved', { parent: 'privacy', name: 'Share feedback' });
+  const S = defScreen('feedback', 'loved', { parent: 'privacy', name: 'Share Feedback' });
   addNav(S, { icons: true });
-  addText(S, 'loved-title', 90, 160, 600, 130, 74, 'Share feedback');
+  addText(S, 'loved-title', 90, 160, 600, 130, 74, 'Share Feedback');
   const sheet = el('div', 'sheet'); place(sheet, 45, 330, 763, 1470, S); S.art.appendChild(sheet);
   sheet.appendChild(tx('p', '', 'What do you enjoy? What didn’t you like, or what felt confusing? What would make it better, and how? Is there a feature you’d love to see? Anything at all is welcome.'));
   sheet.appendChild(tx('p', 'shint', 'This is anonymous: we don’t ask for your name or email, and please don’t include personal details. Please keep it kind and respectful.'));
@@ -1545,7 +1545,7 @@ function maybeRemindBackup(S) {
   showPanel(S, { title: 'Time for a backup?',
     text: (last ? 'It’s been ' + Math.floor((nowMs() - last) / 86400000) + ' days since your last backup.' : 'You haven’t made a backup yet.') + ' A backup keeps your contacts and progress safe if this phone’s data is ever cleared.',
     buttons: [{ label: 'Later', secondary: true, fn: () => Store.set('backupSnooze', nowMs() + 86400000) },
-              { label: 'Back up now', fn: () => { SCREENS.settings.pendingView = 'backup'; go('settings'); } }] });
+              { label: 'Back Up Now', fn: () => { SCREENS.settings.pendingView = 'backup'; go('settings'); } }] });
 }
 
 // ============================================================
@@ -1639,7 +1639,7 @@ function showUpdateCard(S, fromBadge) {
               } },
               // Later: reminded again next time the app opens; meanwhile the badge and Settings stay available
               { label: 'Later', secondary: true, fn: () => { PWA.dismissed = true; toast(S, 'You can update anytime from Settings.', 3500); } },
-              { label: 'Update now', fn: applyUpdate }] });
+              { label: 'Update Now', fn: applyUpdate }] });
 }
 
 // ------------------------------------------------------------
@@ -1733,9 +1733,9 @@ function visitSwitch(S) {
     const turningOn = Visits.chosenOff();
     showPanel(S, turningOn
       ? { title: 'Count your visits again?', text: 'Visits are counted anonymously: no cookies, no personal profile, and nothing you save in the app. You can turn this off again anytime.',
-          buttons: [{ label: 'Cancel', secondary: true }, { label: 'Turn on', fn: () => Visits.set(true) }] }
+          buttons: [{ label: 'Cancel', secondary: true }, { label: 'Turn On', fn: () => Visits.set(true) }] }
       : { title: 'Stop counting your visits?', text: 'The app will stop sending anonymous visit counts from this phone. You can turn this back on anytime, here or in Settings.',
-          buttons: [{ label: 'Cancel', secondary: true }, { label: 'Turn off', fn: () => Visits.set(false) }] });
+          buttons: [{ label: 'Cancel', secondary: true }, { label: 'Turn Off', fn: () => Visits.set(false) }] });
   });
   box._paint = () => {
     const g = Visits.gpc(), on = Visits.counting();
@@ -1766,7 +1766,7 @@ function showWelcome() {
     : 'We count visits anonymously (no cookies, no personal profile, nothing you save), so we know roughly how many people visit. You can turn this off anytime in Privacy & Safety or Settings.');
   const ov = showPanel(S, { title: 'Welcome to Taarala Thota \u{1F31F}', text,
     buttons: [{ label: 'Read Privacy & Safety', secondary: true, fn: () => { seen(); go('privacy'); } },
-              { label: 'Got it', fn: seen }] });
+              { label: 'Got It', fn: seen }] });
   ov.classList.add('welcome');
 }
 
@@ -1774,7 +1774,7 @@ function showWelcome() {
 // TAKE A TOUR (a playing walkthrough, like a screen recording)
 // The app plays the tour on its REAL screens: a glowing finger moves to each button and "taps" it, a short caption
 // explains, and a player bar gives pause/play, 5 seconds back/forward, a bar to drag, speed (1×, 1.5×, 2×, 0.5×)
-// and music on/off. Started from the "Take a tour" card at the top of Privacy & Safety and in Settings (under App update).
+// and music on/off. Started from the "Take A Tour" card at the top of Privacy & Safety and in Settings (under App update).
 // Rules:
 // - It only LOOKS: the finger is a picture. A see-through cover sits over the app, so nothing underneath can be
 //   tapped; the tour never opens a contact, starts a game or changes a setting, and never visits Settings itself.
@@ -1803,7 +1803,7 @@ const TOUR_SCENES = [
         : TOUR_KIND === 'android' ? 'In Chrome: ⋮ → Add to home screen → Install (not “Create shortcut”, which only opens a browser tab). It then opens full screen and works offline.'
         : 'Android (Chrome): ⋮ → Add to home screen → Install. iPhone (Safari): ⋯ → Share → Add to Home Screen → Add. It then works offline.' },
   { screen: 'home-view', dur: 6000, tap: '.gear-btn', title: 'Add your loved ones',
-    text: 'Tap the gear (Settings), create a passcode, then Add a contact: a name, a WhatsApp number and, if you like, a photo.' },
+    text: 'Tap the gear (Settings), create a passcode, then Add A Contact: a name, a WhatsApp number and, if you like, a photo.' },
   { screen: 'home-view', dur: 4500, tap: '.hot[aria-label="Family"]', then: 'contact-view', title: 'See your loved ones',
     text: 'Tap the Family door.' },
   { screen: 'contact-view', dur: 6000, tap: '.medallion, .loved-empty', title: 'Reach them in one tap',
@@ -1819,7 +1819,7 @@ const TOUR_SCENES = [
   { screen: 'chs-entry-n', dur: 3500, tap: '.hot[aria-label="Home"]', then: 'home-view', title: 'Back to Home',
     text: 'Every screen has a way Home.' },
   { screen: 'home-view', dur: 6000, tap: '.gear-btn', title: 'Keep your data safe',
-    text: 'Everything stays on this phone. Now and then, tap the gear → Back up now, and keep the file somewhere safe.' },
+    text: 'Everything stays on this phone. Now and then, tap the gear → Back Up Now, and keep the file somewhere safe.' },
   { screen: 'home-view', dur: 6000, pill: true, title: 'Stay up to date',
     text: 'When a new version is ready, a gold ↑ Update button appears up here. See What’s New, then update whenever it suits you.' },
   { screen: 'home-view', dur: 4500, tap: '.privacy-link', then: 'privacy', title: 'Privacy & Safety',
@@ -1996,7 +1996,7 @@ function tourCard(from) {
   const c = tx('div', 'tour-card');
   c.appendChild(tx('div', 'tour-card-title', 'New here? \u{1F31F}'));
   c.appendChild(tx('div', 'tour-card-text', 'Watch a short walkthrough of everything the app does.'));
-  c.appendChild(btn('▶ Take a tour', 'small tour-go', () => Tour.start(from, { record: TEST_MODE && QS.has('tourrec') })));
+  c.appendChild(btn('▶ Take A Tour', 'small tour-go', () => Tour.start(from, { record: TEST_MODE && QS.has('tourrec') })));
   return c;
 }
 
@@ -4469,7 +4469,7 @@ function setupDeskCard() {
   words.appendChild(t('upright-title', 'Best on your phone'));
   words.appendChild(t('upright-sub', 'Taarala Thota is painted for phone screens. Point your phone\u2019s camera at this code to open it there.'));
   words.appendChild(t('desk-addr', 'Or type this address on your phone: ' + location.host));
-  const go = el('button', 'desk-btn'); go.type = 'button'; go.textContent = 'Continue on this screen';
+  const go = el('button', 'desk-btn'); go.type = 'button'; go.textContent = 'Continue On This Screen';
   const close = () => { try { sessionStorage.setItem('tt:deskok', '1'); } catch (e) {} card.remove(); document.removeEventListener('keydown', onKey); };
   const onKey = (e) => { if (e.key === 'Escape') close(); };
   go.addEventListener('click', (e) => { e.stopPropagation(); close(); });
