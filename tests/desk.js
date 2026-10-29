@@ -1,5 +1,5 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
-// "Best on your phone" card: laptops only; QR code holds this site's address; "Continue" closes it for this tab.
+// "Best On Your Phone" card: laptops only; QR code holds this site's address; "Continue" closes it for this tab.
 const { chromium } = require('playwright');
 let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m); if (!c) f++; };
 (async () => {

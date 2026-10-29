@@ -109,8 +109,8 @@ function backupReminderDue() {
 function maybeRemindBackup(S) {
   if (!S || S.panel || !backupReminderDue()) return;
   const last = Store.get('lastBackup', 0);
-  showPanel(S, { title: 'Time for a backup?',
+  showPanel(S, { title: 'Time For A Backup?',
     text: (last ? 'It’s been ' + Math.floor((nowMs() - last) / 86400000) + ' days since your last backup.' : 'You haven’t made a backup yet.') + ' A backup keeps your contacts and progress safe if this phone’s data is ever cleared.',
     buttons: [{ label: 'Later', secondary: true, fn: () => Store.set('backupSnooze', nowMs() + 86400000) },
-              { label: 'Back up now', fn: () => { SCREENS.settings.pendingView = 'backup'; go('settings'); } }] });
+              { label: 'Back Up Now', fn: () => { SCREENS.settings.pendingView = 'backup'; go('settings'); } }] });
 }

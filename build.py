@@ -56,7 +56,7 @@ js = '\n'.join([
     '// ' + STAMP,
     "const APP_RELEASE = '%s';   // this version's release label (newest entry in src/whats_new.json)" % APP_RELEASE,
     src('core.js').replace('/*PIC_JSON*/{}', json.dumps(pic)).replace('/*VER_JSON*/{}', json.dumps(ver)),
-    src('helpers.js'), src('contacts.js'), src('audio.js'), src('gamekit.js'), src('screens_main.js'), src('settings.js'), src('backup.js'), src('pwa.js'), src('visits.js'), src('bubble.js'), src('mine.js'),
+    src('helpers.js'), src('contacts.js'), src('audio.js'), src('gamekit.js'), src('screens_main.js'), src('settings.js'), src('backup.js'), src('pwa.js'), src('visits.js'), src('tour.js'), src('bubble.js'), src('mine.js'),
     src('chess_engine.js'), src('checkers_engine.js'), src('chess_ui.js'), src('checkers_ui.js'), src('qr.js'), src('init.js'),
     'detectAvif(bootApp);'
 ])
@@ -87,13 +87,13 @@ core += ["fonts/%s?v=%s" % (f, hashlib.md5(open(os.path.join('public', 'fonts', 
 assets = sorted('img/%s.%s?v=%s' % (n, ext, h) for n in ver for ext, h in ver[n].items())
 version = hashlib.sha256((html + css + js + json.dumps(core) + json.dumps(assets) + json.dumps(manifest)).encode('utf-8')).hexdigest()[:12]
 # release notes: src/whats_new.json (newest first; "date" is the release label, e.g. 2026-10-30, or 2026-10-30b for a
-# second release that day). All entries travel inside the new version's offline helper, so "What's new" can show every
+# second release that day). All entries travel inside the new version's offline helper, so "What's New" can show every
 # release the person hasn't installed yet, even if they skipped some. All entries also become CHANGELOG.md.
 releases = json.load(open(os.path.join('src', 'whats_new.json'), encoding='utf-8'))
 notes = [{'release': str(r['date']), 'notes': [str(n) for n in r['notes']][:8]} for r in releases]   # every release, newest first
 with open('CHANGELOG.md', 'w', encoding='utf-8', newline='\n') as ch:
     ch.write('# Changelog\n\nWhat changed in each release of Taarala Thota (Garden of Stars), newest first.\n'
-             'Before updating, the app\u2019s "What\u2019s new" shows the entries newer than the version on the phone.\n')
+             'Before updating, the app\u2019s "What\u2019s New" shows the entries newer than the version on the phone.\n')
     for r in releases: ch.write('\n## ' + r['date'] + '\n\n' + ''.join('- ' + n + '\n' for n in r['notes']))
 version = hashlib.sha256((version + json.dumps(notes)).encode('utf-8')).hexdigest()[:12]
 sw = '// ' + STAMP + '\n' + src('sw.js').replace('__NOTES__', json.dumps(notes, ensure_ascii=False)).replace('__VERSION__', version).replace('__CORE__', json.dumps(core)).replace('__ASSETS__', json.dumps(assets))

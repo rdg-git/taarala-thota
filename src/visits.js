@@ -53,10 +53,10 @@ function visitSwitch(S) {
     if (Visits.gpc()) return;
     const turningOn = Visits.chosenOff();
     showPanel(S, turningOn
-      ? { title: 'Count your visits again?', text: 'Visits are counted anonymously: no cookies, no personal profile, and nothing you save in the app. You can turn this off again anytime.',
-          buttons: [{ label: 'Cancel', secondary: true }, { label: 'Turn on', fn: () => Visits.set(true) }] }
-      : { title: 'Stop counting your visits?', text: 'The app will stop sending anonymous visit counts from this phone. You can turn this back on anytime, here or in Settings.',
-          buttons: [{ label: 'Cancel', secondary: true }, { label: 'Turn off', fn: () => Visits.set(false) }] });
+      ? { title: 'Count Your Visits Again?', text: 'Visits are counted anonymously: no cookies, no personal profile, and nothing you save in the app. You can turn this off again anytime.',
+          buttons: [{ label: 'Cancel', secondary: true }, { label: 'Turn On', fn: () => Visits.set(true) }] }
+      : { title: 'Stop Counting Your Visits?', text: 'The app will stop sending anonymous visit counts from this phone. You can turn this back on anytime, here or in Settings.',
+          buttons: [{ label: 'Cancel', secondary: true }, { label: 'Turn Off', fn: () => Visits.set(false) }] });
   });
   box._paint = () => {
     const g = Visits.gpc(), on = Visits.counting();
@@ -85,8 +85,8 @@ function showWelcome() {
   const text = 'Everything you save stays on this phone. No ads, no sign-up, no personal tracking.\n\n' + (Visits.gpc()
     ? 'Your browser asks websites not to track you (Global Privacy Control), so your visits are never counted.'
     : 'We count visits anonymously (no cookies, no personal profile, nothing you save), so we know roughly how many people visit. You can turn this off anytime in Privacy & Safety or Settings.');
-  const ov = showPanel(S, { title: 'Welcome to Taarala Thota \u{1F31F}', text,
+  const ov = showPanel(S, { title: 'Welcome To Taarala Thota \u{1F31F}', text,
     buttons: [{ label: 'Read Privacy & Safety', secondary: true, fn: () => { seen(); go('privacy'); } },
-              { label: 'Got it', fn: seen }] });
+              { label: 'Got It', fn: seen }] });
   ov.classList.add('welcome');
 }

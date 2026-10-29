@@ -1,7 +1,15 @@
 # Changelog
 
 What changed in each release of Taarala Thota (Garden of Stars), newest first.
-Before updating, the app’s "What’s new" shows the entries newer than the version on the phone.
+Before updating, the app’s "What’s New" shows the entries newer than the version on the phone.
+
+## 2026-10-29
+
+- Minor Formatting.
+
+## 2026-10-28f
+
+- New “Take A Tour” on the Privacy & Safety page and in Settings: a short walkthrough that plays on its own and shows where to tap, with pause, speed and a bar to go back or forward.
 
 ## 2026-10-28e
 
@@ -25,7 +33,7 @@ Before updating, the app’s "What’s new" shows the entries newer than the ver
 ## 2026-10-28
 
 - All Bubble Pop levels are open. Earn a gold star for each level you complete.
-- See what's new before you update.
+- See What's New before you update.
 - When an update is ready, a small gold “Update” button appears at the top of the screen.
 - Update anytime from Settings, even after tapping Later.
 - The app now reopens reliably every time.

@@ -16,7 +16,7 @@ const fs = require('fs');
       localStorage.setItem('tt:contacts', JSON.stringify([{ id: 'a', name: 'Grandma', phone: '+10000000001', accent: '#FF9F40' }, { id: 'b', name: 'Uncle Ravi', phone: '+10000000002' }, { id: 'c', name: 'Best Friend', phone: '+10000000003', accent: '#A78BFA' }]));
       MM.go('home-view'); MM.Pass.unlockedUntil = MM.nowMs() + 600000; MM.go('settings'); });
     await shot('3-settings-list');
-    await p.locator('#settings .sbtn', { hasText: '+ Add a contact' }).click(); await shot('4-add-contact');
+    await p.locator('#settings .sbtn', { hasText: '+ Add A Contact' }).click(); await shot('4-add-contact');
     await p.evaluate(() => { MM.Pass.lock(); MM.go('home-view'); MM.Pass.unlockedUntil = MM.nowMs() + 600000; MM.go('settings'); }); await shot('5-locked');
     await p.evaluate(() => MM.go('contact-view')); await shot('6-loved-ones');
     await p.evaluate(() => MM.go('privacy')); await shot('7-privacy');

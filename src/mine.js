@@ -186,7 +186,7 @@ function mineOpen(S, i) {
     }
     G.over = true; c.hit = true; mineTick(S); mineRecord(S, 'lost');
     G.cells.forEach((x, k) => { if (x.mine) { x.open = true; paintCell(S, k); } });
-    setTimeout(() => showPanel(S, { icon: '☄️', title: 'Oh! A comet', text: 'That is okay. Try again?',
+    setTimeout(() => showPanel(S, { icon: '☄️', title: 'Oh! A Comet', text: 'That is okay. Try again?',
       buttons: [{ label: 'Hidden Comets', secondary: true, fn: () => go('ms-home') }, { label: 'Try Again', fn: () => newMineGame(S) }] }), 700);
     return;
   }

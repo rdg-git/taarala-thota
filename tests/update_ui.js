@@ -1,6 +1,6 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
 // While a new version waits: the "Update" pill shows next to the top-right button on every screen except during play,
-// covers nothing, and opens the update card. Settings: compact box at the top; "Update later" shrinks it; What's new shows/hides.
+// covers nothing, and opens the update card. Settings: compact box at the top; "Update Later" shrinks it; What's New shows/hides.
 const { chromium } = require('playwright');
 let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m); if (!c) f++; };
 (async () => {
@@ -34,15 +34,15 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
     if (w === 390) {
       await p.evaluate(() => MM.go('games')); await p.waitForTimeout(400);
       await p.locator('#games .upd-badge').click(); await p.waitForTimeout(400);
-      ok(await p.evaluate(() => /new version is ready/.test((document.querySelector('#games .panel-card') || {}).textContent || '')), 'tapping the pill opens the update card (even after Later)');
+      ok(await p.evaluate(() => /New Version Is Ready/.test((document.querySelector('#games .panel-card') || {}).textContent || '')), 'tapping the pill opens the update card (even after Later)');
       await p.evaluate(() => { closePanel(SCREENS.games); MM.go('settings'); }); await p.waitForTimeout(400);
       ok(await p.evaluate(() => document.querySelector('#settings .sheet').firstChild.classList.contains('supd')), 'Settings: update box is the first thing on the page');
       await p.locator('#settings .supd .sbtn', { hasText: 'What' }).click(); await p.waitForTimeout(300);
-      ok(await p.evaluate(() => document.querySelectorAll('#settings .supd .wn-list li').length === 2), "Settings: What's new opens the list");
+      ok(await p.evaluate(() => document.querySelectorAll('#settings .supd .wn-list li').length === 2), "Settings: What's New opens the list");
       await p.locator('#settings .supd .sbtn', { hasText: 'Hide' }).click(); await p.waitForTimeout(300);
       ok(await p.evaluate(() => !document.querySelector('#settings .supd .wn-box')), "Settings: tapping again hides the list");
-      await p.locator('#settings .supd .sbtn', { hasText: 'Update later' }).click(); await p.waitForTimeout(300);
-      ok(await p.evaluate(() => /Update waiting/.test(document.querySelector('#settings .supd').textContent) && document.querySelectorAll('#settings .supd button').length === 1), 'Settings: Update later shrinks the box to one line');
+      await p.locator('#settings .supd .sbtn', { hasText: 'Update Later' }).click(); await p.waitForTimeout(300);
+      ok(await p.evaluate(() => /Update waiting/.test(document.querySelector('#settings .supd').textContent) && document.querySelectorAll('#settings .supd button').length === 1), 'Settings: Update Later shrinks the box to one line');
     }
     ok(errs.length === 0, w + 'x' + h + ': no page errors ' + errs.join(' | '));
   }

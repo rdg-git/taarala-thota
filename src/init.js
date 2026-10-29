@@ -55,6 +55,7 @@ function setupSteadyScreen() {
     if (leaving) return;
     const S = CUR && SCREENS[CUR];
     const stay = () => { try { history.pushState({ tt: 'app' }, ''); } catch (e) {} };
+    if (Tour.on) { Tour.end(); stay(); return; }                     // during the tour: back ends the tour
     if (S && S.panel) { closePanel(S); stay(); return; }            // first: close an open card
     if (CUR && CUR !== 'home-view') { goBack(); stay(); return; }  // then: one screen back
     stay();                                                          // on Home: ask before leaving
@@ -80,7 +81,7 @@ function setupUprightCard() {
     '<circle cx="32" cy="32" r="29" fill="url(#upw)" stroke="#d9a95a" stroke-width="3"/>' +
     '<g class="upright-turn"><rect x="23" y="13" width="18" height="34" rx="4" fill="#2a1608" stroke="#ffe3a3" stroke-width="2.6"/><circle cx="32" cy="42" r="1.8" fill="#ffe3a3"/></g></svg>';
   const words = el('div', 'upright-words');
-  words.appendChild(Object.assign(document.createElement('div'), { className: 'upright-title', textContent: 'Turn your phone upright' }));
+  words.appendChild(Object.assign(document.createElement('div'), { className: 'upright-title', textContent: 'Turn Your Phone Upright' }));
   words.appendChild(Object.assign(document.createElement('div'), { className: 'upright-sub', textContent: 'The garden is painted for upright screens. Your game is paused and nothing is lost.' }));
   panel.appendChild(words);
   card.appendChild(panel);
@@ -109,16 +110,16 @@ function setupDeskCard() {
   if (!isComputerScreen()) return;
   try { if (sessionStorage.getItem('tt:deskok') === '1') return; } catch (e) {}
   const addr = location.origin + location.pathname.replace(/index\.html$/, '');
-  const card = el('div', 'desk-card'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-label', 'Best on your phone');
+  const card = el('div', 'desk-card'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-label', 'Best On Your Phone');
   const bg = el('div', 'upright-bg'); bg.style.backgroundImage = 'url("' + picUrl('home') + '")'; card.appendChild(bg);
   const panel = el('div', 'desk-panel');
   const qr = el('div', 'desk-qr'); qr.innerHTML = qrSvg(addr);
   const words = el('div', 'desk-words');
   const t = (cls, text) => Object.assign(document.createElement('div'), { className: cls, textContent: text });
-  words.appendChild(t('upright-title', 'Best on your phone'));
+  words.appendChild(t('upright-title', 'Best On Your Phone'));
   words.appendChild(t('upright-sub', 'Taarala Thota is painted for phone screens. Point your phone\u2019s camera at this code to open it there.'));
   words.appendChild(t('desk-addr', 'Or type this address on your phone: ' + location.host));
-  const go = el('button', 'desk-btn'); go.type = 'button'; go.textContent = 'Continue on this screen';
+  const go = el('button', 'desk-btn'); go.type = 'button'; go.textContent = 'Continue On This Screen';
   const close = () => { try { sessionStorage.setItem('tt:deskok', '1'); } catch (e) {} card.remove(); document.removeEventListener('keydown', onKey); };
   const onKey = (e) => { if (e.key === 'Escape') close(); };
   go.addEventListener('click', (e) => { e.stopPropagation(); close(); });

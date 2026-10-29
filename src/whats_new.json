@@ -1,5 +1,17 @@
 [
   {
+    "date": "2026-10-29",
+    "notes": [
+      "Minor Formatting."
+    ]
+  },
+  {
+    "date": "2026-10-28f",
+    "notes": [
+      "New “Take A Tour” on the Privacy & Safety page and in Settings: a short walkthrough that plays on its own and shows where to tap, with pause, speed and a bar to go back or forward."
+    ]
+  },
+  {
     "date": "2026-10-28e",
     "notes": [
       "Anonymous visit counting (no cookies, no personal tracking). A one-time welcome note explains it, and you can turn it off anytime on the Privacy & Safety page or in Settings. Browsers that send a “Global Privacy Control” signal are never counted.",
@@ -30,7 +42,7 @@
     "date": "2026-10-28",
     "notes": [
       "All Bubble Pop levels are open. Earn a gold star for each level you complete.",
-      "See what's new before you update.",
+      "See What's New before you update.",
       "When an update is ready, a small gold “Update” button appears at the top of the screen.",
       "Update anytime from Settings, even after tapping Later.",
       "The app now reopens reliably every time.",

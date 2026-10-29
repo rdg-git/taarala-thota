@@ -38,7 +38,7 @@ function ok(c, msg) { if (c) { pass++; console.log('PASS', msg); } else { fail++
     await ev(() => bubSetProgress(1));
     await ev(([l, po, mi]) => { go('bubble-l' + l); const G = BUB.cur; G.popped = po; G.missed = mi; G.bubbles.forEach(b => b.el.remove()); G.bubbles = []; finishBubbleLevel(); }, [lvl, popped, missed]);
     const title = await ev((l) => { const pn = SCREENS['bubble-l' + l].panel; return pn ? pn.querySelector('.panel-title').textContent : ''; }, lvl);
-    const exp = passExpected ? (lvl === 3 ? 'Bubble Pop Complete!' : 'Level ' + lvl + ' Complete!') : 'So close!';
+    const exp = passExpected ? (lvl === 3 ? 'Bubble Pop Complete!' : 'Level ' + lvl + ' Complete!') : 'So Close!';
     ok(title === exp, `bubble: level ${lvl} ${popped}/${popped + missed} -> "${title}"`);
   }
   ok(await ev(() => bubProgress()) === 1, 'bubble: finishing level 3 resets progress to level 1');
