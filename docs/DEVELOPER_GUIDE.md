@@ -45,7 +45,7 @@ section-by-section notes right where each part begins.
 | `settings.js` | Settings screen (passcode pages, contacts, backups, erase) and the Privacy & Safety page. |
 | `backup.js` | Locked backup files, safe restore, 6-day backup reminder. |
 | `visits.js` | Anonymous visit counting (Cloudflare Web Analytics): loaded only when allowed, only on the official address; the on/off switch used on Privacy & Safety and in Settings; Global Privacy Control respected. |
-| `tour.js` | "Take A Tour": a one-minute guided walk through the real screens (caption card plus a gold glow). Started from the card at the top of Privacy & Safety and under App update in Settings. Looks only: a cover blocks taps, nothing is saved, and it returns to where it started. Steps are listed in `TOUR_STEPS`. |
+| `tour.js` | "Take A Tour": a playing walkthrough on the real screens (pretend finger, captions, player bar with pause, 5-second back/forward, drag bar, speed and music). Started from the card at the top of Privacy & Safety and under App update in Settings. Looks only: a cover blocks taps, nothing is saved, and it returns to where it started. Scenes are listed in `TOUR_SCENES`; `?tourrec` (test mode) hides the player bar for recording the video. |
 | `pwa.js` | Installable app: registers the offline helper, keeps pictures for offline play, "new version ready" card. |
 | `bubble.js` | Bubble Pop (3 levels of 2 minutes, all open; accuracy goals 95/98/100 % earn a gold star; bubbles cross in 6.0 / 4.8 / 3.7 s, a new one about every 0.75 s). |
 | `mine.js` | Hidden Comets (minesweeper-style; Gentle never loses). |
@@ -206,11 +206,20 @@ Found in the security and quality review (28 Oct 2026). Each item says what rema
 - **Security rules allow inline styles** (`style-src 'unsafe-inline'`; scripts are still strictly limited to the app's
   own files). Low risk; tightening needs every style attribute moved into the stylesheet.
 
-**Before launch**
-- Short legal review of the Privacy & Safety wording. (`OFFICIAL_ADDRESS` is set to taarala-thota.pages.dev.)
-- Replace the temporary app icon (cut from the Home picture); the Games picture still shows a small painted mine-ball
-  and flag on the Hidden Comets tile.
-- README, case study and LICENSE; GitHub branch protection and secret scanning; delete the test site.
+**Done before launch** (October 2026)
+- Privacy & Safety wording self-reviewed against what the app does (not a legal review). `OFFICIAL_ADDRESS` is
+  taarala-thota.pages.dev.
+- New painted app icon (public/icons, all sizes); the Hidden Comets tile on the Games picture shows a comet and a star.
+- README, product documentation (docs/), tour video (docs/media) and LICENSE (all rights reserved).
+- Daily tamper check added (see below).
+- Still to do at launch: GitHub branch protection and secret scanning; delete the old test site.
+
+**Daily tamper check** (`.github/workflows/live-check.yml` + `tools/live_check.py`): once a day GitHub compares every
+file on the live site with the approved release on `main`. If anything differs or is missing, the job fails and GitHub
+emails the owner. Run it by hand from GitHub → Actions → "Daily live check" → Run workflow. A failure right after a
+merge can just mean Cloudflare is still publishing: run it again a few minutes later.
+
+**Small tidy-ups**
 - `tests/update_ui.js` and `tests/update_badge.js` overlap and could be merged.
 
 **Ideas**
