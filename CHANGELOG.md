@@ -3,6 +3,10 @@
 What changed in each release of Taarala Thota (Garden of Stars), newest first.
 Before updating, the app’s "What’s New" shows the entries newer than the version on the phone.
 
+## 2026-10-29c
+
+- Take A Tour: clearer, simpler iPhone install steps.
+
 ## 2026-10-29b
 
 - Privacy & Safety: a short note about this project, how feedback may be used, and clearer wording about WhatsApp, data storage and the hosting service.

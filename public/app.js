@@ -1,5 +1,5 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
-const APP_RELEASE = '2026-10-29b';   // this version's release label (newest entry in src/whats_new.json)
+const APP_RELEASE = '2026-10-29c';   // this version's release label (newest entry in src/whats_new.json)
 // ============================================================
 // CORE: helpers, storage, picture-screen system, navigation
 // ============================================================
@@ -1803,9 +1803,9 @@ const TOUR_SCENES = [
   { screen: 'home-view', dur: 5000, title: 'Welcome To The Garden \u{1F31F}',
     text: 'A calm place to play and to stay close to the people who matter. Here’s a quick look around.' },
   { screen: 'home-view', dur: TOUR_KIND === 'both' ? 20000 : 11000, install: TOUR_KIND, title: 'Install It (Optional, Recommended)',
-    text: TOUR_KIND === 'ios' ? 'In Safari: ⋯ → Share → Add to Home Screen → keep “Open as Web App” on → Add. It then opens full screen and works offline.'
+    text: TOUR_KIND === 'ios' ? 'In Safari, open the Share menu (on some iPhones it’s under ⋯), find Add to Home Screen (you may need to scroll down), then tap Add. It then opens full screen and works offline.'
         : TOUR_KIND === 'android' ? 'In Chrome: ⋮ → Add to home screen → Install (not “Create shortcut”, which only opens a browser tab). It then opens full screen and works offline.'
-        : 'Android (Chrome): ⋮ → Add to home screen → Install. iPhone (Safari): ⋯ → Share → Add to Home Screen → Add. It then works offline.' },
+        : 'Android (Chrome): ⋮ → Add to home screen → Install. iPhone (Safari): Share menu → Add to Home Screen → Add. It then works offline.' },
   { screen: 'home-view', dur: 6000, tap: '.gear-btn', title: 'Add Your Loved Ones',
     text: 'Tap the gear (Settings), create a passcode, then Add A Contact: a name, a WhatsApp number and, if you like, a photo.' },
   { screen: 'home-view', dur: 4500, tap: '.hot[aria-label="Family"]', then: 'contact-view', title: 'See Your Loved Ones',
