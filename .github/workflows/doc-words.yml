@@ -1,0 +1,40 @@
+# DOCUMENTATION CHECK: on every pull request, check that the Markdown copy of the product documentation
+# has exactly the same words as the PDF (tools/check_doc_words.py). If not, the pull request shows a red cross.
+# It runs on EVERY pull request (no filters), so it can be a required check in the "Protect main" ruleset.
+name: Documentation check
+on:
+  pull_request: {}
+permissions:
+  contents: read            # read-only: it can look at the files, never change the repository
+jobs:
+  doc-words:
+    name: PDF and Markdown words match
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false   # don't keep GitHub's access key on the machine after downloading
+      - name: Install the PDF reader (exact version, checked by fingerprint)
+        run: |
+          python3 -m venv /tmp/doccheck
+          /tmp/doccheck/bin/pip install --require-hashes --no-deps --only-binary=:all: -r tools/requirements-doc-check.txt
+      - name: "Self-test: a deliberate mismatch is caught"
+        run: |
+          # Testing the tester: on GitHub's machine only (never saved to the repository), make a throwaway copy
+          # of the Markdown with ONE word changed ("calm" -> "quiet"). The check MUST fail on it, and for exactly
+          # that reason. If it passes, or fails for another reason, the check itself is broken, so this step fails.
+          sed '0,/calm/s//quiet/' docs/Taarala_Thota_Product_Documentation.md > docs/selftest-mismatch.md
+          set +e
+          out=$(/tmp/doccheck/bin/python -I tools/check_doc_words.py --md docs/selftest-mismatch.md)
+          code=$?
+          set -e
+          rm docs/selftest-mismatch.md
+          echo "$out"
+          if [ "$code" -ne 1 ] || ! grep -q "'quiet': PDF 0 · Markdown 1" <<< "$out"; then
+            echo "SELF-TEST FAILED: the check did not catch the deliberately changed word."
+            exit 1
+          fi
+          echo "Self-test passed: the deliberately changed word was caught, as expected."
+      - name: Compare the words in the PDF and the Markdown
+        run: /tmp/doccheck/bin/python -I tools/check_doc_words.py
