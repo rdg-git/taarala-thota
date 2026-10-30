@@ -28,9 +28,10 @@ section-by-section notes right where each part begins.
 | `public/_headers` | Security rules and caching rules (read by Cloudflare and by the local test server). |
 | `manifest.json` | Size of every picture (width, height). |
 | `build.py` | Builds `public/` from `src/`. |
-| `tools/` | One-off helpers: `make_fonts.py` (font files), `make_pictures.py` (smaller AVIF copies). |
-| `tests/` | Automatic tests and the local test server. |
-| `docs/` | This guide. |
+| `tools/` | Helpers: `make_fonts.py` (font files), `make_pictures.py` (smaller AVIF copies), `live_check.py` (daily check that the live site matches `main`), `check_doc_words.py` + `requirements-doc-check.txt` (documentation check, below). |
+| `.github/workflows/` | `live-check.yml` (the daily live check) and `doc-words.yml` (the documentation check on every pull request). |
+| `tests/` | Automatic tests and the local test server. How to install and run them: `tests/README.md`. |
+| `docs/` | This guide; the product documentation as a PDF and as an identical Markdown copy (`Taarala_Thota_Product_Documentation.md`, pictures in `docs/images/product-doc/`); README pictures and the tour video. |
 
 ### Source files (in the order they are joined)
 
@@ -59,6 +60,7 @@ section-by-section notes right where each part begins.
 ## 3. Build and test
 
 Requirements: Python 3 (with Pillow only for `tools/`), Node.js, Playwright with Chromium (tests only).
+Step-by-step setup for any computer: `tests/README.md`.
 
 ```
 python3 build.py                 # rebuild public/ after any change in src/
@@ -83,6 +85,15 @@ Open `http://localhost:8765/index.html?test=1` for test mode (only works on your
 | `hints.js` | Move hints on Easy only in Chess and Checkers; moves still work on every level. |
 | `steady.js` | Back gesture stays inside the app (asks before leaving on Home), no long-press menus or dragging, bubble speeds. |
 | `music_off.js`, `music_firsttap.js`, `audio.js` | Music on/off memory, first-tap start on phones, sound check. |
+
+Every test file starts with a one-line note saying what it checks; `audio.js`, `soak.js`, `undo_multi.js`, `shots.js` and
+`shots2.js` are manual helpers (not part of `run_all.js`).
+
+**Documentation check.** The product documentation exists as a PDF and as a Markdown copy that GitHub shows as a web page.
+`tools/check_doc_words.py` fails if their words differ (word counts, not order; capitals count), if a Markdown link goes
+somewhere the PDF doesn't link to, if a picture isn't a local file, or if there is raw HTML. It runs on every pull request
+(`.github/workflows/doc-words.yml`, with a self-test that first proves it catches a changed word) and is a required check:
+a pull request can't be merged until it passes. Run it by hand with `python3 tools/check_doc_words.py` (needs pypdf 6.17.0).
 
 ## 4. How a screen works
 
@@ -182,7 +193,8 @@ All in the browser's storage for this site, labels starting with `tt:`. Nothing 
    **Update the documentation in the same change**: the section notes in the files you touched and this guide
    (file map, saved-data labels, security model, known gaps) whenever they are affected.
 2. Commit on a test branch, open a pull request, check the preview on a real phone.
-3. Merge after approval; publish on Cloudflare Pages.
+3. Merge after approval (the documentation check must be green); publish on Cloudflare Pages.
+4. **If documentation changes, update the PDF and the Markdown together.**
 
 ## 10. Known limitations, risks and ideas
 

@@ -1,7 +1,8 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
+// Manual sound check (not part of run_all.js): starts the music and measures its loudness and pitch for 10 seconds; prints numbers to read, no pass/fail.
 const { chromium } = require('playwright');
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required'] });
+  const b = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required'] });
   const p = await (await b.newContext({ viewport: { width: 390, height: 844 } })).newPage();
   const errs = []; p.on('pageerror', e => errs.push(e.message));
   await p.goto('http://localhost:8765/index.html?test=1'); await p.waitForTimeout(500);

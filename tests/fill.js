@@ -5,7 +5,7 @@ const { chromium } = require('playwright');
 let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m); if (!c) f++; };
 const SIZES = [['small Android', 360, 640], ['iPhone Safari', 390, 664], ['Android Chrome', 412, 780], ['iPhone', 390, 844], ['large phone', 430, 932], ['tablet', 768, 1024]];
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox'] });
+  const b = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--no-sandbox'] });
   for (const [label, w, h] of SIZES) {
     const p = await (await b.newContext({ viewport: { width: w, height: h }, hasTouch: true, serviceWorkers: 'block' })).newPage();
     await p.goto('http://localhost:8765/index.html?test=1'); await p.waitForTimeout(700);

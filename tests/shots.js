@@ -1,9 +1,9 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
-// phone-size screenshots of the main screens: node tests/shots.js <outdir>
+// Manual helper (not part of run_all.js): phone-size screenshots of the main screens. Run: node tests/shots.js <outdir>
 const { chromium } = require('playwright');
 (async () => {
   const out = process.argv[2] || 'test-output';
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox'] });
+  const b = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--no-sandbox'] });
   for (const [tag, w, h] of [['android', 390, 844], ['iphone-safari', 390, 664]]) {
     const ctx = await b.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 2, hasTouch: true });
     const p = await ctx.newPage();

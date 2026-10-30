@@ -1,7 +1,9 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
+// Pictures download efficiently: what loads at start and per screen, no picture downloaded twice, every picture address carries
+// a version fingerprint (for safe long caching). Prints results to read.
 const { chromium } = require('playwright');
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox'] });
+  const b = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--no-sandbox'] });
   const p = await (await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true })).newPage();
   const reqs=[]; p.on('request',r=>{ if(/\/img\//.test(r.url())) reqs.push(r.url().split('/img/')[1]); });
   const errs=[]; p.on('pageerror',e=>errs.push(e.message));

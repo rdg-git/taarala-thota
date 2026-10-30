@@ -1,9 +1,11 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
+// Main flows, part 2 (with func.js): Bubble Pop levels and accuracy goals, Hidden Comets, Chess special rules through the screen,
+// Checkers result screens, and no hidden admin screen.
 const { chromium } = require('playwright');
 let pass = 0, fail = 0;
 function ok(c, msg) { if (c) { pass++; console.log('PASS', msg); } else { fail++; console.log('FAIL', msg); } }
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox'] });
+  const b = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--no-sandbox'] });
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
   const p = await ctx.newPage();
   const errs = [];

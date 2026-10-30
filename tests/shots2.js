@@ -1,10 +1,10 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
-// Step 2 screenshots: node tests/shots2.js <outdir>
+// Manual helper (not part of run_all.js): screenshots of the Settings and Loved Ones screens. Run: node tests/shots2.js <outdir>
 const { chromium } = require('playwright');
 const fs = require('fs');
 (async () => {
   const out = process.argv[2] || 'test-output';
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox'] });
+  const b = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--no-sandbox'] });
   for (const [tag, w, h] of [['android', 390, 844], ['iphone-safari', 390, 664]]) {
     const ctx = await b.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 2, hasTouch: true });
     const p = await ctx.newPage();

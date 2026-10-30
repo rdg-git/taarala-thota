@@ -1,4 +1,6 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
+// Chess rules engine on its own (no browser): move counts against standard "perft" tables, draws (dead positions, stalemate,
+// 50/75-move rules, threefold/fivefold repetition), checkmate, castling and en passant.
 const mk = require('../src/chess_engine.js'); const E = mk();
 function fen(f){ const p=f.split(' '), b=new Array(64).fill(null); let i=0;
   for (const ch of p[0]) { if (ch==='/') continue; if (/\d/.test(ch)) i+=+ch; else { b[i++]=(ch===ch.toUpperCase()?'w':'b')+ch.toUpperCase(); } }

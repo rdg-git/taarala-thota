@@ -1,10 +1,11 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
-// functional checks: node tests/func.js
+// Main flows, part 1 (with func2.js): navigation and Back, required screen ids, Loved Ones (names shown as plain text),
+// Chess and Checkers play, undo and saving. Run: node tests/func.js
 const { chromium } = require('playwright');
 let pass = 0, fail = 0;
 function ok(c, msg) { if (c) { pass++; console.log('PASS', msg); } else { fail++; console.log('FAIL', msg); } }
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox'] });
+  const b = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--no-sandbox'] });
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
   const p = await ctx.newPage();
   const errs = [];

@@ -1,7 +1,9 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
+// Manual check (not part of run_all.js): pressing Undo several times in a row in Chess and Checkers (Easy) returns the board
+// exactly to the start. Prints results to read.
 const { chromium } = require('playwright');
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox'] });
+  const b = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--no-sandbox'] });
   const p = await (await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true })).newPage();
   const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   await p.goto('http://localhost:8765/index.html?test=1'); await p.waitForTimeout(600);
