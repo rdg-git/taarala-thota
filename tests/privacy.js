@@ -1,9 +1,9 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
-// privacy & clean-up checks: node tests/privacy.js
+// Privacy and clean-up: no outside addresses contacted, no sign-in code, only tt: labels saved. Run: node tests/privacy.js
 const { chromium } = require('playwright');
 let f = 0; const ok = (c, m) => { console.log(c ? 'PASS' : 'FAIL', m); if (!c) f++; };
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox'] });
+  const b = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--no-sandbox'] });
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
   const p = await ctx.newPage(); const errs = [], outside = [];
   p.on('pageerror', e => errs.push(e.message));

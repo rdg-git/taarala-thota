@@ -4,7 +4,7 @@
 const { chromium } = require('playwright');
 let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m); if (!c) f++; };
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox'] });
+  const b = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--no-sandbox'] });
   const c = await b.newContext({ viewport: { width: 390, height: 844 } }), p = await c.newPage();
   await p.goto('http://localhost:8765/'); await p.waitForTimeout(3000);
   ok(await p.evaluate(() => !!navigator.serviceWorker.controller), 'offline helper installed');

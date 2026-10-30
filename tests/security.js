@@ -14,7 +14,7 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   // a pretend "other website" on another port that tries to show the app inside its own page
   const evil = http.createServer((q, r) => { r.writeHead(200, { 'Content-Type': 'text/html' }); r.end('<iframe id=f src="http://localhost:8765/index.html" width=300 height=500></iframe>'); });
   await new Promise(r => evil.listen(8766, '127.0.0.1', r));
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox'] });
+  const b = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--no-sandbox'] });
   try {
     const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, acceptDownloads: true });
     const p = await ctx.newPage(); const errs = [], csp = [];

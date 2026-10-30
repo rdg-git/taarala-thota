@@ -8,7 +8,7 @@ const URL = 'http://localhost:8765/index.html?test=1';
 const UA = { android: 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Mobile Safari/537.36',
              ios: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1' };
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox'] });
+  const b = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--no-sandbox'] });
   const page = async (o) => { const p = await (await b.newContext(Object.assign({ viewport: { width: 390, height: 844 }, hasTouch: true, serviceWorkers: 'block' }, o || {}))).newPage(); return p; };
   const p = await page({ userAgent: UA.android });
   const errs = []; p.on('pageerror', e => errs.push(e.message));
