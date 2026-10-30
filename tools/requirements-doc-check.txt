@@ -1,0 +1,5 @@
+# The PDF reader used by tools/check_doc_words.py, pinned to one exact version AND its fingerprint (SHA-256),
+# copied from https://pypi.org/project/pypdf/6.17.0/ (file pypdf-6.17.0-py3-none-any.whl, released 4 Sep 2026).
+# pip refuses to install it if the downloaded file's fingerprint differs, so a tampered copy can't sneak in.
+# To upgrade later: change both the version and the fingerprint, then confirm the check still passes.
+pypdf==6.17.0 --hash=sha256:5bd827266a21553b74d910e350131a6227b72f2ab4209bf372814b8195fa11c5

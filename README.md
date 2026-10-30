@@ -4,7 +4,9 @@
 No sign-in. No ads. Everything you save stays on your own phone.
 Built because free game apps are full of ads and pop-ups that one accidental tap can open.
 
-**[▶ Try it](https://taarala-thota.pages.dev)** · **[Watch the tour](#watch-the-tour)** · **[Product documentation (PDF)](docs/Taarala_Thota_Product_Documentation.pdf)**
+**[▶ Try it](https://taarala-thota.pages.dev)** · **[Watch the tour](#watch-the-tour)** · **[Product documentation (PDF)](docs/Taarala_Thota_Product_Documentation.pdf)** · **[(Markdown)](docs/Taarala_Thota_Product_Documentation.md)**
+
+Developers: see the [Developer Guide](docs/DEVELOPER_GUIDE.md)
 
 ## Watch the tour
 

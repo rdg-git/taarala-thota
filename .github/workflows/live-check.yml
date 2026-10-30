@@ -13,8 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: main
+          persist-credentials: false   # don't keep GitHub's access key on the machine after downloading
       - name: Compare the live site with the approved release
         run: python3 tools/live_check.py
