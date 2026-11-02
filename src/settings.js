@@ -11,15 +11,18 @@ const APP_NAME = 'Taarala Thota (Garden of Stars)';   // the name always travels
 // All privacy wording lives here so it can be reviewed and changed in one place.
 // The name is always written with its meaning: Taarala Thota (Garden of Stars).
 // ------------------------------------------------------------
-const SETTINGS_NOTE = 'Contacts saved here stay only on this phone, inside ' + APP_NAME + '. Anyone using this phone can call them from Loved Ones and see their names and photos, but only someone with the passcode can see or change the numbers. Your phone’s own contacts are never touched.';
+const SETTINGS_NOTE = 'Contacts saved here stay in this browser on this phone, inside ' + APP_NAME + '. Anyone using this phone can see your saved contacts’ names and photos and open WhatsApp to contact them. The passcode keeps their numbers hidden on the app’s normal screens and restricts changes through Settings, but does not encrypt the saved numbers. Your phone’s own contacts are never changed.';
 const FORGOT_TEXT = 'If you forget this passcode, the contacts you saved in ' + APP_NAME + ' will be erased, and you’ll need to add them again. Your phone’s own contacts and WhatsApp are not affected.';
 const ABOUT_TEXT = 'Taarala Thota is a personal, non-commercial learning project. It\u2019s free, has no ads and isn\u2019t for sale. I\u2019ve worked hard to protect privacy and get things right, but I\u2019m not a legal or security professional, and there may be mistakes. If you notice anything that could cause harm, please tell me through Share Feedback and I\u2019ll fix it as quickly as I can.';
 const DAILY_NOTICE = 'Contacts saved here stay only on this phone. Your phone’s own contacts are never touched.';
 
-// Cloudflare Turnstile: a free "are you a person?" check shown only on the feedback box. It blocks automated
-// scripts without ever limiting a real person (a person passes it automatically and can send as often as they like).
+// Cloudflare Turnstile: a free "are you a person?" check shown on the feedback box of the live app only. It blocks
+// automated scripts; a real person passes it automatically. An overall daily total limit still applies to everyone.
 // The Site key below is public and safe to ship; the matching Secret key is a server setting named TURNSTILE_SECRET.
 const TURNSTILE_SITEKEY = '0x4AAAAAAFvWBO8a_93XGcW_';
+// Turnstile runs only on the live production app. On the local test build and on sign-in-protected preview
+// deployments it is off (the server verifies per environment there), so feedback stays testable on the preview.
+function tsOff() { return TEST_MODE || /^[a-z0-9-]+\.taarala-thota\.pages\.dev$/i.test(location.hostname); }
 let _tsLoading = false, _tsReady = false, _tsQueue = [];
 function ensureTurnstile(cb) {
   if (_tsReady && window.turnstile) { cb(); return; }
@@ -36,18 +39,19 @@ function ensureTurnstile(cb) {
 const OFFICIAL_ADDRESS = 'taarala-thota.pages.dev';   // the app's one official address (people's saved data belongs to it)
 const PRIVACY_POINTS = [
   // Application data (what the app saves) is kept apart from infrastructure data (what any website's host handles):
-  'Your saved data stays on this phone: contacts and their photos, your passcode, game progress, stats and settings are stored only in this browser on this phone. The app never sends them anywhere, and the creator cannot see them.',
-  'The app has no sign-in, no ads and no personal tracking. To know roughly how many people visit, it counts visits anonymously with Cloudflare Web Analytics, which by Cloudflare’s description uses no cookies, stores nothing on your phone and builds no personal profile. It never sees anything you save in the app or what you do in it. You can switch counting off below or in Settings. If your browser sends a “Global Privacy Control” signal, your visits are never counted.',
+  'Your saved contacts and their photos, game progress, statistics and settings are stored in this browser on this device. The app stores a protected check value for your passcode, not the passcode itself. This saved information is not automatically uploaded to the creator or to an application account. When you choose to open a contact in WhatsApp, their number is passed to WhatsApp. You can also choose to export a password-protected backup.',
+  'The app has no sign-in, no ads and no personal tracking. To know roughly how many people visit, it counts visits anonymously with Cloudflare Web Analytics, which by Cloudflare’s description uses no cookies, stores nothing on your phone and builds no personal profile. It never sees anything you save in the app or what you do in it. You can switch anonymous visit counting off here or in Settings. If your browser sends a Global Privacy Control signal, your visits are not counted by the app’s optional analytics. Switching counting off does not stop the basic technical information that Cloudflare processes to deliver and protect the website.',
   'Like every website, the app is delivered by a hosting service (Cloudflare). When your phone downloads the app, checks for an update, sends an anonymous visit count or sends feedback, the hosting service automatically handles basic technical information, such as your internet (IP) address, browser type and the time, to deliver and protect the site. This never includes your saved data. The creator does not receive these details (apart from overall totals the hosting service may show, such as the number of visits) and has no control or oversight over how the hosting service handles them: that is covered by the hosting service\u2019s own privacy policy.',
   'Contacts you save here exist only in this app. Your phone’s own contacts and WhatsApp are never changed.',
-  'Anyone using this phone can call your saved contacts from Loved Ones and see their names and photos. Seeing or changing numbers needs your passcode.',
-  'Keep your phone locked with a PIN, fingerprint or face unlock. That also protects this app’s data.',
+  'Anyone using this phone can see your saved contacts’ names and photos and open WhatsApp to contact them. The passcode keeps their numbers hidden on the app’s normal screens and restricts changes through Settings. It does not encrypt the saved numbers.',
+  'Keep your phone locked with a PIN, fingerprint or face unlock. Your phone’s screen lock is an important protection for the information stored on it, including this app’s saved contact numbers.',
   'Choose a passcode you’ll remember. If you forget it, your saved contacts must be erased and added again.',
   'Back up regularly, and keep the backup file private. Its password can\u2019t be recovered. If you keep it in a cloud drive or email, that service\u2019s own privacy policy applies (the file stays locked with your password).',
   'On iPhone, add the app to your Home Screen, so your data is kept even if you don’t open it for a while.',
   'So the games work without internet, the app quietly saves its pictures on your phone (about 5 MB, up to 7 MB on older phones) the first time it opens. On mobile data this counts toward your data plan; on Wi-Fi it probably costs nothing extra.',
   'Closing the app or your browser keeps everything. Clearing your browser’s site data (cookies and site data) deletes it all, and removing the app may too. Anything saved in a private/incognito window is deleted when that window closes. Without a backup it can’t be recovered. To bring it back: set a passcode, then Settings → Restore From A Backup.',
-  'Feedback you send from the app is anonymous: we don’t ask for your name or email, and nothing about you is stored with it. It is kept by the app’s hosting service (Cloudflare) so the creator can read it from time to time, and may share short quotes without anything that identifies you. Please don’t include personal details. To block automated spam, the feedback box uses a Cloudflare anti-spam check (Turnstile) that loads only on this screen; by Cloudflare’s description it is privacy-focused, uses no tracking cookies, and never sees your feedback. It never limits how often a real person can write.',
+  'You can share feedback without giving your name or email. The hosting service, Cloudflare, stores your message, its date and time, the app version and its submission source so the creator can review it. Please don’t include personal details in your message. The creator may share short quotes after removing identifying information. To help prevent automated spam, the feedback box uses Cloudflare Turnstile, which loads when you open the feedback feature. Turnstile checks the submission but is not given the text of your feedback as part of that check. Occasionally, you may need to try again. An overall daily message limit applies to protect the service.',
+  'The app does not use cookies for advertising or personal tracking. Cloudflare provides hosting, analytics and spam protection services. See Cloudflare’s privacy information for details of how those services process technical information.',
   'Tapping a contact opens WhatsApp with that person\u2019s number (through WhatsApp\u2019s own wa.me link). Nothing is ever sent automatically. From then on, WhatsApp\u2019s own privacy policy applies.',
   'Sharing your phone with someone? Keep the screen on this app: on iPhone turn on Guided Access (Settings \u2192 Accessibility \u2192 Guided Access), open the app and triple-click the side button; on Android turn on App pinning (Settings \u2192 Security \u2192 App pinning; the exact menu varies by phone) and pin the app from the recent-apps view. To stop the screen turning sideways, use your phone\u2019s Rotation Lock (iPhone: Control Center; Android: quick settings, \u201cAuto-rotate\u201d off).',
   'Only use the official address' + (OFFICIAL_ADDRESS ? ': ' + OFFICIAL_ADDRESS + '.' : ' shared by the creator.') + ' Copies elsewhere aren’t ours.'
@@ -165,7 +169,7 @@ function refreshUpdateBox(S) {
 // ------------------------------------------------------------
 function viewCreate(S, sh) {
   sh.appendChild(tx('h3', '', 'Create A Passcode'));
-  sh.appendChild(tx('p', '', 'The passcode protects your contacts’ numbers. Use at least ' + PASS_MIN + ' characters (letters, numbers or a short phrase).'));
+  sh.appendChild(tx('p', '', 'Create a passcode to keep your contacts’ numbers hidden on the app’s normal screens and restrict changes through Settings. The passcode does not encrypt the saved numbers. Use at least' + PASS_MIN + ' characters (letters, numbers or a short phrase).'));
   sh.appendChild(tx('p', 'swarn', FORGOT_TEXT));
   const a = field('Passcode', 'password', { autocomplete: 'new-password' }), b = field('Type It Again', 'password', { autocomplete: 'new-password' });
   sh.append(a.wrap, b.wrap, showToggle([a.input, b.input]));
@@ -184,7 +188,7 @@ function showToggle(inputs) {
 }
 function viewUnlock(S, sh) {
   sh.appendChild(tx('h3', '', 'Enter Your Passcode'));
-  sh.appendChild(tx('p', '', 'Settings is locked to protect your contacts’ numbers.'));
+  sh.appendChild(tx('p', '', 'Enter your passcode to view or change saved contacts in Settings.'));
   const a = field('Passcode', 'password', { autocomplete: 'current-password' });
   sh.append(a.wrap, showToggle([a.input]));
   const err = tx('p', 'serr'); sh.appendChild(err);
@@ -334,7 +338,7 @@ function viewEraseAll(S, sh) {
   const no = tx('ul', 'slist');
   ['your phone\u2019s own contacts or photo gallery', 'WhatsApp', 'other apps or websites', 'any backup files you saved'].forEach(t => no.appendChild(tx('li', '', t)));
   sh.appendChild(no);
-  sh.appendChild(tx('p', '', 'This app uses no cookies. This can\u2019t be undone.'));
+  sh.appendChild(tx('p', '', 'This can\u2019t be undone.'));
   const a = field('To Confirm, Type ERASE', 'text', { caps: 'characters' }); sh.appendChild(a.wrap);
   const err = tx('p', 'serr'); sh.appendChild(err);
   sh.appendChild(btn('Erase All App Data', 'danger', () => {
@@ -469,11 +473,11 @@ function buildFeedback() {
     const text = box.value.trim();
     if (!text) { msg.textContent = 'Please write something first.'; return; }
     if (Array.from(text).length > FEEDBACK_MAX) { msg.textContent = 'That’s a lot of thoughts! Please keep it under ' + FEEDBACK_MAX.toLocaleString() + ' characters.'; return; }
-    // Quiet anti-bot (never limits a real person, and nothing extra is ever sent): if the hidden honeypot field
+    // Quiet anti-bot (nothing extra is ever sent): if the hidden honeypot field
     // was filled — something only an automated form-filler does — look successful but send nothing.
     if (hp.value.trim()) { box.value = ''; msg.textContent = 'Thank you! Your feedback was sent. 🌟'; return; }
-    // The anti-spam check must have finished first. A real person passes it in a moment; this never caps how often they write.
-    if (!TEST_MODE && !S.tsToken) { msg.textContent = 'One moment — the quick spam check is finishing. Please tap Send again. Your message is safe here.'; return; }
+    // The anti-spam check must have finished first (live app only). A real person passes it in a moment.
+    if (!tsOff() && !S.tsToken) { msg.textContent = 'One moment — the quick spam check is finishing. Please tap Send again. Your message is safe here.'; return; }
     send.disabled = true; msg.textContent = 'Sending…';
     let res = null;
     const payload = { message: text, release: APP_RELEASE };
@@ -496,7 +500,7 @@ function buildFeedback() {
   S.onShow = () => {
     allowZoom(true);
     msg.textContent = S.pauseUntil > Date.now() ? 'Thanks! You can send another message in a few seconds.' : '';
-    if (!TEST_MODE && !S.tsRendered) {                              // show the "are you a person?" check once (never on the local test build)
+    if (!tsOff() && !S.tsRendered) {                               // show the "are you a person?" check (live app only; off in tests and previews)
       ensureTurnstile(function (err) {
         if (err || !window.turnstile) return;                      // if it can't load, Send will ask the person to try again
         try {
