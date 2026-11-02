@@ -22,7 +22,7 @@ https://github.com/user-attachments/assets/24a0f804-09ca-4239-8799-a80cb110cdca
   wording people see before they update.
 - **29 automated test suites with more than 420 checks**, plus testing on real Android and iPhone devices.
 - **71 product decisions logged** with the options considered and the trade-off accepted.
-- **Privacy by design:** no accounts and no server for personal data; $0 a month to host.
+- **Privacy by design:** no accounts, and no central store of your saved contacts or game data; $0 a month to host.
 
 ## My role and how I worked with AI
 
@@ -69,8 +69,9 @@ The full story (requirements, decisions, testing, privacy and risk) is in the
   beginner levels. Chess and Checkers show move hints and allow undo on Easy.
 - **Loved Ones:** a short, private list of chosen people. One tap opens WhatsApp to message or call them; nothing is ever
   sent automatically.
-- **Private by design:** contacts, progress and settings stay on the phone, protected by a Settings passcode, with
-  optional password-locked backups. Visits are counted anonymously (no cookies) and can be switched off.
+- **Private by design:** contacts, progress and settings stay on the phone, with optional password-locked backups. A Settings passcode keeps
+  contact numbers off the app’s normal screens (it doesn’t encrypt them). Visits are counted anonymously (no analytics
+  cookies) and can be switched off.
 - **Steady:** stray taps, long presses and swipes don't throw you out of the app.
 - **Take A Tour:** a 1½-minute walkthrough that plays on the real screens and shows where to tap.
 - **Works offline** and installs like an app. Updates wait until you choose, after showing what's new.
