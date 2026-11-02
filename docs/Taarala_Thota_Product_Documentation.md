@@ -161,7 +161,7 @@ The primary focus is calm play and reaching loved ones quickly, for myself and m
 | F12 | Laptop visitors | A welcome card offers a QR code to open on a phone, or Continue On This Screen |
 | F13 | Phone turned sideways | A calm “turn upright” card appears and Bubble Pop pauses |
 | F14 | Anonymous visit counting | Counted only on the official address and only after the one-time welcome note; switch on Privacy & Safety and in Settings, every change confirmed; never counted when the browser sends Global Privacy Control |
-| F15 | Anonymous feedback | One box from Privacy & Safety or Settings; only the message and app version are sent; 10,000-character limit; daily cap |
+| F15 | Anonymous feedback | One box from Privacy & Safety or Settings; only the message, the app version and a one-time anti-spam token are sent; 10,000-character limit; daily cap |
 | F16 | Take A Tour | Starts from the top of Privacy & Safety and from Settings; plays on the real screens with pause, 5-second back/forward, drag bar, speed and music; nothing is tapped or saved; install steps match the phone |
 
 ### Non-functional requirements
@@ -169,7 +169,7 @@ The primary focus is calm play and reaching loved ones quickly, for myself and m
 | Area | Requirement |
 |---|---|
 | Privacy | Nothing you save leaves the phone; no cookies; visit counts are anonymous and can be switched off; feedback is anonymous |
-| Security | Strict browser security rules; no outside code except Cloudflare’s anonymous counting script, loaded only when counting is on; passcode never stored, only a fingerprint; backups encrypted |
+| Security | Strict browser security rules; the only outside code is Cloudflare’s anonymous counting script (loaded only when counting is on) and Cloudflare’s Turnstile anti-spam check (loaded only on the feedback box); passcode never stored, only a fingerprint; backups encrypted |
 
 | Area | Requirement |
 |---|---|
@@ -313,6 +313,7 @@ Four games, Loved Ones with WhatsApp, Settings passcode, Privacy & Safety page, 
 | Take A Tour | A playing walkthrough with player controls | Show new people where to tap, without a manual |
 | Consistent capitals | Title Case on every button and title | Polish and consistency |
 | App icon and artwork | A new painted app icon; the Hidden Comets tile now shows a comet and a star instead of a mine and a flag | A clear icon at thumb size; artwork that matches the game's theme |
+| Fit, encouragement and review | Full-screen fit on tall phones; a "good move" cheer in Chess and Checkers; a replay to review a finished game; a hidden honeypot and Cloudflare Turnstile to block automated feedback spam | Comfort touches that make the games friendlier, and keep the feedback box clear for real people |
 
 ### Deliberately deferred
 
@@ -358,9 +359,13 @@ Four games, Loved Ones with WhatsApp, Settings passcode, Privacy & Safety page, 
 | Restore | Settings → Restore From A Backup | Confirmation shows date and contact count before replacing anything |
 | Update | “Update” button or card → What’s New → Update Now / Later | Only releases newer than the installed one; never during play |
 | Turn sideways | Phone rotates | Calm card; Bubble Pop pauses; nothing lost |
+
+| Journey | Steps | Design decisions |
+|---|---|---|
 | Share the phone | Privacy & Safety tip | Guided Access (iPhone) / App pinning (Android) explained |
 | Learn the app | Privacy & Safety or Settings → Take A Tour | Plays on the real screens; pause, drag, speed; nothing is tapped or saved |
 | Share feedback | Privacy & Safety or Settings → Share Feedback (Anonymous) | One box; no name or email |
+| Review a game | Game ends → Review Game → step through the moves | Plays on a clean board; nothing is saved; Back or Home clears it |
 
 ![](images/product-doc/take-a-tour-playing.jpg)
 
@@ -385,7 +390,7 @@ Four games, Loved Ones with WhatsApp, Settings passcode, Privacy & Safety page, 
 
 ### Architecture in brief
 
-A set of plain HTML, CSS and JavaScript files served by Cloudflare Pages. Each screen is a painted picture; buttons and words are placed on top in the picture’s own coordinates, so layouts scale to any phone. Everything a person saves stays in their browser’s storage. An offline helper (service worker) keeps the app’s own files for offline use and manages updates. There is no server for personal data. One small Cloudflare function receives anonymous feedback and stores it in a Cloudflare D1 database (time, app version and message only; read from time to time; abusive messages may be deleted). The only outside code is Cloudflare’s anonymous visit-counting script, loaded only on the official address and only when counting is on.
+A set of plain HTML, CSS and JavaScript files served by Cloudflare Pages. Each screen is a painted picture; buttons and words are placed on top in the picture’s own coordinates, so layouts scale to any phone. Everything a person saves stays in their browser’s storage. An offline helper (service worker) keeps the app’s own files for offline use and manages updates. There is no server for personal data. One small Cloudflare function receives anonymous feedback and stores it in a Cloudflare D1 database (time, app version and message only; read from time to time; abusive messages may be deleted). The only outside code is Cloudflare’s anonymous visit-counting script (loaded only on the official address and only when counting is on) and Cloudflare’s Turnstile anti-spam check (loaded only on the feedback box, to block automated spam).
 
 ![](images/product-doc/where-your-data-goes.png)
 
@@ -405,7 +410,7 @@ A set of plain HTML, CSS and JavaScript files served by Cloudflare Pages. Each s
 | A5 | Restoring | Trust the file · check everything | Treat every file as untrusted: size, structure, allowed items, every contact re-checked | Slightly more code; hostile files are refused |
 | A6 | Offline and updates | Always online · offline helper | Offline helper; updates download quietly and apply only when the person chooses | More moving parts; tested specifically |
 | A7 | Release notes | Fetch from a server · carry inside the update | Carried inside each new version; shows only releases newer than the installed one | Notes must be written at release time (and approved) |
-| A8 | Security rules | Defaults · strict policy | Strict Content Security Policy and related headers: only the app’s own files; plus Cloudflare’s counting script and its reporting address, no framing; no camera, mic or location | Inline styles still allowed (low risk; documented) |
+| A8 | Security rules | Defaults · strict policy | Strict Content Security Policy and related headers: only the app’s own files; plus Cloudflare’s counting script and its reporting address, and Cloudflare’s Turnstile anti-spam check on the feedback box (the only framing allowed); no camera, mic or location | Inline styles still allowed (low risk; documented) |
 | A9 | Pictures | One format · modern with fallback | AVIF with WebP fallback, fingerprinted addresses for long caching | Two copies of each picture in the project |
 | A10 | Fonts | Google Fonts · bundled | Bundled fonts (open licence) | Slightly larger app; no outside connection |
 | A11 | QR code on laptops | Online QR service · drawn in the app | Drawn by the app | A little more code; no outside service sees the address |
@@ -434,9 +439,6 @@ $0 a month (hosting only; excludes AI subscriptions and my time). Everything run
 | Depends on | Used for | If it changes or fails | Fallback |
 |---|---|---|---|
 | Cloudflare Pages | Hosting | New visitors can’t load the app; installed copies keep working offline | The same files can be hosted elsewhere (e.g. GitHub Pages); the address would change |
-
-| Depends on | Used for | If it changes or fails | Fallback |
-|---|---|---|---|
 | Cloudflare Web Analytics | Visit counts | Counts stop; the app is unaffected | Switch it off or use another privacy-friendly counter |
 | Cloudflare Functions + D1 | Feedback | Sending fails with a friendly message; the text stays in the box | Pause feedback or move it to another small service |
 | WhatsApp link format (wa.me) | Loved Ones | Taps stop opening chats | The link is built in one place in the code, so it’s a quick change |
@@ -464,16 +466,16 @@ $0 a month (hosting only; excludes AI subscriptions and my time). Everything run
 | Contacts and passcode | Create, unlock, wrong tries and waits, forgot passcode, auto-lock when leaving, 10-minute timeout |
 | Backups | Create, restore, wrong password, tampered, fake and oversized files, hostile contents |
 | Offline and updates | Offline play, reopening, update waiting, What’s New (only newer releases), Update button visibility, Settings update box |
-| Security and privacy | App works under strict rules; no outside connections; only `tt:` storage labels |
+| Security and privacy | App works under strict rules; no unexpected outside connections; only `tt:` storage labels |
 | Layout and devices | Screen fill on six sizes; nothing cut off; laptop card (including touch-screen laptops); sideways card; zoom only on text pages |
 | Steady screen | Back gesture, no long-press menus, no dragging |
-| Visits and feedback | Counting only on the official address and only after the welcome note; Global Privacy Control; switch confirmations; feedback sends only the message and version; size and daily limits |
+| Visits and feedback | Counting only on the official address and only after the welcome note; Global Privacy Control; switch confirmations; feedback sends only the message, the version and a one-time anti-spam token; size and daily limits |
 | Take A Tour | Every scene on the right screen; controls, drag and speed; nothing tapped or saved; install steps per phone; small screens |
 
 ### Security review (28 Oct 2026)
 
 - Attack test: every saved item was filled with booby-trapped text designed to inject code, then all 29 screens were opened. Nothing ran, nothing broke, no errors.
-- No outside connections from any screen, apart from two deliberate ones: the anonymous counting script and the feedback box.
+- No outside connections from any screen, apart from deliberate ones: the anonymous counting script, the feedback box, and Cloudflare’s Turnstile anti-spam check on the feedback box.
 - Personal-information scans of every file and the full history before publishing.
 
 ### Defects found and fixed
@@ -491,6 +493,7 @@ $0 a month (hosting only; excludes AI subscriptions and my time). Everything run
 | Page titles hidden behind the panel on short laptop screens | My laptop screenshot | The panel now moves down with the title; test on three sizes |
 | The feedback Send button looked broken during its pause | My preview testing | A 10-second pause with a message explaining it |
 | An older What’s New line was cut off at 200 characters | My update on the live site | Accepted (only seen when updating from an old version); the build now refuses any new line over 200 characters. |
+| Thin blurred band at the top and bottom on tall iPhones | My phone testing | Zoom to fill and trim only empty side margins, with the picture’s own edge colours filling any remaining band; tested on more screen sizes |
 
 ### Acceptance
 
@@ -544,7 +547,7 @@ $0 a month (hosting only; excludes AI subscriptions and my time). Everything run
 |---|---|
 | Personal data in the public code | Scans of every file and the full history before publishing |
 | Copying the work | Visible maker's mark, code notices, invisible artwork watermark, and dated proof of every release |
-| Feedback spam | Accepted only from the app’s own address; 10,000-character limit; 300 messages a day in total |
+| Feedback spam | Accepted only from the app’s own address; a hidden honeypot field and Cloudflare Turnstile block automated spam; 10,000-character limit; 300 messages a day in total |
 | Someone takes over my GitHub or hosting account | Stronger sign-in (two-factor or passkeys) on GitHub and Cloudflare; main branch protected once the repository is public |
 | Someone changes the live site without approval | A daily automatic check compares the live site with the approved release and emails me if anything differs |
 
@@ -569,7 +572,7 @@ Likelihood: Low = needs unusual circumstances; Medium = will happen to some peop
 
 ### Feedback content
 
-- People can type anything into a free-text box: kind words, criticism, or occasionally something hurtful or personal. Feedback is never shown inside the app, so nothing one person writes can reach anyone else. I read it from time to time, may delete anything abusive, and may share short quotes without anything that identifies the writer (the Privacy & Safety page says so). Because it’s anonymous, I can’t block an individual sender. The protections are a request to keep it kind and leave out personal details, messages accepted only from the app, a 10,000-character limit and at most 300 messages a day. I chose not to filter messages automatically: people are asked not to share personal details, and some may want to leave a way to reach me.
+- People can type anything into a free-text box: kind words, criticism, or occasionally something hurtful or personal. Feedback is never shown inside the app, so nothing one person writes can reach anyone else. I read it from time to time, may delete anything abusive, and may share short quotes without anything that identifies the writer (the Privacy & Safety page says so). Because it’s anonymous, I can’t block an individual sender. The protections are a request to keep it kind and leave out personal details, messages accepted only from the app, a hidden honeypot field and a Cloudflare Turnstile check that block automated spam, a 10,000-character limit and at most 300 messages a day. These never limit honest feedback: a real person can write as often as they like. The aim is only to stop automated spam from flooding the box and crowding out real people, and free tools can reduce that without stopping a determined attacker completely. I chose not to filter messages automatically: people are asked not to share personal details, and some may want to leave a way to reach me.
 
 ---
 
@@ -664,3 +667,7 @@ Each entry: the decision, the options, my choice, and the trade-off I accepted.
 | # | Decision | Options | My choice | Trade-off accepted |
 |---|---|---|---|---|
 | 67 | Playing and talking with each other | A closed group where an admin adds members and everyone can message and play each other · a one-way list of each person’s own loved ones | A one-way list: each person keeps their own loved ones on their own phone, with no sign-in. A shared group would mean holding other people’s data and taking responsibility for it, it’s far more complex to build for a first version, and someone’s loved ones aren’t always loved ones to each other, so not everyone would want to be in one group. I may explore it again later. | No playing against each other and no group; each person only connects one-to-one with the people they choose |
+| 68 | Encouraging good moves | None · praise every strong move · only clear-cut good moves | A brief "Nice move!" that fades on its own, shown only on clear-cut good moves (a capture that wins material, or reaching a king/promotion), in Chess and Checkers at every level | Subtle positional moves are not praised, so it never praises a weak move by mistake; it appears after you move, so it is encouragement, not a hint |
+| 69 | Reviewing a finished game | None · save games to review later · review now, nothing saved | After a game ends, an optional walkthrough steps through the moves on a clean board; it is never saved and disappears on Back or Home | No stored history to revisit later; a game can only be reviewed right after it ends |
+| 70 | Tall phones (e.g. iPhone) | Leave blurred strips · zoom to fill and trim the sides · fill the edge with the picture’s own colours | Zoom in to fill the screen, trimming only empty side margins (never a painted sign), and fill any thin remaining band with the picture’s own edge colours | On a very tall phone a sliver of the far left and right edges is trimmed |
+| 71 | Protecting the feedback box from spam | Nothing extra · limit how often each person can write · block automated spam only | Block automated spam only — a hidden honeypot field and a Cloudflare Turnstile check, on top of the existing app-only rule and daily cap — and never limit a real person, who can write as often as they like | Free tools reduce automated spam but cannot stop a determined attacker completely; rarely, a real person on a very fast or unusual setup may need to tap Send again |

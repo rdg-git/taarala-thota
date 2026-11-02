@@ -21,7 +21,7 @@ https://github.com/user-attachments/assets/24a0f804-09ca-4239-8799-a80cb110cdca
 - **Eleven small, approved releases in its first week.** I approved each one, including the exact "What's New"
   wording people see before they update.
 - **29 automated test suites with more than 420 checks**, plus testing on real Android and iPhone devices.
-- **67 product decisions logged** with the options considered and the trade-off accepted.
+- **71 product decisions logged** with the options considered and the trade-off accepted.
 - **Privacy by design:** no accounts and no server for personal data; $0 a month to host.
 
 ## My role and how I worked with AI

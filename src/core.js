@@ -130,12 +130,42 @@ function layoutScreen(S) {
     sc = vh / (S.H - hide);
     cropTop = Math.min(safeTop, Math.max(hide / 2, hide - safeBot)); cropBot = hide - cropTop;
   }
+  // TALL PHONES: when the phone screen is taller than the picture (which would leave strips at the top and bottom),
+  // zoom in instead and trim a little of the picture's left and right sides (at most FILL_CROP of its width).
+  // Only empty edges are trimmed: never past words drawn on the picture or a painted sign. Tap areas may lose a sliver.
+  let cropL = 0, cropR = 0;
+  const tall = vh / S.H > vw / S.W + 1e-6;
+  if (tall) {
+    let safeL = S.W, safeR = S.W;
+    S.art.querySelectorAll('.live, .plank, .sheet, [data-sign]').forEach(e => {
+      const g = e._pg; if (!g || e.matches(FLOATING) || g[2] == null || g[2] >= S.W * 0.9) return;
+      safeL = Math.min(safeL, g[0] - SAFE); safeR = Math.min(safeR, S.W - (g[0] + g[2]) - SAFE);
+    });
+    safeL = Math.max(0, safeL); safeR = Math.max(0, safeR);
+    const need = S.W - vw / (vh / S.H);
+    const hide = Math.min(need, FILL_CROP * S.W, safeL + safeR);
+    sc = vw / (S.W - hide);
+    cropL = Math.min(safeL, Math.max(hide / 2, hide - safeR)); cropR = hide - cropL;
+  }
+  S.cropL = cropL; S.cropR = cropR;
+  S.art.style.left = 'calc(50% + ' + ((cropR - cropL) / 2 * sc) + 'px)';
   S.crop = cropTop; S.cropBot = cropBot;
   S.art.style.width = (S.W * sc) + 'px';
   S.art.style.height = (S.H * sc) + 'px';
   S.art.style.top = 'calc(50% + ' + ((cropBot - cropTop) / 2 * sc) + 'px)';   // trim more at whichever end has room
   S.art.style.setProperty('--u', sc + 'px');
   S.scale = sc;
+  // COLOUR-MATCHED EDGE: on a tall phone a hair-thin band can still remain at the top and bottom
+  // (the sides are never trimmed past a painted sign). Fill it with the picture's OWN edge colours
+  // (its sky at the top, its ground at the bottom) so it reads as the artwork continuing, not a blur.
+  // Until the colours are measured (sampleEdges, on first load) the blurred copy is used as before.
+  const band = vh - S.H * sc;
+  if (tall && band > 1 && S.edgeTop) {
+    S.el.style.background = 'linear-gradient(' + S.edgeTop + ' 0, ' + S.edgeTop + ' 18%, ' + S.edgeBot + ' 82%, ' + S.edgeBot + ' 100%)';
+    S.bg.style.display = 'none';
+  } else {
+    S.el.style.background = ''; S.bg.style.display = '';
+  }
   S.art.querySelectorAll(FLOATING).forEach(e => {
     const g = e._pg; if (!g) return;
     const y = g[1] < EDGE ? g[1] + cropTop : (g[1] + g[3] > S.H - EDGE ? g[1] - cropBot : g[1]);
@@ -152,12 +182,28 @@ function layoutScreen(S) {
   const MIN = 44, GAP = 6;
   S.art.querySelectorAll('[data-g]').forEach(b => {
     const g = b.dataset.g.split(',').map(Number), [x, y, w, h, slot, right] = g;
-    if (w * sc >= MIN) { place(b, x, y + crop, w, h, S); return; }
+    const xs = right ? x - cropR : x + cropL;                       // corner buttons move inwards when the sides are trimmed
+    if (w * sc >= MIN) { place(b, xs, y + crop, w, h, S); return; }
     const size = MIN, top = (y + crop) * sc;
-    const left = right ? (x + w) * sc - size : 30 * sc + slot * (size + GAP);
+    const left = right ? (xs + w) * sc - size : (30 + cropL) * sc + slot * (size + GAP);
     Object.assign(b.style, { left: left + 'px', top: top + 'px', width: size + 'px', height: size + 'px' });
   });
   if (typeof placeUpdateBadge === 'function') placeUpdateBadge(S);
+}
+// Measure a picture's top and bottom edge colours once it has loaded, so a leftover band can be
+// filled to match (see layoutScreen). Uses a tiny 1x16 canvas: pixel 0 is the average of the top
+// sliver of the picture, pixel 15 the bottom. Same-origin picture, so reading it back is allowed.
+function sampleEdges(S) {
+  const im = S.art.querySelector('img.pic');
+  if (!im || !im.naturalWidth || S.edgeTop) return;
+  try {
+    const c = document.createElement('canvas'); c.width = 1; c.height = 16;
+    const cx = c.getContext('2d'); cx.drawImage(im, 0, 0, 1, 16);
+    const d = cx.getImageData(0, 0, 1, 16).data;
+    S.edgeTop = 'rgb(' + d[0] + ',' + d[1] + ',' + d[2] + ')';
+    S.edgeBot = 'rgb(' + d[60] + ',' + d[61] + ',' + d[62] + ')';
+    if (CUR === S.id) layoutScreen(S);
+  } catch (e) {}
 }
 function layoutAll() { for (const k in SCREENS) layoutScreen(SCREENS[k]); }
 window.addEventListener('resize', layoutAll);
@@ -254,6 +300,67 @@ function hideBanner(S) {
   const b = S && S.banner; if (!b) return; S.banner = null;
   b.classList.add('out'); setTimeout(() => b.remove(), 350);
 }
+// A brief, friendly note over the board (e.g. "Great capture!") that fades on its own and never blocks taps.
+function flashGood(S, text) {
+  if (!S || !S.art) return;
+  if (S._goodNote) { S._goodNote.remove(); S._goodNote = null; }
+  clearTimeout(S._goodT);
+  const n = el('div', 'good-note'); n.textContent = text; n.setAttribute('role', 'status');
+  S.art.appendChild(n); S._goodNote = n;
+  S._goodT = setTimeout(() => {
+    n.classList.add('out');
+    setTimeout(() => { if (n.parentNode) n.remove(); if (S._goodNote === n) S._goodNote = null; }, 500);
+  }, 1200);
+}
+
+// ------------------------------------------------------------
+// POST-GAME REVIEW (step through a finished game on a clean board)
+// Nothing is saved: the overlay is built fresh, drawn from the moves kept in memory, and removed on Back/Home.
+// cfg: { title, size, initialState, moves, applyMove, pieceSVG, isDark(r,c), lastSquares(state) }
+// ------------------------------------------------------------
+let REVIEW = null;
+function closeReview() { if (REVIEW) { REVIEW.remove(); REVIEW = null; } }
+function openReview(cfg) {
+  closeReview();
+  const states = [cfg.initialState];
+  try { (cfg.moves || []).forEach(m => states.push(cfg.applyMove(states[states.length - 1], m))); } catch (e) { console.warn('review replay stopped early', e); }
+  let i = states.length - 1;                                        // start on the final position
+  const ov = el('div', 'review-ov');
+  const head = el('div', 'rv-head');
+  const ttl = el('div', 'rv-title'); ttl.textContent = cfg.title || 'Game Review';
+  const cnt = el('div', 'rv-count');
+  const close = el('button', 'rv-close'); close.type = 'button'; close.setAttribute('aria-label', 'Close review'); close.innerHTML = '&times;';
+  close.addEventListener('click', closeReview);
+  head.appendChild(ttl); head.appendChild(cnt); head.appendChild(close);
+  const board = el('div', 'rv-board'); board.style.setProperty('--n', cfg.size);
+  const cells = [];
+  for (let k = 0; k < cfg.size * cfg.size; k++) {
+    const c = el('div', 'rv-cell'); if (cfg.isDark(Math.floor(k / cfg.size), k % cfg.size)) c.classList.add('d');
+    board.appendChild(c); cells.push(c);
+  }
+  const ctrl = el('div', 'rv-ctrl');
+  const mk = (lbl, al, fn) => { const b = el('button', 'rv-btn'); b.type = 'button'; b.setAttribute('aria-label', al); b.innerHTML = lbl; b.addEventListener('click', fn); return b; };
+  const first = mk('&#x23ee;', 'First move', () => { i = 0; draw(); });
+  const prev = mk('&#x25c0;', 'Previous move', () => { if (i > 0) { i--; draw(); } });
+  const next = mk('&#x25b6;', 'Next move', () => { if (i < states.length - 1) { i++; draw(); } });
+  const last = mk('&#x23ed;', 'Last move', () => { i = states.length - 1; draw(); });
+  [first, prev, next, last].forEach(b => ctrl.appendChild(b));
+  ov.appendChild(head); ov.appendChild(board); ov.appendChild(ctrl);
+  (SCREENS[CUR] ? SCREENS[CUR].el : document.body).appendChild(ov);
+  REVIEW = ov;
+  function draw() {
+    const st = states[i], hl = cfg.lastSquares ? (cfg.lastSquares(st) || []) : [];
+    for (let k = 0; k < cells.length; k++) {
+      const code = st.board[k];
+      cells[k].innerHTML = code ? cfg.pieceSVG(code) : '';
+      cells[k].classList.toggle('last', hl.indexOf(k) >= 0);
+    }
+    cnt.textContent = i === 0 ? 'Start' : 'Move ' + i + ' of ' + (states.length - 1);
+    first.disabled = prev.disabled = (i === 0);
+    next.disabled = last.disabled = (i === states.length - 1);
+  }
+  draw();
+}
 // Adds Home and Back to a screen, either as tap areas over painted signs, drawn planks, or small round icons.
 // Every screen except Home must have both, and Back always goes to the screen's parent.
 function addNav(S, o) {   // o: {home:[x,y,w,h]|'plank:x,y,w,h', back:...}
@@ -285,6 +392,7 @@ function go(id, params) {
   if (ALIAS[id]) id = ALIAS[id]();
   const S = SCREENS[id];
   if (!S) { console.warn('unknown screen', id); return; }
+  closeReview();                                                   // a game review never carries across to another screen
   if (CUR && SCREENS[CUR] && CUR !== id) {
     const P = SCREENS[CUR];
     try { if (P.onHide) P.onHide(); } catch (e) { console.error(e); }
@@ -295,7 +403,7 @@ function go(id, params) {
   if (S.lazyUrl && !S.loaded) {
     S.loaded = true;
     const im = S.art.querySelector('img.pic');
-    if (im) im.src = S.lazyUrl;
+    if (im) { im.src = S.lazyUrl; im.addEventListener('load', () => sampleEdges(S), { once: true }); }
     S.bg.style.backgroundImage = 'url(' + S.lazyUrl + ')';
   }
   layoutScreen(S);

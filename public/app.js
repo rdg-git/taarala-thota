@@ -1,5 +1,5 @@
 // Taarala Thota (Garden of Stars) © 2026 Rukmini Gandepalli (@rdg-git). All rights reserved.
-const APP_RELEASE = '2026-10-29c';   // this version's release label (newest entry in src/whats_new.json)
+const APP_RELEASE = '2026-11-01';   // this version's release label (newest entry in src/whats_new.json)
 // ============================================================
 // CORE: helpers, storage, picture-screen system, navigation
 // ============================================================
@@ -131,12 +131,42 @@ function layoutScreen(S) {
     sc = vh / (S.H - hide);
     cropTop = Math.min(safeTop, Math.max(hide / 2, hide - safeBot)); cropBot = hide - cropTop;
   }
+  // TALL PHONES: when the phone screen is taller than the picture (which would leave strips at the top and bottom),
+  // zoom in instead and trim a little of the picture's left and right sides (at most FILL_CROP of its width).
+  // Only empty edges are trimmed: never past words drawn on the picture or a painted sign. Tap areas may lose a sliver.
+  let cropL = 0, cropR = 0;
+  const tall = vh / S.H > vw / S.W + 1e-6;
+  if (tall) {
+    let safeL = S.W, safeR = S.W;
+    S.art.querySelectorAll('.live, .plank, .sheet, [data-sign]').forEach(e => {
+      const g = e._pg; if (!g || e.matches(FLOATING) || g[2] == null || g[2] >= S.W * 0.9) return;
+      safeL = Math.min(safeL, g[0] - SAFE); safeR = Math.min(safeR, S.W - (g[0] + g[2]) - SAFE);
+    });
+    safeL = Math.max(0, safeL); safeR = Math.max(0, safeR);
+    const need = S.W - vw / (vh / S.H);
+    const hide = Math.min(need, FILL_CROP * S.W, safeL + safeR);
+    sc = vw / (S.W - hide);
+    cropL = Math.min(safeL, Math.max(hide / 2, hide - safeR)); cropR = hide - cropL;
+  }
+  S.cropL = cropL; S.cropR = cropR;
+  S.art.style.left = 'calc(50% + ' + ((cropR - cropL) / 2 * sc) + 'px)';
   S.crop = cropTop; S.cropBot = cropBot;
   S.art.style.width = (S.W * sc) + 'px';
   S.art.style.height = (S.H * sc) + 'px';
   S.art.style.top = 'calc(50% + ' + ((cropBot - cropTop) / 2 * sc) + 'px)';   // trim more at whichever end has room
   S.art.style.setProperty('--u', sc + 'px');
   S.scale = sc;
+  // COLOUR-MATCHED EDGE: on a tall phone a hair-thin band can still remain at the top and bottom
+  // (the sides are never trimmed past a painted sign). Fill it with the picture's OWN edge colours
+  // (its sky at the top, its ground at the bottom) so it reads as the artwork continuing, not a blur.
+  // Until the colours are measured (sampleEdges, on first load) the blurred copy is used as before.
+  const band = vh - S.H * sc;
+  if (tall && band > 1 && S.edgeTop) {
+    S.el.style.background = 'linear-gradient(' + S.edgeTop + ' 0, ' + S.edgeTop + ' 18%, ' + S.edgeBot + ' 82%, ' + S.edgeBot + ' 100%)';
+    S.bg.style.display = 'none';
+  } else {
+    S.el.style.background = ''; S.bg.style.display = '';
+  }
   S.art.querySelectorAll(FLOATING).forEach(e => {
     const g = e._pg; if (!g) return;
     const y = g[1] < EDGE ? g[1] + cropTop : (g[1] + g[3] > S.H - EDGE ? g[1] - cropBot : g[1]);
@@ -153,12 +183,28 @@ function layoutScreen(S) {
   const MIN = 44, GAP = 6;
   S.art.querySelectorAll('[data-g]').forEach(b => {
     const g = b.dataset.g.split(',').map(Number), [x, y, w, h, slot, right] = g;
-    if (w * sc >= MIN) { place(b, x, y + crop, w, h, S); return; }
+    const xs = right ? x - cropR : x + cropL;                       // corner buttons move inwards when the sides are trimmed
+    if (w * sc >= MIN) { place(b, xs, y + crop, w, h, S); return; }
     const size = MIN, top = (y + crop) * sc;
-    const left = right ? (x + w) * sc - size : 30 * sc + slot * (size + GAP);
+    const left = right ? (xs + w) * sc - size : (30 + cropL) * sc + slot * (size + GAP);
     Object.assign(b.style, { left: left + 'px', top: top + 'px', width: size + 'px', height: size + 'px' });
   });
   if (typeof placeUpdateBadge === 'function') placeUpdateBadge(S);
+}
+// Measure a picture's top and bottom edge colours once it has loaded, so a leftover band can be
+// filled to match (see layoutScreen). Uses a tiny 1x16 canvas: pixel 0 is the average of the top
+// sliver of the picture, pixel 15 the bottom. Same-origin picture, so reading it back is allowed.
+function sampleEdges(S) {
+  const im = S.art.querySelector('img.pic');
+  if (!im || !im.naturalWidth || S.edgeTop) return;
+  try {
+    const c = document.createElement('canvas'); c.width = 1; c.height = 16;
+    const cx = c.getContext('2d'); cx.drawImage(im, 0, 0, 1, 16);
+    const d = cx.getImageData(0, 0, 1, 16).data;
+    S.edgeTop = 'rgb(' + d[0] + ',' + d[1] + ',' + d[2] + ')';
+    S.edgeBot = 'rgb(' + d[60] + ',' + d[61] + ',' + d[62] + ')';
+    if (CUR === S.id) layoutScreen(S);
+  } catch (e) {}
 }
 function layoutAll() { for (const k in SCREENS) layoutScreen(SCREENS[k]); }
 window.addEventListener('resize', layoutAll);
@@ -255,6 +301,67 @@ function hideBanner(S) {
   const b = S && S.banner; if (!b) return; S.banner = null;
   b.classList.add('out'); setTimeout(() => b.remove(), 350);
 }
+// A brief, friendly note over the board (e.g. "Great capture!") that fades on its own and never blocks taps.
+function flashGood(S, text) {
+  if (!S || !S.art) return;
+  if (S._goodNote) { S._goodNote.remove(); S._goodNote = null; }
+  clearTimeout(S._goodT);
+  const n = el('div', 'good-note'); n.textContent = text; n.setAttribute('role', 'status');
+  S.art.appendChild(n); S._goodNote = n;
+  S._goodT = setTimeout(() => {
+    n.classList.add('out');
+    setTimeout(() => { if (n.parentNode) n.remove(); if (S._goodNote === n) S._goodNote = null; }, 500);
+  }, 1200);
+}
+
+// ------------------------------------------------------------
+// POST-GAME REVIEW (step through a finished game on a clean board)
+// Nothing is saved: the overlay is built fresh, drawn from the moves kept in memory, and removed on Back/Home.
+// cfg: { title, size, initialState, moves, applyMove, pieceSVG, isDark(r,c), lastSquares(state) }
+// ------------------------------------------------------------
+let REVIEW = null;
+function closeReview() { if (REVIEW) { REVIEW.remove(); REVIEW = null; } }
+function openReview(cfg) {
+  closeReview();
+  const states = [cfg.initialState];
+  try { (cfg.moves || []).forEach(m => states.push(cfg.applyMove(states[states.length - 1], m))); } catch (e) { console.warn('review replay stopped early', e); }
+  let i = states.length - 1;                                        // start on the final position
+  const ov = el('div', 'review-ov');
+  const head = el('div', 'rv-head');
+  const ttl = el('div', 'rv-title'); ttl.textContent = cfg.title || 'Game Review';
+  const cnt = el('div', 'rv-count');
+  const close = el('button', 'rv-close'); close.type = 'button'; close.setAttribute('aria-label', 'Close review'); close.innerHTML = '&times;';
+  close.addEventListener('click', closeReview);
+  head.appendChild(ttl); head.appendChild(cnt); head.appendChild(close);
+  const board = el('div', 'rv-board'); board.style.setProperty('--n', cfg.size);
+  const cells = [];
+  for (let k = 0; k < cfg.size * cfg.size; k++) {
+    const c = el('div', 'rv-cell'); if (cfg.isDark(Math.floor(k / cfg.size), k % cfg.size)) c.classList.add('d');
+    board.appendChild(c); cells.push(c);
+  }
+  const ctrl = el('div', 'rv-ctrl');
+  const mk = (lbl, al, fn) => { const b = el('button', 'rv-btn'); b.type = 'button'; b.setAttribute('aria-label', al); b.innerHTML = lbl; b.addEventListener('click', fn); return b; };
+  const first = mk('&#x23ee;', 'First move', () => { i = 0; draw(); });
+  const prev = mk('&#x25c0;', 'Previous move', () => { if (i > 0) { i--; draw(); } });
+  const next = mk('&#x25b6;', 'Next move', () => { if (i < states.length - 1) { i++; draw(); } });
+  const last = mk('&#x23ed;', 'Last move', () => { i = states.length - 1; draw(); });
+  [first, prev, next, last].forEach(b => ctrl.appendChild(b));
+  ov.appendChild(head); ov.appendChild(board); ov.appendChild(ctrl);
+  (SCREENS[CUR] ? SCREENS[CUR].el : document.body).appendChild(ov);
+  REVIEW = ov;
+  function draw() {
+    const st = states[i], hl = cfg.lastSquares ? (cfg.lastSquares(st) || []) : [];
+    for (let k = 0; k < cells.length; k++) {
+      const code = st.board[k];
+      cells[k].innerHTML = code ? cfg.pieceSVG(code) : '';
+      cells[k].classList.toggle('last', hl.indexOf(k) >= 0);
+    }
+    cnt.textContent = i === 0 ? 'Start' : 'Move ' + i + ' of ' + (states.length - 1);
+    first.disabled = prev.disabled = (i === 0);
+    next.disabled = last.disabled = (i === states.length - 1);
+  }
+  draw();
+}
 // Adds Home and Back to a screen, either as tap areas over painted signs, drawn planks, or small round icons.
 // Every screen except Home must have both, and Back always goes to the screen's parent.
 function addNav(S, o) {   // o: {home:[x,y,w,h]|'plank:x,y,w,h', back:...}
@@ -286,6 +393,7 @@ function go(id, params) {
   if (ALIAS[id]) id = ALIAS[id]();
   const S = SCREENS[id];
   if (!S) { console.warn('unknown screen', id); return; }
+  closeReview();                                                   // a game review never carries across to another screen
   if (CUR && SCREENS[CUR] && CUR !== id) {
     const P = SCREENS[CUR];
     try { if (P.onHide) P.onHide(); } catch (e) { console.error(e); }
@@ -296,7 +404,7 @@ function go(id, params) {
   if (S.lazyUrl && !S.loaded) {
     S.loaded = true;
     const im = S.art.querySelector('img.pic');
-    if (im) im.src = S.lazyUrl;
+    if (im) { im.src = S.lazyUrl; im.addEventListener('load', () => sampleEdges(S), { once: true }); }
     S.bg.style.backgroundImage = 'url(' + S.lazyUrl + ')';
   }
   layoutScreen(S);
@@ -987,6 +1095,24 @@ const SETTINGS_NOTE = 'Contacts saved here stay only on this phone, inside ' + A
 const FORGOT_TEXT = 'If you forget this passcode, the contacts you saved in ' + APP_NAME + ' will be erased, and you’ll need to add them again. Your phone’s own contacts and WhatsApp are not affected.';
 const ABOUT_TEXT = 'Taarala Thota is a personal, non-commercial learning project. It\u2019s free, has no ads and isn\u2019t for sale. I\u2019ve worked hard to protect privacy and get things right, but I\u2019m not a legal or security professional, and there may be mistakes. If you notice anything that could cause harm, please tell me through Share Feedback and I\u2019ll fix it as quickly as I can.';
 const DAILY_NOTICE = 'Contacts saved here stay only on this phone. Your phone’s own contacts are never touched.';
+
+// Cloudflare Turnstile: a free "are you a person?" check shown only on the feedback box. It blocks automated
+// scripts without ever limiting a real person (a person passes it automatically and can send as often as they like).
+// The Site key below is public and safe to ship; the matching Secret key is a server setting named TURNSTILE_SECRET.
+const TURNSTILE_SITEKEY = '0x4AAAAAAFvWBO8a_93XGcW_';
+let _tsLoading = false, _tsReady = false, _tsQueue = [];
+function ensureTurnstile(cb) {
+  if (_tsReady && window.turnstile) { cb(); return; }
+  _tsQueue.push(cb);
+  if (_tsLoading) return;
+  _tsLoading = true;
+  window.__tsOnload = function () { _tsReady = true; const q = _tsQueue; _tsQueue = []; q.forEach(f => { try { f(); } catch (e) {} }); };
+  const s = document.createElement('script');
+  s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=__tsOnload';
+  s.async = true; s.defer = true;
+  s.onerror = function () { _tsLoading = false; const q = _tsQueue; _tsQueue = []; q.forEach(f => { try { f(new Error('turnstile load failed')); } catch (e) {} }); };
+  document.head.appendChild(s);
+}
 const OFFICIAL_ADDRESS = 'taarala-thota.pages.dev';   // the app's one official address (people's saved data belongs to it)
 const PRIVACY_POINTS = [
   // Application data (what the app saves) is kept apart from infrastructure data (what any website's host handles):
@@ -1001,7 +1127,7 @@ const PRIVACY_POINTS = [
   'On iPhone, add the app to your Home Screen, so your data is kept even if you don’t open it for a while.',
   'So the games work without internet, the app quietly saves its pictures on your phone (about 5 MB, up to 7 MB on older phones) the first time it opens. On mobile data this counts toward your data plan; on Wi-Fi it probably costs nothing extra.',
   'Closing the app or your browser keeps everything. Clearing your browser’s site data (cookies and site data) deletes it all, and removing the app may too. Anything saved in a private/incognito window is deleted when that window closes. Without a backup it can’t be recovered. To bring it back: set a passcode, then Settings → Restore From A Backup.',
-  'Feedback you send from the app is anonymous: we don’t ask for your name or email, and nothing about you is stored with it. It is kept by the app’s hosting service (Cloudflare) so the creator can read it from time to time, and may share short quotes without anything that identifies you. Please don’t include personal details.',
+  'Feedback you send from the app is anonymous: we don’t ask for your name or email, and nothing about you is stored with it. It is kept by the app’s hosting service (Cloudflare) so the creator can read it from time to time, and may share short quotes without anything that identifies you. Please don’t include personal details. To block automated spam, the feedback box uses a Cloudflare anti-spam check (Turnstile) that loads only on this screen; by Cloudflare’s description it is privacy-focused, uses no tracking cookies, and never sees your feedback. It never limits how often a real person can write.',
   'Tapping a contact opens WhatsApp with that person\u2019s number (through WhatsApp\u2019s own wa.me link). Nothing is ever sent automatically. From then on, WhatsApp\u2019s own privacy policy applies.',
   'Sharing your phone with someone? Keep the screen on this app: on iPhone turn on Guided Access (Settings \u2192 Accessibility \u2192 Guided Access), open the app and triple-click the side button; on Android turn on App pinning (Settings \u2192 Security \u2192 App pinning; the exact menu varies by phone) and pin the app from the recent-apps view. To stop the screen turning sideways, use your phone\u2019s Rotation Lock (iPhone: Control Center; Android: quick settings, \u201cAuto-rotate\u201d off).',
   'Only use the official address' + (OFFICIAL_ADDRESS ? ': ' + OFFICIAL_ADDRESS + '.' : ' shared by the creator.') + ' Copies elsewhere aren’t ours.'
@@ -1412,14 +1538,28 @@ function buildFeedback() {
   sheet.appendChild(tx('p', 'shint', 'This is anonymous: we don’t ask for your name or email, and please don’t include personal details. Please keep it kind and respectful.'));
   const box = document.createElement('textarea'); box.className = 'fb-box'; box.setAttribute('aria-label', 'Your feedback'); box.rows = 9;
   sheet.appendChild(box);
+  // Honeypot: a hidden field a real person never sees or fills. A bot that fills every field gives itself away.
+  const hp = document.createElement('input'); hp.type = 'text'; hp.className = 'hp'; hp.tabIndex = -1;
+  hp.setAttribute('autocomplete', 'off'); hp.setAttribute('aria-hidden', 'true');
+  sheet.appendChild(hp);
+  const tsHolder = el('div', 'cf-holder'); sheet.appendChild(tsHolder);   // the Turnstile "are you a person?" widget renders here
+  const resetTs = () => { if (window.turnstile && S.tsWidgetId != null) { try { window.turnstile.reset(S.tsWidgetId); } catch (e) {} } S.tsToken = ''; };
   const msg = tx('p', 'fb-msg'); msg.setAttribute('role', 'status');
   const send = btn('Send', '', async () => {
     const text = box.value.trim();
     if (!text) { msg.textContent = 'Please write something first.'; return; }
     if (Array.from(text).length > FEEDBACK_MAX) { msg.textContent = 'That’s a lot of thoughts! Please keep it under ' + FEEDBACK_MAX.toLocaleString() + ' characters.'; return; }
+    // Quiet anti-bot (never limits a real person, and nothing extra is ever sent): if the hidden honeypot field
+    // was filled — something only an automated form-filler does — look successful but send nothing.
+    if (hp.value.trim()) { box.value = ''; msg.textContent = 'Thank you! Your feedback was sent. 🌟'; return; }
+    // The anti-spam check must have finished first. A real person passes it in a moment; this never caps how often they write.
+    if (!TEST_MODE && !S.tsToken) { msg.textContent = 'One moment — the quick spam check is finishing. Please tap Send again. Your message is safe here.'; return; }
     send.disabled = true; msg.textContent = 'Sending…';
     let res = null;
-    try { res = await fetch('api/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text, release: APP_RELEASE }) }); } catch (e) {}
+    const payload = { message: text, release: APP_RELEASE };
+    if (S.tsToken) payload.ts = S.tsToken;                          // one-time anti-spam token (not personal; verified then discarded)
+    try { res = await fetch('api/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); } catch (e) {}
+    resetTs();                                                     // the token is single-use; get a fresh one for next time
     if (res && res.ok) {
       box.value = ''; msg.textContent = 'Thank you! Your feedback was sent. 🌟';
       S.pauseUntil = Date.now() + 10000;                           // a short pause before the next message (the server also limits each day)
@@ -1428,11 +1568,29 @@ function buildFeedback() {
     }
     send.disabled = false;
     msg.textContent = res && res.status === 429 ? 'Lots of messages today. Please try again tomorrow; your message is still here.'
+      : res && res.status === 403 ? 'The spam check didn’t pass. Please tap Send again; your message is still here.'
       : 'Couldn’t send right now. Please check your internet and try again; your message is still here.';
   });
   sheet.appendChild(send); sheet.appendChild(msg);
   // coming back during the short pause: say why Send is resting, never leave it silently greyed out
-  S.onShow = () => { allowZoom(true); msg.textContent = S.pauseUntil > Date.now() ? 'Thanks! You can send another message in a few seconds.' : ''; };
+  S.onShow = () => {
+    allowZoom(true);
+    msg.textContent = S.pauseUntil > Date.now() ? 'Thanks! You can send another message in a few seconds.' : '';
+    if (!TEST_MODE && !S.tsRendered) {                              // show the "are you a person?" check once (never on the local test build)
+      ensureTurnstile(function (err) {
+        if (err || !window.turnstile) return;                      // if it can't load, Send will ask the person to try again
+        try {
+          S.tsWidgetId = window.turnstile.render(tsHolder, {
+            sitekey: TURNSTILE_SITEKEY, theme: 'dark',
+            callback: function (t) { S.tsToken = t; },
+            'expired-callback': function () { S.tsToken = ''; },
+            'error-callback': function () { S.tsToken = ''; }
+          });
+          S.tsRendered = true;
+        } catch (e) {}
+      });
+    }
+  };
   S.onHide = () => allowZoom(false);
 }
 
@@ -3752,7 +3910,7 @@ function chsForfeitCurrent() {
 }
 function chsStart(side) {
   const E = CH.E;
-  CH.G = { state: E.initialState(), level: CH.pendingLevel || 'easy', side, last: nowMs(), undo: [], capHuman: [], capComp: [], over: false };
+  CH.G = { state: E.initialState(), level: CH.pendingLevel || 'easy', side, last: nowMs(), undo: [], capHuman: [], capComp: [], over: false, review: [] };
   Saved.set('chess', CH.G);
   go('chs-board', { fresh: true });
 }
@@ -3856,11 +4014,23 @@ function chsPromote(moves) {
 }
 function chsHumanMove(m) {
   const G = CH.G, E = CH.E;
-  if (G.level === 'easy') G.undo.push({ state: G.state, capHuman: G.capHuman.slice(), capComp: G.capComp.slice() });   // every move is kept so Undo can go all the way back
+  const moverPc = G.state.board[m.from];                              // the piece being moved (used for "good move")
+  if (!G.review) G.review = [];
+  if (G.level === 'easy') G.undo.push({ state: G.state, capHuman: G.capHuman.slice(), capComp: G.capComp.slice(), rev: G.review.length });   // every move is kept so Undo can go all the way back
   const ns = E.applyMove(G.state, m);
   if (ns.captured) G.capHuman.push(ns.captured);
+  G.review.push(m);                                                   // keep the move list in memory for the post-game review
   G.state = ns; G.last = nowMs(); CH.sel = null; CH.legal = [];
-  Saved.set('chess', G); chsRender(); chsAfterMove(false);
+  Saved.set('chess', G); chsRender();
+  if (!E.status(ns).over) chsPraise(moverPc, m, ns);                  // a quiet nudge on a clear-cut good move (never on the game-ending move)
+  chsAfterMove(false);
+}
+// "Good move" encouragement: only clear-cut good moves, so it never praises a weak move.
+// A promotion, or a capture that wins material (the captured piece is worth more than the one that took it).
+function chsPraise(moverPc, m, ns) {
+  const V = CH.E.pieceValues;
+  if (m.promo) { flashGood(CH.S, 'Nice promotion!'); return; }
+  if (ns.captured && moverPc && V[ns.captured[1]] > V[moverPc[1]]) flashGood(CH.S, 'Great capture!');
 }
 
 // ------------------------------------------------------------
@@ -3895,6 +4065,7 @@ function chsComputer() {
       if (!mv) { chsAfterMove(); return; }
       const ns = CH.E.applyMove(G.state, mv);
       if (ns.captured) G.capComp.push(ns.captured);
+      (G.review || (G.review = [])).push(mv);                         // record the computer's reply too
       G.state = ns; G.last = nowMs(); Saved.set('chess', G); chsRender(); chsAfterMove();
     }, wait);
   });
@@ -3921,8 +4092,20 @@ function chsEnd(sts) {
   else { const t = CHS_TEXT[sts.result] || ['Draw', '']; title = 'Draw'; text = t[1]; }
   Results.add('chess', res, G.level); Saved.clear('chess');
   chsRender(); S.art.classList.add('dim');
-  showPanel(S, { icon: res === 'won' ? '🏆' : res === 'lost' ? '♟️' : '🤝', title, text, buttons: [
-    { label: 'View Board', secondary: true, fn: () => { S.art.classList.remove('dim'); } }, { label: 'Chess Home', fn: () => go('chs-entry') }] });
+  const btns = [{ label: 'View Board', secondary: true, fn: () => { S.art.classList.remove('dim'); } }];
+  if (G.review && G.review.length) btns.push({ label: 'Review Game', secondary: true, fn: () => { closePanel(S); S.art.classList.remove('dim'); chsOpenReview(); } });
+  btns.push({ label: 'Chess Home', fn: () => go('chs-entry') });
+  showPanel(S, { icon: res === 'won' ? '🏆' : res === 'lost' ? '♟️' : '🤝', title, text, buttons: btns });
+}
+// Step through the finished game on a clean board (nothing saved; gone on Back/Home).
+function chsOpenReview() {
+  const G = CH.G; if (!G || !G.review || !G.review.length) return;
+  openReview({
+    title: 'Game Review', size: 8,
+    initialState: CH.E.initialState(), moves: G.review, applyMove: CH.E.applyMove,
+    pieceSVG: chessPieceSVG, isDark: (r, c) => (r + c) % 2 === 1,
+    lastSquares: st => st.lastMove ? [st.lastMove.from, st.lastMove.to] : []
+  });
 }
 function chsReset() {
   const S = CH.S, G = CH.G;
@@ -3945,6 +4128,7 @@ function chsUndoTap() {
 function chsUndo() {
   const G = CH.G; if (!G || G.over || CH.busy || G.level !== 'easy' || !G.undo.length) return;
   const u = G.undo.pop(); G.state = u.state; G.capHuman = u.capHuman; G.capComp = u.capComp; G.last = nowMs();
+  if (G.review && u.rev != null) G.review.length = u.rev;             // keep the review move list in step with Undo
   CH.sel = null; CH.legal = []; Saved.set('chess', G); chsRender();
 }
 // Once a second: enforces the 60-minute rule while the app is open.
@@ -4047,7 +4231,11 @@ function buildCheckers() {
     const S = defScreen('ck-result-' + k, pic, { parent: 'ck-entry', name: 'Checkers result' });
     S.plaque = addText(S, 'plaque', 352, 712, 196, 42, 28, '');
     addHot(S, 229, 785, 440, 94, () => go('ck-entry'), 'Checkers Home'); addMusic(S, 764, 36);
-    S.onShow = () => { S.plaque.textContent = CK.lastLevel ? LEVEL_NAME[CK.lastLevel] : ''; };
+    S.reviewBtn = addPlank(S, 227, 912, 442, 92, 'Review Game', () => ckOpenReview());   // only shown when there are moves to replay
+    S.onShow = () => {
+      S.plaque.textContent = CK.lastLevel ? LEVEL_NAME[CK.lastLevel] : '';
+      S.reviewBtn.style.display = (CK.G && CK.G.review && CK.G.review.length) ? '' : 'none';
+    };
   });
   // stats
   const T = defScreen('ck-stats', 'checkers-stats', { parent: 'ck-entry', name: 'Checkers stats' });
@@ -4076,7 +4264,7 @@ function ckPickLevel(level) {
   if (ckActive()) go('ck-replace'); else ckStart(level);
 }
 function ckStart(level) {
-  CK.G = { state: CK.E.initialState(), level: level || 'easy', last: nowMs(), undo: [], capHuman: [], capComp: [], over: false };
+  CK.G = { state: CK.E.initialState(), level: level || 'easy', last: nowMs(), undo: [], capHuman: [], capComp: [], over: false, review: [] };
   Saved.set('checkers', CK.G); go('ck-board', { fresh: true });
 }
 function ckShowBoard() {
@@ -4145,10 +4333,30 @@ function ckTap(i) {
 }
 function ckHumanMove(m) {
   const G = CK.G, E = CK.E;
-  if (G.level === 'easy') G.undo.push({ state: G.state, capHuman: G.capHuman.slice(), capComp: G.capComp.slice() });   // every move is kept so Undo can go all the way back
+  if (!G.review) G.review = [];
+  if (G.level === 'easy') G.undo.push({ state: G.state, capHuman: G.capHuman.slice(), capComp: G.capComp.slice(), rev: G.review.length });   // every move is kept so Undo can go all the way back
   m.captured.forEach(sq => G.capHuman.push(G.state.board[sq]));
   G.state = E.applyMove(G.state, m); G.last = nowMs(); CK.sel = null; CK.cands = []; CK.step = 0;
-  Saved.set('checkers', G); ckRender(); ckAfterMove();
+  G.review.push(m);                                                  // keep the move list in memory for the post-game review
+  Saved.set('checkers', G); ckRender();
+  if (!E.status(G.state).over) ckPraise(m);                          // a quiet nudge on a clear-cut good move (never on the game-ending move)
+  ckAfterMove();
+}
+// "Good move" encouragement: only clear-cut good moves, so it never praises a weak move.
+// Reaching a king, or a multi-jump that captures two or more pieces at once.
+function ckPraise(m) {
+  if (m.promotes) { flashGood(CK.S, 'Kinged!'); return; }
+  if (m.captured && m.captured.length >= 2) flashGood(CK.S, 'Great capture!');
+}
+// Step through the finished game on a clean board (nothing saved; gone on Back/Home).
+function ckOpenReview() {
+  const G = CK.G; if (!G || !G.review || !G.review.length) return;
+  openReview({
+    title: 'Game Review', size: 10,
+    initialState: CK.E.initialState(), moves: G.review, applyMove: CK.E.applyMove,
+    pieceSVG: ckPieceSVG, isDark: (r, c) => (r + c) % 2 === 1,
+    lastSquares: st => st.lastMove ? (st.lastMove.path ? [st.lastMove.path[0], st.lastMove.to] : [st.lastMove.from, st.lastMove.to]) : []
+  });
 }
 
 // ------------------------------------------------------------
@@ -4171,6 +4379,7 @@ function ckComputer() {
       CK.busy = false;
       if (!mv) { ckAfterMove(); return; }
       mv.captured.forEach(sq => G.capComp.push(G.state.board[sq]));
+      (G.review || (G.review = [])).push(mv);                        // record the computer's reply too
       G.state = CK.E.applyMove(G.state, mv); G.last = nowMs(); Saved.set('checkers', G); ckRender(); ckAfterMove();
     }, wait);
   });
@@ -4203,6 +4412,7 @@ function ckUndoTap() { if (ckCanUndo()) ckUndo(); }
 function ckUndo() {
   const G = CK.G; if (!G || G.over || CK.busy || G.level !== 'easy' || !G.undo.length) return;
   const u = G.undo.pop(); G.state = u.state; G.capHuman = u.capHuman; G.capComp = u.capComp; G.last = nowMs();
+  if (G.review && u.rev != null) G.review.length = u.rev;            // keep the review move list in step with Undo
   CK.sel = null; CK.cands = []; CK.step = 0; Saved.set('checkers', G); ckRender();
 }
 // Once a second: enforces the 60-minute rule while the app is open.

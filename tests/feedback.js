@@ -15,7 +15,8 @@ let f = 0, n = 0; const ok = (c, m) => { n++; console.log(c ? 'PASS' : 'FAIL', m
   await p.evaluate(() => MM.go('settings')); await p.waitForTimeout(200);
   ok(await p.evaluate(() => { const sh = document.querySelector('#settings .sheet'); return /Share Feedback/.test(sh.children[3].textContent); }), 'Settings has it too, before the passcode');
   await p.locator('#settings .fb-open').click(); await p.waitForTimeout(300);
-  ok(await p.evaluate(() => MM.cur === 'feedback' && document.querySelectorAll('#feedback textarea').length === 1 && document.querySelectorAll('#feedback input').length === 0), 'one box, no other fields');
+  ok(await p.evaluate(() => MM.cur === 'feedback' && document.querySelectorAll('#feedback textarea').length === 1 && document.querySelectorAll('#feedback input:not(.hp)').length === 0), 'one box, no real input fields (name/email never asked)');
+  ok(await p.evaluate(() => { const h = document.querySelector('#feedback input.hp'); return !!h && h.getBoundingClientRect().right < 0 && h.tabIndex === -1; }), 'hidden honeypot field is present, off-screen and not keyboard-reachable (never seen by a person)');
   ok(await p.evaluate(() => /kind and respectful/.test(document.querySelector('#feedback .sheet').textContent)), 'asks people to keep it kind and respectful');
   await p.locator('#feedback .sbtn', { hasText: 'Send' }).click(); await p.waitForTimeout(200);
   ok(sent === null && /write something/.test(await p.textContent('#feedback .fb-msg')), 'empty box: nothing sent');

@@ -28,6 +28,24 @@ export async function onRequestPost({ request, env }) {
   const release = typeof body.release === 'string' && /^\d{4}-\d{2}-\d{2}[a-z]?$/.test(body.release) ? body.release : '';
   if (!message) return json(400, { ok: false, error: 'empty' });
   if (Array.from(message).length > MAX_CHARS) return json(413, { ok: false, error: 'too-long' });
+  // Turnstile: when the Secret is configured, every message must carry a valid one-time token from the anti-spam
+  // widget. A real person passes it automatically; an automated script has none, so it is refused. No token is stored.
+  if (env.TURNSTILE_SECRET) {
+    const token = typeof body.ts === 'string' ? body.ts : '';
+    if (!token) return json(403, { ok: false, error: 'turnstile' });
+    let human = false;
+    try {
+      const form = new URLSearchParams();
+      form.append('secret', env.TURNSTILE_SECRET);
+      form.append('response', token);
+      const ip = request.headers.get('CF-Connecting-IP');
+      if (ip) form.append('remoteip', ip);
+      const vr = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', { method: 'POST', body: form });
+      const vj = await vr.json();
+      human = !!(vj && vj.success);
+    } catch (e) { human = false; }
+    if (!human) return json(403, { ok: false, error: 'turnstile' });
+  }
   try {
     await env.FEEDBACK_DB.prepare('CREATE TABLE IF NOT EXISTS feedback (id INTEGER PRIMARY KEY AUTOINCREMENT, created_at TEXT NOT NULL, release TEXT, source TEXT, message TEXT NOT NULL)').run();
     const today = new Date().toISOString().slice(0, 10);
