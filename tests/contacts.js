@@ -30,7 +30,7 @@ function png(w, h) {   // a small solid-colour PNG made on the fly (stands in fo
   ok(await ev(() => MM.cur === 'settings'), 'gear opens Settings');
   ok(await ev(() => !!document.querySelector('#settings .fade-note')), 'once-a-day notice appears on first visit');
   ok(await ev(() => /Create A Passcode/.test(document.querySelector('#settings .sheet').textContent)), 'first visit asks to create a passcode');
-  ok(await ev(() => /never touched/.test(document.querySelector('#settings .snote').textContent)), 'the permanent note is shown');
+  ok(await ev(() => /never changed/.test(document.querySelector('#settings .snote').textContent)), 'the permanent note is shown');
   const fs = await ev(() => parseFloat(getComputedStyle(document.querySelector('#settings .sinput')).fontSize));
   ok(fs >= 16, 'typing boxes use ' + fs + ' px text (16+ stops iPhone zooming)');
   // passcode rules
@@ -96,7 +96,7 @@ function png(w, h) {   // a small solid-colour PNG made on the fly (stands in fo
   ok(await ev(() => !document.querySelector('#settings .fade-note')), 'notice does not repeat the same day');
   // privacy page
   await ev(() => MM.go('home-view')); await p.click('#home-view .privacy-link'); await wait(300);
-  ok(await ev(() => MM.cur === 'privacy' && document.querySelectorAll('#privacy .plist li').length === 15), 'Privacy & Safety page shows the 15 points');
+  ok(await ev(() => MM.cur === 'privacy' && document.querySelectorAll('#privacy .plist li').length === 16), 'Privacy & Safety page shows the 16 points');
   await ev(() => MM.goBack()); ok(await ev(() => MM.cur === 'home-view'), 'Back from Privacy returns Home');
   // 20 max
   await ev(() => { const a = []; for (let i = 0; i < 20; i++) a.push({ id: 'k' + i, name: 'P' + i, phone: '+1000000' + String(1000 + i) }); localStorage.setItem('tt:contacts', JSON.stringify(a)); });

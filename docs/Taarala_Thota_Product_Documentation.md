@@ -48,8 +48,8 @@ Taarala Thota is a personal, non-commercial learning project. It’s free, has n
 
 **Key decisions**
 
-1. **Everything stays on the phone:** no accounts and no server for personal data; locked backups instead of cloud sync.
-2. **Settings protected by a passcode:** games and loved ones stay one tap away, numbers stay private.
+1. **Everything you save stays on the phone:** no accounts, and no server holds your saved data; locked backups instead of cloud sync.
+2. **Settings protected by a passcode:** games and loved ones stay one tap away, numbers stay off the app’s normal screens.
 3. **The person chooses when to update,** after seeing exactly what’s new; never during play.
 4. **Anonymous visit counting with a clear notice,** an easy off switch, and Global Privacy Control respected.
 5. **Nothing reaches the live app untested:** test branch, protected preview, and my approval of every change and its wording.
@@ -68,7 +68,7 @@ Taarala Thota is a personal, non-commercial learning project. It’s free, has n
 
 ### Background
 
-Taarala Thota started as a public offshoot of a private family app I’d been building since February 2026. I was looking for safe, calm games for my family and kept finding free apps full of ads and banners, where one accidental tap opened a pop-up, a video or a store page, which often led to another. I wanted a space where that simply couldn’t happen. The idea then grew to include a focused way to reach a few chosen loved ones. Taarala Thota is that idea, made public: no ads, no sign-in, nothing personal collected.
+Taarala Thota started as a public offshoot of a private family app I’d been building since February 2026. I was looking for safe, calm games for my family and kept finding free apps full of ads and banners, where one accidental tap opened a pop-up, a video or a store page, which often led to another. I wanted a space where that simply couldn’t happen. The idea then grew to include a focused way to reach a few chosen loved ones. Taarala Thota is that idea, made public: no ads, no sign-in, no personal tracking.
 
 ### The problem
 
@@ -90,7 +90,7 @@ A garden that opens straight onto two doors, **Play** and **Family**:
 
 - **Play**: Bubble Pop, Hidden Comets (a gentle take on minesweeper), Chess and International Checkers. Every game has easy beginner levels; Chess and Checkers offer hints and undo on Easy, so anyone can learn.
 - **Family (Loved Ones)**: up to 20 chosen people as large circles with photos. One tap opens WhatsApp to message or call.
-- **Privacy:** Nothing to sign up for, nothing personal collected: no account, no ads, no personal tracking. Everything you save stays on the phone, protected by a Settings passcode and optional password-locked backups. Visits are counted anonymously (no cookies) and can be switched off.
+- **Privacy:** No sign-up and no account, no ads, no personal tracking. Everything you save stays on the phone; a Settings passcode keeps your contacts’ numbers off the app’s normal screens (it does not encrypt them), and you can make optional password-locked backups.
 - **Steady**: stray taps, long presses and swipes never throw you out of the app.
 - **Take A Tour**: a 1½-minute walkthrough that plays on the real screens and shows where to tap, with pause, speed and a bar to go back or forward.
 
@@ -101,7 +101,7 @@ A garden that opens straight onto two doors, **Play** and **Family**:
 ### Outcome
 
 - Live and installable, with a test-then-release process: every change is tested on a protected preview before it reaches the live app, and people see exactly “What’s New” before they choose to update.
-- A product with no personal data to leak by design apart from anything people choose to type into feedback (see Feedback content), an honest privacy page, and documented, disclosed limitations.
+- A privacy-focused product that avoids centrally storing saved contacts and game data, minimizes personal-data collection, and openly documents its privacy limitations and residual risks.
 - A public repository showing the full history of decisions, tests and releases.
 - Anonymous visit counts and an in-app feedback box show whether it’s working, without tracking anyone.
 
@@ -117,12 +117,12 @@ AI made execution dramatically faster, but quality came from the product discipl
 
 1. Offer calm, constructive play with no ads, no sign-up and no personal tracking.
 2. Put the people who matter one tap away, privately.
-3. Keep every piece of personal data on the person’s own phone, under their control.
+3. Keep the personal data people save on their own phone, under their control.
 4. Be usable by anyone, including beginners, without instructions.
 
 ### Non-goals (for this version)
 
-- Accounts, cloud sync or server-side storage of personal data
+- Accounts, cloud sync or server-side storage of your saved data
 - Playing against other people online.
 - Advertising of any kind.
 - App-store distribution (it is an installable web app).
@@ -151,7 +151,7 @@ The primary focus is calm play and reaching loved ones quickly, for myself and m
 | # | Requirement | Accepted when |
 |---|---|---|
 | F4 | Loved Ones: one tap to WhatsApp | Tapping a person opens WhatsApp for that number; nothing is sent automatically |
-| F5 | Settings protected by a passcode | Numbers can only be seen or changed after the passcode; Settings locks when you leave it and after 10 minutes without a tap in Settings |
+| F5 | Settings protected by a passcode | In the normal app interface, saved numbers can only be viewed or changed through Settings after entering the passcode. Settings locks when you leave it and after 10 minutes without activity in Settings. The passcode does not encrypt the underlying browser-stored numbers. |
 | F6 | Forgot passcode | Typing ERASE removes saved contacts and the passcode only; games and progress stay |
 | F7 | Backup and restore | Backup creates a password-locked file; restore checks every item and keeps the current passcode |
 | F8 | Backup reminder | Shown on Home only, every 6 days once there is something to save |
@@ -168,7 +168,7 @@ The primary focus is calm play and reaching loved ones quickly, for myself and m
 
 | Area | Requirement |
 |---|---|
-| Privacy | Nothing you save leaves the phone; no cookies; visit counts are anonymous and can be switched off; feedback is anonymous |
+| Privacy | Saved contacts, game progress and settings remain in browser storage on the device. Contact numbers are passed to WhatsApp only when the person chooses to contact someone. The app does not use cookies for advertising or personal tracking. Optional analytics can be switched off, and feedback does not require identifying details. |
 | Security | Strict browser security rules; the only outside code is Cloudflare’s anonymous counting script (loaded only when counting is on) and Cloudflare’s Turnstile anti-spam check (loaded only on the feedback box); passcode never stored, only a fingerprint; backups encrypted |
 
 | Area | Requirement |
@@ -182,7 +182,7 @@ The primary focus is calm play and reaching loved ones quickly, for myself and m
 
 Success is measured with the lightest possible footprint: anonymous counts and voluntary feedback, never personal tracking.
 
-- **Reach (anonymous):** visits, where they came from (for example LinkedIn or GitHub), countries and device types, via Cloudflare Web Analytics. No cookies, no unique-user tracking, one count per app opening, never in-app behaviour. People can switch counting off, and browsers sending Global Privacy Control are never counted.
+- **Reach (anonymous):** visits, where they came from (for example LinkedIn or GitHub), countries and device types, via Cloudflare Web Analytics. No analytics cookies, no unique-user tracking, one count per app opening, never in-app behaviour. People can switch counting off, and browsers sending Global Privacy Control are never counted.
 - **Voice of the user:** anonymous feedback from the in-app “Share Feedback” box: what people enjoy, what confuses them, and what they’d like next.
 - **Quality gates:** every release passes all automated tests, is checked on a protected preview, and is approved (changes and What’s New text) before going live.
 - **Privacy guardrail:** nothing people save in the app is held anywhere other than their own phone. Visit counts and feedback are anonymous by design.
@@ -196,9 +196,6 @@ Success is measured with the lightest possible footprint: anonymous counts and v
 | Hypothesis | How I’ll check (without tracking anyone) | Status |
 |---|---|---|
 | A first-time visitor can open the app and start a game without help | Watch 3–5 people try it with no instructions; note where they hesitate | Not yet tested |
-
-| Hypothesis | How I’ll check (without tracking anyone) | Status |
-|---|---|---|
 | People can add a loved one and reach them in one tap | In the same session, ask them to add a test contact and open it | Not yet tested |
 | People understand that their data stays on their phone | After they read Privacy & Safety, ask them to explain it in their own words | Not yet tested |
 | No stray tap takes people out of the app | Note any accidental exits in the sessions; feedback themes | Tested in my own use and automated tests; not yet with others |
@@ -390,7 +387,7 @@ Four games, Loved Ones with WhatsApp, Settings passcode, Privacy & Safety page, 
 
 ### Architecture in brief
 
-A set of plain HTML, CSS and JavaScript files served by Cloudflare Pages. Each screen is a painted picture; buttons and words are placed on top in the picture’s own coordinates, so layouts scale to any phone. Everything a person saves stays in their browser’s storage. An offline helper (service worker) keeps the app’s own files for offline use and manages updates. There is no server for personal data. One small Cloudflare function receives anonymous feedback and stores it in a Cloudflare D1 database (time, app version and message only; read from time to time; abusive messages may be deleted). The only outside code is Cloudflare’s anonymous visit-counting script (loaded only on the official address and only when counting is on) and Cloudflare’s Turnstile anti-spam check (loaded only on the feedback box, to block automated spam).
+A set of plain HTML, CSS and JavaScript files served by Cloudflare Pages. Each screen is a painted picture; buttons and words are placed on top in the picture’s own coordinates, so layouts scale to any phone. Everything a person saves stays in their browser’s storage. An offline helper (service worker) keeps the app’s own files for offline use and manages updates. There is no server that holds a person’s saved data. One small Cloudflare function receives anonymous feedback and stores it in a Cloudflare D1 database (time, app version, source (live app or test preview) and message only; read from time to time; abusive messages may be deleted). The only outside code is Cloudflare’s anonymous visit-counting script (loaded only on the official address and only when counting is on) and Cloudflare’s Turnstile anti-spam check (loaded only on the feedback box, to block automated spam).
 
 ![](images/product-doc/where-your-data-goes.png)
 
@@ -401,7 +398,7 @@ A set of plain HTML, CSS and JavaScript files served by Cloudflare Pages. Each s
 | # | Decision | Options considered | Chosen | Trade-off |
 |---|---|---|---|---|
 | A1 | Technology | Framework · plain web code | Plain HTML/CSS/JavaScript, one small build step | Less tooling; fewer dependencies and nothing third-party to trust |
-| A2 | Where data lives | Server database · phone storage | Browser storage on the phone (labels start `tt:`) | No sync between devices; nothing to leak or breach |
+| A2 | Where data lives | Server database · phone storage | Browser storage on the phone (labels start `tt:`) | No central store of saved contacts or game data; no synchronization between devices |
 
 | # | Decision | Options considered | Chosen | Trade-off |
 |---|---|---|---|---|
@@ -421,7 +418,7 @@ A set of plain HTML, CSS and JavaScript files served by Cloudflare Pages. Each s
 | A13 | Hosting | Several free hosts | Cloudflare Pages, connected to GitHub | The `.pages.dev` address ties the app to Cloudflare |
 | A14 | Releases | Publish on every change · test first | Test branch → protected preview → merge | A few extra steps per release; nothing untested reaches the live app |
 | A15 | Visit counting | None · Google Analytics · Cloudflare Web Analytics | Cloudflare Web Analytics, loaded by the app only when allowed | Approximate numbers; one outside script |
-| A16 | Feedback | Google Form · email link · own function | Own Cloudflare function + D1, accepting messages only from the app, with a daily cap | A small server piece to maintain |
+| A16 | Feedback | Google Form · email link · own function | Own Cloudflare function + D1, accepting messages only from the app, with a daily cap, a honeypot and a server-verified Turnstile check (the live app and the test preview write to separate databases) | A small server piece to maintain |
 | A17 | Guided tour | Video file · step cards · live replay | Live replay on the real screens (a few KB, works offline, never out of date), recorded to MP4 for social media | More code than a video file |
 
 ### Running cost
@@ -444,7 +441,7 @@ $0 a month (hosting only; excludes AI subscriptions and my time). Everything run
 | WhatsApp link format (wa.me) | Loved Ones | Taps stop opening chats | The link is built in one place in the code, so it’s a quick change |
 | GitHub | Code, history, releases | Releases pause | Upload directly to Cloudflare; a full copy is kept locally |
 
-- Fonts, pictures and the QR code are all inside the app; nothing else is loaded from outside.
+- Fonts, pictures and the QR code are included with the app. External resources are limited to the disclosed Cloudflare analytics and Turnstile services, loaded only when applicable.
 
 ---
 
@@ -518,7 +515,7 @@ $0 a month (hosting only; excludes AI subscriptions and my time). Everything run
 
 ### Privacy by design
 
-- No account, no cookies, no personal tracking, and no server for personal data. There is no central store of personal data to steal. Visits are counted anonymously (Cloudflare Web Analytics) and can be switched off; feedback is anonymous.
+- No accounts, no advertising or personal tracking cookies, and no central application database of saved contacts or game data. Your contacts and game data stay on the phone, so there is no central store of them to steal. Visits are counted anonymously (Cloudflare Web Analytics) and can be switched off; feedback is anonymous.
 - Application data vs hosting data: everything the app saves stays on the phone. Like any website, the hosting service handles basic technical information (such as IP address and browser type) to deliver the site; this is stated plainly on the Privacy & Safety page.
 - The Privacy & Safety page was self-reviewed by the creator and Claude against what the app actually does. This is not a legal review.
 
@@ -531,7 +528,7 @@ $0 a month (hosting only; excludes AI subscriptions and my time). Everything run
 | Game progress, stats, stars, music choice | Browser storage on the phone | Not sensitive |
 | Backups | A file the person saves wherever they choose | Encrypted with their password |
 | Visit-counting choice; welcome note seen | Browser storage on the phone | Not sensitive; included in backups |
-| Feedback messages | Cloudflare D1 (hosting service) | Anonymous: time, app version and message only; read from time to time; abusive messages may be deleted |
+| Feedback messages | Cloudflare D1 (hosting service) | Anonymous: time, app version, source (live app or test preview) and message only; read from time to time; abusive messages may be deleted |
 
 ### Threats and mitigations
 
@@ -547,7 +544,7 @@ $0 a month (hosting only; excludes AI subscriptions and my time). Everything run
 |---|---|
 | Personal data in the public code | Scans of every file and the full history before publishing |
 | Copying the work | Visible maker's mark, code notices, invisible artwork watermark, and dated proof of every release |
-| Feedback spam | Accepted only from the app’s own address; a hidden honeypot field and Cloudflare Turnstile block automated spam; 10,000-character limit; 300 messages a day in total |
+| Feedback spam | Accepted only from the app’s own address; a hidden honeypot field and a Cloudflare Turnstile check (verified server-side, including the host the token was solved on) block automated spam; 10,000-character limit; 300 messages a day in total |
 | Someone takes over my GitHub or hosting account | Stronger sign-in (two-factor or passkeys) on GitHub and Cloudflare; main branch protected once the repository is public |
 | Someone changes the live site without approval | A daily automatic check compares the live site with the approved release and emails me if anything differs |
 
@@ -555,7 +552,7 @@ $0 a month (hosting only; excludes AI subscriptions and my time). Everything run
 
 | Risk | Why it remains | Likelihood | Impact |
 |---|---|---|---|
-| Numbers are readable in browser storage by a technical person with access to the unlocked device | Loved Ones must open WhatsApp with one tap, without the passcode; encryption would mean a passcode for every call; anyone with the unlocked phone could already see these numbers in its own Contacts or WhatsApp | Low | Medium |
+| Contact numbers are stored in browser storage and are not encrypted by the Settings passcode, so someone with technical access to the unlocked device could inspect storage and read them | Loved Ones must open WhatsApp with one tap, without the passcode; encryption would mean a passcode for every call; anyone with the unlocked phone could already see these numbers in its own Contacts or WhatsApp | Low | Medium |
 | No recovery without a backup | By design, there is no copy anywhere else; reminders and clear advice mitigate it | Medium | Medium |
 | The phone’s own Home gesture can’t be blocked | No web app can stop the phone’s own swipe home. Guided Access (iPhone) and App pinning (Android) lock the screen to one app; the Privacy & Safety page explains how. Nothing is lost. | High | Low |
 | One-time picture download (about 5 MB, up to 7 MB on older phones) | Needed for offline play; explained on the Privacy page | High | Low |
@@ -572,7 +569,7 @@ Likelihood: Low = needs unusual circumstances; Medium = will happen to some peop
 
 ### Feedback content
 
-- People can type anything into a free-text box: kind words, criticism, or occasionally something hurtful or personal. Feedback is never shown inside the app, so nothing one person writes can reach anyone else. I read it from time to time, may delete anything abusive, and may share short quotes without anything that identifies the writer (the Privacy & Safety page says so). Because it’s anonymous, I can’t block an individual sender. The protections are a request to keep it kind and leave out personal details, messages accepted only from the app, a hidden honeypot field and a Cloudflare Turnstile check that block automated spam, a 10,000-character limit and at most 300 messages a day. These never limit honest feedback: a real person can write as often as they like. The aim is only to stop automated spam from flooding the box and crowding out real people, and free tools can reduce that without stopping a determined attacker completely. I chose not to filter messages automatically: people are asked not to share personal details, and some may want to leave a way to reach me.
+- People can type anything into a free-text box: kind words, criticism, or occasionally something hurtful or personal. Feedback is never shown inside the app, so nothing one person writes can reach anyone else. I read it from time to time, may delete anything abusive, and may share short quotes without anything that identifies the writer (the Privacy & Safety page says so). Because it’s anonymous, I can’t block an individual sender. The protections start with a request to keep it kind and leave out personal details. A client-side honeypot helps deter basic automated submissions, and production feedback additionally requires a server-verified Cloudflare Turnstile check, including hostname validation, alongside the app-origin check, a 10,000-character limit and a 300-message daily cap. They are aimed at automated spam, not at honest people: a real person is not individually rate-limited, though the 300-a-day total is shared by everyone and the check can occasionally need a second try. The aim is only to stop automated spam from flooding the box and crowding out real people, and free tools can reduce that without stopping a determined attacker completely. I chose not to filter messages automatically: people are asked not to share personal details, and some may want to leave a way to reach me.
 
 ---
 
@@ -673,4 +670,4 @@ Each entry: the decision, the options, my choice, and the trade-off I accepted.
 | 68 | Encouraging good moves | None · praise every strong move · only clear-cut good moves | A brief "Nice move!" that fades on its own, shown only on clear-cut good moves (a capture that wins material, or reaching a king/promotion), in Chess and Checkers at every level | Subtle positional moves are not praised, so it never praises a weak move by mistake; it appears after you move, so it is encouragement, not a hint |
 | 69 | Reviewing a finished game | None · keep a history of finished games · replay from the game’s saved moves | After a game ends, an optional walkthrough replays the moves on a clean board; it closes on Back or Home and is not stored on its own, and the moves it replays stay on the device with the resumable game and clear when the game ends | The moves stay on the device, never sent anywhere; once a game ends there is no lasting history to revisit |
 | 70 | Tall phones (e.g. iPhone) | Leave blurred strips · zoom to fill and trim the sides · fill the edge with the picture’s own colours | Zoom in to fill the screen, trimming only empty side margins (never a painted sign), and fill any thin remaining band with the picture’s own edge colours | On a very tall phone a sliver of the far left and right edges is trimmed |
-| 71 | Protecting the feedback box from spam | Nothing extra · limit how often each person can write · block automated spam only | Block automated spam only — a hidden honeypot field and a Cloudflare Turnstile check, on top of the existing app-only rule and daily cap — and never limit a real person, who can write as often as they like | Free tools reduce automated spam but cannot stop a determined attacker completely; rarely, a real person on a very fast or unusual setup may need to tap Send again |
+| 71 | Protecting the feedback box from spam | Nothing extra · limit how often each person can write · block automated spam only | Block automated spam only — a hidden honeypot field and a Cloudflare Turnstile check (verified server-side, including the host it was solved on), on top of the existing app-only rule and daily cap — with no limit aimed at an individual person | Free tools reduce automated spam but cannot stop a determined attacker completely; rarely, a real person on a very fast or unusual setup may need to tap Send again |
