@@ -15,6 +15,24 @@ const SETTINGS_NOTE = 'Contacts saved here stay only on this phone, inside ' + A
 const FORGOT_TEXT = 'If you forget this passcode, the contacts you saved in ' + APP_NAME + ' will be erased, and you’ll need to add them again. Your phone’s own contacts and WhatsApp are not affected.';
 const ABOUT_TEXT = 'Taarala Thota is a personal, non-commercial learning project. It\u2019s free, has no ads and isn\u2019t for sale. I\u2019ve worked hard to protect privacy and get things right, but I\u2019m not a legal or security professional, and there may be mistakes. If you notice anything that could cause harm, please tell me through Share Feedback and I\u2019ll fix it as quickly as I can.';
 const DAILY_NOTICE = 'Contacts saved here stay only on this phone. Your phone’s own contacts are never touched.';
+
+// Cloudflare Turnstile: a free "are you a person?" check shown only on the feedback box. It blocks automated
+// scripts without ever limiting a real person (a person passes it automatically and can send as often as they like).
+// The Site key below is public and safe to ship; the matching Secret key is a server setting named TURNSTILE_SECRET.
+const TURNSTILE_SITEKEY = '0x4AAAAAAFvWBO8a_93XGcW_';
+let _tsLoading = false, _tsReady = false, _tsQueue = [];
+function ensureTurnstile(cb) {
+  if (_tsReady && window.turnstile) { cb(); return; }
+  _tsQueue.push(cb);
+  if (_tsLoading) return;
+  _tsLoading = true;
+  window.__tsOnload = function () { _tsReady = true; const q = _tsQueue; _tsQueue = []; q.forEach(f => { try { f(); } catch (e) {} }); };
+  const s = document.createElement('script');
+  s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=__tsOnload';
+  s.async = true; s.defer = true;
+  s.onerror = function () { _tsLoading = false; const q = _tsQueue; _tsQueue = []; q.forEach(f => { try { f(new Error('turnstile load failed')); } catch (e) {} }); };
+  document.head.appendChild(s);
+}
 const OFFICIAL_ADDRESS = 'taarala-thota.pages.dev';   // the app's one official address (people's saved data belongs to it)
 const PRIVACY_POINTS = [
   // Application data (what the app saves) is kept apart from infrastructure data (what any website's host handles):
@@ -29,7 +47,7 @@ const PRIVACY_POINTS = [
   'On iPhone, add the app to your Home Screen, so your data is kept even if you don’t open it for a while.',
   'So the games work without internet, the app quietly saves its pictures on your phone (about 5 MB, up to 7 MB on older phones) the first time it opens. On mobile data this counts toward your data plan; on Wi-Fi it probably costs nothing extra.',
   'Closing the app or your browser keeps everything. Clearing your browser’s site data (cookies and site data) deletes it all, and removing the app may too. Anything saved in a private/incognito window is deleted when that window closes. Without a backup it can’t be recovered. To bring it back: set a passcode, then Settings → Restore From A Backup.',
-  'Feedback you send from the app is anonymous: we don’t ask for your name or email, and nothing about you is stored with it. It is kept by the app’s hosting service (Cloudflare) so the creator can read it from time to time, and may share short quotes without anything that identifies you. Please don’t include personal details.',
+  'Feedback you send from the app is anonymous: we don’t ask for your name or email, and nothing about you is stored with it. It is kept by the app’s hosting service (Cloudflare) so the creator can read it from time to time, and may share short quotes without anything that identifies you. Please don’t include personal details. To block automated spam, the feedback box uses a Cloudflare anti-spam check (Turnstile) that loads only on this screen; by Cloudflare’s description it is privacy-focused, uses no tracking cookies, and never sees your feedback. It never limits how often a real person can write.',
   'Tapping a contact opens WhatsApp with that person\u2019s number (through WhatsApp\u2019s own wa.me link). Nothing is ever sent automatically. From then on, WhatsApp\u2019s own privacy policy applies.',
   'Sharing your phone with someone? Keep the screen on this app: on iPhone turn on Guided Access (Settings \u2192 Accessibility \u2192 Guided Access), open the app and triple-click the side button; on Android turn on App pinning (Settings \u2192 Security \u2192 App pinning; the exact menu varies by phone) and pin the app from the recent-apps view. To stop the screen turning sideways, use your phone\u2019s Rotation Lock (iPhone: Control Center; Android: quick settings, \u201cAuto-rotate\u201d off).',
   'Only use the official address' + (OFFICIAL_ADDRESS ? ': ' + OFFICIAL_ADDRESS + '.' : ' shared by the creator.') + ' Copies elsewhere aren’t ours.'
@@ -440,14 +458,28 @@ function buildFeedback() {
   sheet.appendChild(tx('p', 'shint', 'This is anonymous: we don’t ask for your name or email, and please don’t include personal details. Please keep it kind and respectful.'));
   const box = document.createElement('textarea'); box.className = 'fb-box'; box.setAttribute('aria-label', 'Your feedback'); box.rows = 9;
   sheet.appendChild(box);
+  // Honeypot: a hidden field a real person never sees or fills. A bot that fills every field gives itself away.
+  const hp = document.createElement('input'); hp.type = 'text'; hp.className = 'hp'; hp.tabIndex = -1;
+  hp.setAttribute('autocomplete', 'off'); hp.setAttribute('aria-hidden', 'true');
+  sheet.appendChild(hp);
+  const tsHolder = el('div', 'cf-holder'); sheet.appendChild(tsHolder);   // the Turnstile "are you a person?" widget renders here
+  const resetTs = () => { if (window.turnstile && S.tsWidgetId != null) { try { window.turnstile.reset(S.tsWidgetId); } catch (e) {} } S.tsToken = ''; };
   const msg = tx('p', 'fb-msg'); msg.setAttribute('role', 'status');
   const send = btn('Send', '', async () => {
     const text = box.value.trim();
     if (!text) { msg.textContent = 'Please write something first.'; return; }
     if (Array.from(text).length > FEEDBACK_MAX) { msg.textContent = 'That’s a lot of thoughts! Please keep it under ' + FEEDBACK_MAX.toLocaleString() + ' characters.'; return; }
+    // Quiet anti-bot (never limits a real person, and nothing extra is ever sent): if the hidden honeypot field
+    // was filled — something only an automated form-filler does — look successful but send nothing.
+    if (hp.value.trim()) { box.value = ''; msg.textContent = 'Thank you! Your feedback was sent. 🌟'; return; }
+    // The anti-spam check must have finished first. A real person passes it in a moment; this never caps how often they write.
+    if (!TEST_MODE && !S.tsToken) { msg.textContent = 'One moment — the quick spam check is finishing. Please tap Send again. Your message is safe here.'; return; }
     send.disabled = true; msg.textContent = 'Sending…';
     let res = null;
-    try { res = await fetch('api/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text, release: APP_RELEASE }) }); } catch (e) {}
+    const payload = { message: text, release: APP_RELEASE };
+    if (S.tsToken) payload.ts = S.tsToken;                          // one-time anti-spam token (not personal; verified then discarded)
+    try { res = await fetch('api/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); } catch (e) {}
+    resetTs();                                                     // the token is single-use; get a fresh one for next time
     if (res && res.ok) {
       box.value = ''; msg.textContent = 'Thank you! Your feedback was sent. 🌟';
       S.pauseUntil = Date.now() + 10000;                           // a short pause before the next message (the server also limits each day)
@@ -456,10 +488,28 @@ function buildFeedback() {
     }
     send.disabled = false;
     msg.textContent = res && res.status === 429 ? 'Lots of messages today. Please try again tomorrow; your message is still here.'
+      : res && res.status === 403 ? 'The spam check didn’t pass. Please tap Send again; your message is still here.'
       : 'Couldn’t send right now. Please check your internet and try again; your message is still here.';
   });
   sheet.appendChild(send); sheet.appendChild(msg);
   // coming back during the short pause: say why Send is resting, never leave it silently greyed out
-  S.onShow = () => { allowZoom(true); msg.textContent = S.pauseUntil > Date.now() ? 'Thanks! You can send another message in a few seconds.' : ''; };
+  S.onShow = () => {
+    allowZoom(true);
+    msg.textContent = S.pauseUntil > Date.now() ? 'Thanks! You can send another message in a few seconds.' : '';
+    if (!TEST_MODE && !S.tsRendered) {                              // show the "are you a person?" check once (never on the local test build)
+      ensureTurnstile(function (err) {
+        if (err || !window.turnstile) return;                      // if it can't load, Send will ask the person to try again
+        try {
+          S.tsWidgetId = window.turnstile.render(tsHolder, {
+            sitekey: TURNSTILE_SITEKEY, theme: 'dark',
+            callback: function (t) { S.tsToken = t; },
+            'expired-callback': function () { S.tsToken = ''; },
+            'error-callback': function () { S.tsToken = ''; }
+          });
+          S.tsRendered = true;
+        } catch (e) {}
+      });
+    }
+  };
   S.onHide = () => allowZoom(false);
 }

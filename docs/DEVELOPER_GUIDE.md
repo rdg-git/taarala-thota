@@ -3,7 +3,7 @@
 A calm, ad-free set of games plus a private "loved ones" shortcut to WhatsApp.
 No sign-in, no ads, no personal tracking: everything a person saves stays in their own phone's browser. The only server code
 is one small function that receives anonymous feedback (section 6).
-The only outside service is anonymous visit counting (Cloudflare Web Analytics), with an off switch (section 6).
+The only outside services are anonymous visit counting (Cloudflare Web Analytics, with an off switch) and a Cloudflare Turnstile anti-spam check on the feedback box (section 6).
 This guide is the starting point for anyone continuing development. Each code file also carries
 section-by-section notes right where each part begins.
 
@@ -11,7 +11,7 @@ section-by-section notes right where each part begins.
 
 ## 1. How it is built (in one minute)
 
-- **Plain HTML, CSS and JavaScript.** No framework and no outside code libraries at run time.
+- **Plain HTML, CSS and JavaScript.** No framework and no outside code libraries at run time, apart from Cloudflare’s visit-counting script and the Cloudflare Turnstile anti-spam widget on the feedback box.
 - **Every screen is one painted picture.** Buttons and words are placed on top of the picture, measured
   in the picture's own pixels, so the layout scales to any phone.
 - **One small build step** (`build.py`) joins the files in `src/` into `public/app.js` and `public/app.css`,
@@ -79,7 +79,7 @@ Open `http://localhost:8765/index.html?test=1` for test mode (only works on your
 | `backup.js` | Backup, restore, tampered / wrong-password / booby-trapped files, reminder. |
 | `pictures.js` | Every picture loads (AVIF + WebP fallback), Hidden Comets words and comets. |
 | `pwa.js` | Install details, offline play, update card, data kept across updates, button sizes. |
-| `security.js` | App works fully under the security rules; outside code, connections and framing are refused. |
+| `security.js` | App works fully under the security rules; unexpected outside code, connections and framing are refused (the counting script and the Turnstile anti-spam check are the allowed exceptions). |
 | `privacy.js` | No outside addresses contacted, no sign-in code, only `tt:` labels saved. |
 | `fill.js` | Screen fill on 6 sizes (small Android to tablet): no side strips where avoidable, nothing tappable or readable cut off. |
 | `hints.js` | Move hints on Easy only in Chess and Checkers; moves still work on every level. |
@@ -142,9 +142,9 @@ All in the browser's storage for this site, labels starting with `tt:`. Nothing 
 
 - **No accounts, and no server for personal data.** There is no central store of people's data to steal.
 - **Anonymous feedback** (`functions/api/feedback.js`, screen in `settings.js`): one box, opened from Privacy & Safety and
-  Settings. Only the message and the app release are sent. Stored: time, release, source (app/preview), message. Never
+  Settings. The message, the app release, and a one-time Cloudflare Turnstile anti-spam token are sent (verified with the `TURNSTILE_SECRET` secret, then discarded — never stored). Stored: time, release, source (app/preview), message. Never
   stored: name, email, IP, browser details. Accepted only from the app's own addresses; at most 10,000 characters; at most
-  300 messages a day in total. Setup: a Cloudflare D1 database (`taarala-feedback`) bound to the Pages project as
+  300 messages a day in total. A hidden honeypot field and a Cloudflare Turnstile check (Site key in `settings.js`, Secret key in the `TURNSTILE_SECRET` Pages secret, `challenges.cloudflare.com` allowed in `public/_headers`) block automated spam; neither ever limits a real person. Setup: a Cloudflare D1 database (`taarala-feedback`) bound to the Pages project as
   `FEEDBACK_DB` (Production and Preview). Read messages in the Cloudflare dashboard: D1 → taarala-feedback → Console:
   `SELECT * FROM feedback ORDER BY id DESC;`
 - **Anonymous visit counting** (`visits.js`): Cloudflare Web Analytics counts visits, referrers, countries and device types
@@ -159,7 +159,7 @@ All in the browser's storage for this site, labels starting with `tt:`. Nothing 
   are downloaded; that is outside the app and outside the creator's control, covered by the host's own privacy
   policy. Keep this distinction in any public wording: never claim "no data is processed at all".
 - **Strict security rules** (`public/_headers`): the page may only load the app's own files; no outside
-  scripts, styles, fonts or connections (one exception: Cloudflare's visit-counting script and its counting address); no other site may show the app inside its page; no camera,
+  scripts, styles, fonts or connections (two exceptions: Cloudflare's visit-counting script and its counting address, and the Cloudflare Turnstile anti-spam check on the feedback box — its script and frame); no other site may show the app inside its page; no camera,
   microphone or location. Code and styles live in files, so no code is allowed inside the page itself.
 - **Plain text only**: anything a person types is set with `textContent` (or escaped), never run as code.
 - **Contacts**: Loved Ones shows names/photos without a passcode by design; numbers need the passcode.

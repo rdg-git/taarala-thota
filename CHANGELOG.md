@@ -3,6 +3,13 @@
 What changed in each release of Taarala Thota (Garden of Stars), newest first.
 Before updating, the app’s "What’s New" shows the entries newer than the version on the phone.
 
+## 2026-11-01
+
+- Full-Screen Fit: the games now fill the whole screen on tall phones like iPhone.
+- Nice Move: a little cheer appears when you play a strong move in Chess or Checkers.
+- Review Your Game: when a game ends, step back through the moves on the board.
+- Spam-Free Feedback: stronger protection against automated spam — your own feedback is never limited.
+
 ## 2026-10-29c
 
 - Take A Tour: clearer, simpler iPhone install steps.

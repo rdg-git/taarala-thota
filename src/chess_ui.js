@@ -111,7 +111,7 @@ function chsForfeitCurrent() {
 }
 function chsStart(side) {
   const E = CH.E;
-  CH.G = { state: E.initialState(), level: CH.pendingLevel || 'easy', side, last: nowMs(), undo: [], capHuman: [], capComp: [], over: false };
+  CH.G = { state: E.initialState(), level: CH.pendingLevel || 'easy', side, last: nowMs(), undo: [], capHuman: [], capComp: [], over: false, review: [] };
   Saved.set('chess', CH.G);
   go('chs-board', { fresh: true });
 }
@@ -215,11 +215,23 @@ function chsPromote(moves) {
 }
 function chsHumanMove(m) {
   const G = CH.G, E = CH.E;
-  if (G.level === 'easy') G.undo.push({ state: G.state, capHuman: G.capHuman.slice(), capComp: G.capComp.slice() });   // every move is kept so Undo can go all the way back
+  const moverPc = G.state.board[m.from];                              // the piece being moved (used for "good move")
+  if (!G.review) G.review = [];
+  if (G.level === 'easy') G.undo.push({ state: G.state, capHuman: G.capHuman.slice(), capComp: G.capComp.slice(), rev: G.review.length });   // every move is kept so Undo can go all the way back
   const ns = E.applyMove(G.state, m);
   if (ns.captured) G.capHuman.push(ns.captured);
+  G.review.push(m);                                                   // keep the move list in memory for the post-game review
   G.state = ns; G.last = nowMs(); CH.sel = null; CH.legal = [];
-  Saved.set('chess', G); chsRender(); chsAfterMove(false);
+  Saved.set('chess', G); chsRender();
+  if (!E.status(ns).over) chsPraise(moverPc, m, ns);                  // a quiet nudge on a clear-cut good move (never on the game-ending move)
+  chsAfterMove(false);
+}
+// "Good move" encouragement: only clear-cut good moves, so it never praises a weak move.
+// A promotion, or a capture that wins material (the captured piece is worth more than the one that took it).
+function chsPraise(moverPc, m, ns) {
+  const V = CH.E.pieceValues;
+  if (m.promo) { flashGood(CH.S, 'Nice promotion!'); return; }
+  if (ns.captured && moverPc && V[ns.captured[1]] > V[moverPc[1]]) flashGood(CH.S, 'Great capture!');
 }
 
 // ------------------------------------------------------------
@@ -254,6 +266,7 @@ function chsComputer() {
       if (!mv) { chsAfterMove(); return; }
       const ns = CH.E.applyMove(G.state, mv);
       if (ns.captured) G.capComp.push(ns.captured);
+      (G.review || (G.review = [])).push(mv);                         // record the computer's reply too
       G.state = ns; G.last = nowMs(); Saved.set('chess', G); chsRender(); chsAfterMove();
     }, wait);
   });
@@ -280,8 +293,20 @@ function chsEnd(sts) {
   else { const t = CHS_TEXT[sts.result] || ['Draw', '']; title = 'Draw'; text = t[1]; }
   Results.add('chess', res, G.level); Saved.clear('chess');
   chsRender(); S.art.classList.add('dim');
-  showPanel(S, { icon: res === 'won' ? '🏆' : res === 'lost' ? '♟️' : '🤝', title, text, buttons: [
-    { label: 'View Board', secondary: true, fn: () => { S.art.classList.remove('dim'); } }, { label: 'Chess Home', fn: () => go('chs-entry') }] });
+  const btns = [{ label: 'View Board', secondary: true, fn: () => { S.art.classList.remove('dim'); } }];
+  if (G.review && G.review.length) btns.push({ label: 'Review Game', secondary: true, fn: () => { closePanel(S); S.art.classList.remove('dim'); chsOpenReview(); } });
+  btns.push({ label: 'Chess Home', fn: () => go('chs-entry') });
+  showPanel(S, { icon: res === 'won' ? '🏆' : res === 'lost' ? '♟️' : '🤝', title, text, buttons: btns });
+}
+// Step through the finished game on a clean board (nothing saved; gone on Back/Home).
+function chsOpenReview() {
+  const G = CH.G; if (!G || !G.review || !G.review.length) return;
+  openReview({
+    title: 'Game Review', size: 8,
+    initialState: CH.E.initialState(), moves: G.review, applyMove: CH.E.applyMove,
+    pieceSVG: chessPieceSVG, isDark: (r, c) => (r + c) % 2 === 1,
+    lastSquares: st => st.lastMove ? [st.lastMove.from, st.lastMove.to] : []
+  });
 }
 function chsReset() {
   const S = CH.S, G = CH.G;
@@ -304,6 +329,7 @@ function chsUndoTap() {
 function chsUndo() {
   const G = CH.G; if (!G || G.over || CH.busy || G.level !== 'easy' || !G.undo.length) return;
   const u = G.undo.pop(); G.state = u.state; G.capHuman = u.capHuman; G.capComp = u.capComp; G.last = nowMs();
+  if (G.review && u.rev != null) G.review.length = u.rev;             // keep the review move list in step with Undo
   CH.sel = null; CH.legal = []; Saved.set('chess', G); chsRender();
 }
 // Once a second: enforces the 60-minute rule while the app is open.

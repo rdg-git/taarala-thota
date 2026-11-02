@@ -1,5 +1,14 @@
 [
   {
+    "date": "2026-11-01",
+    "notes": [
+      "Full-Screen Fit: the games now fill the whole screen on tall phones like iPhone.",
+      "Nice Move: a little cheer appears when you play a strong move in Chess or Checkers.",
+      "Review Your Game: when a game ends, step back through the moves on the board.",
+      "Spam-Free Feedback: stronger protection against automated spam — your own feedback is never limited."
+    ]
+  },
+  {
     "date": "2026-10-29c",
     "notes": [
       "Take A Tour: clearer, simpler iPhone install steps."

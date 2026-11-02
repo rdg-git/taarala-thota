@@ -80,7 +80,11 @@ function buildCheckers() {
     const S = defScreen('ck-result-' + k, pic, { parent: 'ck-entry', name: 'Checkers result' });
     S.plaque = addText(S, 'plaque', 352, 712, 196, 42, 28, '');
     addHot(S, 229, 785, 440, 94, () => go('ck-entry'), 'Checkers Home'); addMusic(S, 764, 36);
-    S.onShow = () => { S.plaque.textContent = CK.lastLevel ? LEVEL_NAME[CK.lastLevel] : ''; };
+    S.reviewBtn = addPlank(S, 227, 912, 442, 92, 'Review Game', () => ckOpenReview());   // only shown when there are moves to replay
+    S.onShow = () => {
+      S.plaque.textContent = CK.lastLevel ? LEVEL_NAME[CK.lastLevel] : '';
+      S.reviewBtn.style.display = (CK.G && CK.G.review && CK.G.review.length) ? '' : 'none';
+    };
   });
   // stats
   const T = defScreen('ck-stats', 'checkers-stats', { parent: 'ck-entry', name: 'Checkers stats' });
@@ -109,7 +113,7 @@ function ckPickLevel(level) {
   if (ckActive()) go('ck-replace'); else ckStart(level);
 }
 function ckStart(level) {
-  CK.G = { state: CK.E.initialState(), level: level || 'easy', last: nowMs(), undo: [], capHuman: [], capComp: [], over: false };
+  CK.G = { state: CK.E.initialState(), level: level || 'easy', last: nowMs(), undo: [], capHuman: [], capComp: [], over: false, review: [] };
   Saved.set('checkers', CK.G); go('ck-board', { fresh: true });
 }
 function ckShowBoard() {
@@ -178,10 +182,30 @@ function ckTap(i) {
 }
 function ckHumanMove(m) {
   const G = CK.G, E = CK.E;
-  if (G.level === 'easy') G.undo.push({ state: G.state, capHuman: G.capHuman.slice(), capComp: G.capComp.slice() });   // every move is kept so Undo can go all the way back
+  if (!G.review) G.review = [];
+  if (G.level === 'easy') G.undo.push({ state: G.state, capHuman: G.capHuman.slice(), capComp: G.capComp.slice(), rev: G.review.length });   // every move is kept so Undo can go all the way back
   m.captured.forEach(sq => G.capHuman.push(G.state.board[sq]));
   G.state = E.applyMove(G.state, m); G.last = nowMs(); CK.sel = null; CK.cands = []; CK.step = 0;
-  Saved.set('checkers', G); ckRender(); ckAfterMove();
+  G.review.push(m);                                                  // keep the move list in memory for the post-game review
+  Saved.set('checkers', G); ckRender();
+  if (!E.status(G.state).over) ckPraise(m);                          // a quiet nudge on a clear-cut good move (never on the game-ending move)
+  ckAfterMove();
+}
+// "Good move" encouragement: only clear-cut good moves, so it never praises a weak move.
+// Reaching a king, or a multi-jump that captures two or more pieces at once.
+function ckPraise(m) {
+  if (m.promotes) { flashGood(CK.S, 'Kinged!'); return; }
+  if (m.captured && m.captured.length >= 2) flashGood(CK.S, 'Great capture!');
+}
+// Step through the finished game on a clean board (nothing saved; gone on Back/Home).
+function ckOpenReview() {
+  const G = CK.G; if (!G || !G.review || !G.review.length) return;
+  openReview({
+    title: 'Game Review', size: 10,
+    initialState: CK.E.initialState(), moves: G.review, applyMove: CK.E.applyMove,
+    pieceSVG: ckPieceSVG, isDark: (r, c) => (r + c) % 2 === 1,
+    lastSquares: st => st.lastMove ? (st.lastMove.path ? [st.lastMove.path[0], st.lastMove.to] : [st.lastMove.from, st.lastMove.to]) : []
+  });
 }
 
 // ------------------------------------------------------------
@@ -204,6 +228,7 @@ function ckComputer() {
       CK.busy = false;
       if (!mv) { ckAfterMove(); return; }
       mv.captured.forEach(sq => G.capComp.push(G.state.board[sq]));
+      (G.review || (G.review = [])).push(mv);                        // record the computer's reply too
       G.state = CK.E.applyMove(G.state, mv); G.last = nowMs(); Saved.set('checkers', G); ckRender(); ckAfterMove();
     }, wait);
   });
@@ -236,6 +261,7 @@ function ckUndoTap() { if (ckCanUndo()) ckUndo(); }
 function ckUndo() {
   const G = CK.G; if (!G || G.over || CK.busy || G.level !== 'easy' || !G.undo.length) return;
   const u = G.undo.pop(); G.state = u.state; G.capHuman = u.capHuman; G.capComp = u.capComp; G.last = nowMs();
+  if (G.review && u.rev != null) G.review.length = u.rev;            // keep the review move list in step with Undo
   CK.sel = null; CK.cands = []; CK.step = 0; Saved.set('checkers', G); ckRender();
 }
 // Once a second: enforces the 60-minute rule while the app is open.

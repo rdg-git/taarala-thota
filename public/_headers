@@ -1,11 +1,14 @@
 # ============================================================
 # Security rules sent with every page (Cloudflare reads this file; tests/serve.js applies it locally too).
-# The app may only load its own files. No outside scripts, styles, fonts or connections, with one exception:
-# Cloudflare's anonymous visit counting (script from static.cloudflareinsights.com, counts sent to cloudflareinsights.com),
-# which the app loads only when counting is allowed (see src/visits.js).
+# The app may only load its own files. No outside scripts, styles, fonts or connections, with two exceptions:
+# 1. Cloudflare's anonymous visit counting (script from static.cloudflareinsights.com, counts sent to cloudflareinsights.com),
+#    which the app loads only when counting is allowed (see src/visits.js).
+# 2. Cloudflare Turnstile, the anti-spam check on the feedback box (script and frame from challenges.cloudflare.com),
+#    which the app loads only on the feedback screen (see the Turnstile code in src/settings.js). This is the only
+#    place framing is allowed (frame-src); the token it produces is verified server-side in functions/api/feedback.js.
 # ============================================================
 /*
-  Content-Security-Policy: default-src 'none'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; worker-src 'self' blob:; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
+  Content-Security-Policy: default-src 'none'; script-src 'self' https://static.cloudflareinsights.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; worker-src 'self' blob:; manifest-src 'self'; frame-src https://challenges.cloudflare.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: no-referrer
