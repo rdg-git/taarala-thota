@@ -365,7 +365,7 @@ Four games, Loved Ones with WhatsApp, Settings passcode, Privacy & Safety page, 
 | Share the phone | Privacy & Safety tip | Guided Access (iPhone) / App pinning (Android) explained |
 | Learn the app | Privacy & Safety or Settings → Take A Tour | Plays on the real screens; pause, drag, speed; nothing is tapped or saved |
 | Share feedback | Privacy & Safety or Settings → Share Feedback (Anonymous) | One box; no name or email |
-| Review a game | Game ends → Review Game → step through the moves | Plays on a clean board; nothing is saved; Back or Home clears it |
+| Review a game | Game ends → Review Game → step through the moves | Replays the game’s moves, which stay on the device with the resumable game, on a clean board; the walkthrough is not stored, and Back or Home clears it |
 
 ![](images/product-doc/take-a-tour-playing.jpg)
 
@@ -667,7 +667,10 @@ Each entry: the decision, the options, my choice, and the trade-off I accepted.
 | # | Decision | Options | My choice | Trade-off accepted |
 |---|---|---|---|---|
 | 67 | Playing and talking with each other | A closed group where an admin adds members and everyone can message and play each other · a one-way list of each person’s own loved ones | A one-way list: each person keeps their own loved ones on their own phone, with no sign-in. A shared group would mean holding other people’s data and taking responsibility for it, it’s far more complex to build for a first version, and someone’s loved ones aren’t always loved ones to each other, so not everyone would want to be in one group. I may explore it again later. | No playing against each other and no group; each person only connects one-to-one with the people they choose |
+
+| # | Decision | Options | My choice | Trade-off accepted |
+|---|---|---|---|---|
 | 68 | Encouraging good moves | None · praise every strong move · only clear-cut good moves | A brief "Nice move!" that fades on its own, shown only on clear-cut good moves (a capture that wins material, or reaching a king/promotion), in Chess and Checkers at every level | Subtle positional moves are not praised, so it never praises a weak move by mistake; it appears after you move, so it is encouragement, not a hint |
-| 69 | Reviewing a finished game | None · save games to review later · review now, nothing saved | After a game ends, an optional walkthrough steps through the moves on a clean board; it is never saved and disappears on Back or Home | No stored history to revisit later; a game can only be reviewed right after it ends |
+| 69 | Reviewing a finished game | None · keep a history of finished games · replay from the game’s saved moves | After a game ends, an optional walkthrough replays the moves on a clean board; it closes on Back or Home and is not stored on its own, and the moves it replays stay on the device with the resumable game and clear when the game ends | The moves stay on the device, never sent anywhere; once a game ends there is no lasting history to revisit |
 | 70 | Tall phones (e.g. iPhone) | Leave blurred strips · zoom to fill and trim the sides · fill the edge with the picture’s own colours | Zoom in to fill the screen, trimming only empty side margins (never a painted sign), and fill any thin remaining band with the picture’s own edge colours | On a very tall phone a sliver of the far left and right edges is trimmed |
 | 71 | Protecting the feedback box from spam | Nothing extra · limit how often each person can write · block automated spam only | Block automated spam only — a hidden honeypot field and a Cloudflare Turnstile check, on top of the existing app-only rule and daily cap — and never limit a real person, who can write as often as they like | Free tools reduce automated spam but cannot stop a determined attacker completely; rarely, a real person on a very fast or unusual setup may need to tap Send again |
